@@ -353,6 +353,42 @@ export const ROLES = [
     },
   },
   {
+    id: 'streamer',
+    title: 'Live Streamer & Broadcaster',
+    category: 'official',
+    short: 'Live Streamer',
+    badge: 'LIVE BROADCASTER',
+    color: '#e10613',
+    accentBg: 'rgba(225, 6, 19, 0.08)',
+    desc: 'Match broadcasting, multi-cam live OTT feeds, real-time score overlay graphics and fan audio commentary.',
+    iconName: 'Video',
+    fields: [
+      { name: 'channelName', label: 'Broadcast Channel / Media Name', type: 'text', placeholder: 'e.g. StrikeLive Sports Media' },
+      { name: 'broadcastTier', label: 'Streaming Hardware Setup', type: 'select', options: ['Mobile Multi-Cam HD (1080p)', 'Pro Broadcast Rig & Drones', 'Single Pitch AI Auto-Cam', 'Commentator Audio Stream Desk'] },
+      { name: 'primarySport', label: 'Primary Sport Coverage', type: 'select', options: ['Cricket Tournaments', 'Football & Kabaddi', 'All Multi-Sport Live Feeds'] },
+      { name: 'channelUrl', label: 'Channel / Stream URL (Optional)', type: 'text', placeholder: 'https://youtube.com/@channel' },
+    ],
+    defaultUser: {
+      role: 'streamer',
+      roleCategory: 'official',
+      nickname: 'Streamer_Karan',
+      fullName: 'Karan Mehra',
+      city: 'Mumbai',
+      age: '28',
+      verified: true,
+      trust: 97,
+      roleDetails: {
+        channelName: 'ScoringCast Live Studio',
+        broadcastTier: 'Pro Broadcast Rig & Drones',
+        primarySport: 'Cricket Tournaments',
+        activeStreams: 2,
+        totalViewers: '48,200',
+        subscribers: '12.4K',
+        quality: '1080p 60fps Ultra-Low Latency',
+      },
+    },
+  },
+  {
     id: 'admin',
     title: 'Platform Super Admin',
     category: 'official',
@@ -394,3 +430,50 @@ export function getRoleById(roleId) {
 
 // Officials list for dropdown (all roles except player)
 export const OFFICIAL_ROLES = ROLES.filter((r) => r.category === 'official')
+
+// Explicit 6 Business / Officials categories requested by platform specification
+export const OFFICIAL_BUSINESS_ROLES = [
+  {
+    id: 'ground',
+    name: 'GROUNDS / Stadium',
+    label: '1. GROUNDS / Stadium',
+    subtitle: 'Pitch & turf bookings, floodlight rentals, tournament leases & ground finance',
+    icon: '🏟️',
+  },
+  {
+    id: 'academy',
+    name: 'Academics (Sports Academies)',
+    label: '2. Academics (Sports Academies)',
+    subtitle: 'Student admissions, coach rosters, monthly fees, nets & equipment allocation',
+    icon: '🏫',
+  },
+  {
+    id: 'seller',
+    name: 'Manufacturers / Factory Outlet / Seller',
+    label: '3. Manufacturers / Factory Outlet / Seller',
+    subtitle: 'Sports gear & equipment catalog, English willow bats, apparel & team orders',
+    icon: '🏭',
+  },
+  {
+    id: 'coach',
+    name: 'Coach / Trainer',
+    label: '4. Coach / Trainer',
+    subtitle: 'Batch attendance, swing & biomechanics feedback, drill planning & fitness ratings',
+    icon: '🏃',
+  },
+  {
+    id: 'streamer',
+    name: 'Live Streamers',
+    label: '5. Live Streamers',
+    subtitle: 'Live match streaming, multi-cam feeds, broadcast score graphics & audio commentary',
+    icon: '📹',
+  },
+  {
+    id: 'sponsor',
+    name: 'Sponsor',
+    label: '6. Sponsor',
+    subtitle: 'Tournament title sponsorship, scoreboard billboard banners & live stream campaigns',
+    icon: '🤝',
+  },
+]
+

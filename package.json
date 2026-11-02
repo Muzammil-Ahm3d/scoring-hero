@@ -1,0 +1,11 @@
+{
+  "name": "scoring-hero",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Scoring Heroes - Modern Sports Platform",
+  "scripts": {
+    "build": "npm --prefix client run build",
+    "dev": "npm --prefix client run dev",
+    "lint": "npm --prefix client run lint"
+  }
+}

@@ -1,0 +1,1114 @@
+/* ========================================================
+   SCORING HEROES: CLEAN WHITE THEME AUTHENTICATION
+   Designed for all-day viewing comfort, zero eye strain.
+   ======================================================== */
+
+.sh-white-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f8fafc;
+  color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 32px 16px 64px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow-y: auto;
+}
+
+/* Header with Top Logo */
+.sh-white-header {
+  text-align: center;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sh-white-logo-wrap {
+  width: 140px;
+  max-width: 45vw;
+  margin-bottom: 12px;
+}
+
+.sh-white-logo-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.sh-white-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+}
+
+.sh-white-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Normal Card Structure */
+.sh-white-card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .sh-white-page {
+    padding: 20px 12px 48px;
+  }
+  .sh-white-card {
+    padding: 18px 16px;
+    border-radius: 14px;
+  }
+}
+
+/* Only Two Tabs: Sign In vs Register */
+.sh-white-tab-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 20px;
+  gap: 4px;
+}
+
+.sh-white-tab {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sh-white-tab:hover {
+  color: #0f172a;
+}
+
+.sh-white-tab.is-active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Account Type Choice (Inside Register) */
+.sh-white-account-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sh-white-account-type-card {
+  padding: 12px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sh-white-account-type-card:hover {
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+.sh-white-account-type-card.is-active {
+  border-color: #e10613;
+  background: #fff5f5;
+  box-shadow: 0 0 0 1px #e10613;
+}
+
+.sh-white-account-type-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sh-white-account-type-desc {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+/* Form Groups & Inputs */
+.sh-white-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sh-white-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.sh-white-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sh-white-hint {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: normal;
+}
+
+.sh-white-input,
+.sh-white-select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.sh-white-input:focus,
+.sh-white-select:focus {
+  border-color: #e10613;
+  box-shadow: 0 0 0 3px rgba(225, 6, 19, 0.12);
+}
+
+.sh-white-input::placeholder {
+  color: #94a3b8;
+}
+
+.sh-white-row-split {
+  display: flex;
+  gap: 10px;
+}
+
+/* Search Bar for Sports */
+.sh-white-search-box {
+  position: relative;
+  width: 100%;
+}
+
+.sh-white-search-box input {
+  padding-left: 36px;
+}
+
+.sh-white-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Sports Filter Pills */
+.sh-white-pill-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.sh-white-pill-row::-webkit-scrollbar {
+  display: none;
+}
+
+.sh-white-pill-btn {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.sh-white-pill-btn.is-active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+/* Sports Grid */
+.sh-white-sports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px;
+  background: #f8fafc;
+}
+
+.sh-white-sport-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.sh-white-sport-item:hover {
+  border-color: #94a3b8;
+}
+
+.sh-white-sport-item.is-selected {
+  border-color: #e10613;
+  background: #fff5f5;
+  color: #e10613;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(225, 6, 19, 0.15);
+}
+
+.sh-white-sport-icon {
+  font-size: 16px;
+}
+
+.sh-white-selected-sport-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #166534;
+  font-weight: 600;
+}
+
+/* Minimized Selected Sport Card */
+.sh-white-minimized-sport-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sh-white-minimized-sport-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.sh-white-minimized-sport-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #e10613;
+}
+
+.sh-white-minimized-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.sh-white-minimized-icon {
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.sh-white-minimized-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sh-white-minimized-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+.sh-white-check-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  flex-shrink: 0;
+}
+
+.sh-white-minimized-sub {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.sh-white-change-sport-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #e10613;
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sh-white-change-sport-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Expanded Sport Catalog Box */
+.sh-white-expanded-sport-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  animation: shWhiteFadeIn 0.2s ease-out;
+}
+
+.sh-white-expanded-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sh-white-collapse-btn {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sh-white-collapse-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Dynamic Sport-Specific Questions Section */
+.sh-white-sport-questions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.sh-white-questions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sh-white-questions-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sh-white-questions-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e10613;
+  display: inline-block;
+}
+
+.sh-white-questions-hint {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.sh-white-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Option Chips / Pills */
+.sh-white-option-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sh-white-option-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.sh-white-option-pill:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.sh-white-option-pill.is-active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+}
+
+/* Level Selector (National vs International) */
+.sh-white-level-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.sh-white-level-btn {
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sh-white-level-btn.is-active {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Business Dropdown Summary Box */
+.sh-white-biz-brief-box {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sh-white-biz-brief-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sh-white-biz-brief-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Primary Action Buttons */
+.sh-white-btn-primary {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #e10613;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 4px 12px rgba(225, 6, 19, 0.2);
+}
+
+.sh-white-btn-primary:hover {
+  background: #c7000b;
+}
+
+.sh-white-btn-primary:active {
+  transform: scale(0.99);
+}
+
+.sh-white-btn-secondary {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.sh-white-btn-secondary:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+/* Divider */
+.sh-white-divider {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.sh-white-divider::before,
+.sh-white-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.sh-white-divider span {
+  padding: 0 10px;
+}
+
+/* Information / Notice Callout */
+.sh-white-callout {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.sh-white-callout--info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.sh-white-callout--success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.sh-white-callout--warning {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+/* Aadhaar Flow Box */
+.sh-white-aadhaar-box {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sh-white-aadhaar-preview {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sh-white-preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  padding: 2px 0;
+  border-bottom: 1px dashed #f1f5f9;
+}
+
+.sh-white-preview-row:last-child {
+  border-bottom: none;
+}
+
+.sh-white-preview-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.sh-white-preview-val {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.sh-white-error {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  margin: 4px 0;
+}
+
+/* Terms Checkbox */
+.sh-white-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.4;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sh-white-checkbox-label input {
+  margin-top: 2px;
+  accent-color: #e10613;
+}
+
+/* ========================================================
+   HIGH CONTRAST COUNTRY CODE PICKER FOR WHITE THEME
+   Fixes invisible country code text and dropdown
+   ======================================================== */
+.sh-country-picker {
+  position: relative !important;
+  flex-shrink: 0 !important;
+}
+
+.sh-country-trigger {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 42px !important;
+  padding: 0 12px !important;
+  background: #f8fafc !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 10px 0 0 10px !important;
+  border-right: none !important;
+  color: #0f172a !important; /* Bold black text, 100% visible! */
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+}
+
+.sh-country-trigger:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+
+.sh-country-flag {
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+.sh-country-dial {
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  color: #0f172a !important;
+}
+
+.sh-country-arrow {
+  color: #64748b !important;
+}
+
+.sh-country-dropdown {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  margin-top: 6px !important;
+  width: 280px !important;
+  max-height: 300px !important;
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.sh-country-search-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  background: #f8fafc !important;
+}
+
+.sh-country-search-input {
+  flex: 1 !important;
+  background: transparent !important;
+  border: none !important;
+  color: #0f172a !important;
+  font-size: 12px !important;
+  outline: none !important;
+}
+
+.sh-country-search-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+.sh-country-list {
+  overflow-y: auto !important;
+  max-height: 240px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.sh-country-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 12px !important;
+  background: #ffffff !important;
+  border: none !important;
+  border-bottom: 1px solid #f8fafc !important;
+  color: #0f172a !important;
+  font-size: 13px !important;
+  text-align: left !important;
+  cursor: pointer !important;
+}
+
+.sh-country-item:hover {
+  background: #f1f5f9 !important;
+}
+
+.sh-country-item.is-selected {
+  background: #fff5f5 !important;
+  color: #e10613 !important;
+  font-weight: 700 !important;
+}
+
+.sh-country-name {
+  flex: 1 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  color: #0f172a !important;
+}
+
+.sh-country-dial-code {
+  font-weight: 700 !important;
+  color: #64748b !important;
+  font-size: 12px !important;
+}
+
+/* ========================================================
+   SECTION CARDS: EMAIL & GOOGLE / GMAIL
+   ======================================================== */
+.sh-white-social-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.sh-white-social-card:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.sh-white-social-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sh-white-social-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sh-white-social-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sh-white-social-sub {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* Password with Eye Icon Toggle */
+.sh-white-password-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.sh-white-password-wrap input {
+  padding-right: 42px;
+}
+
+.sh-white-eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.sh-white-eye-btn:hover {
+  color: #0f172a;
+}
+
+/* Onboarding Step Progress Bar */
+.sh-white-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.sh-white-stepper::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  background: #e2e8f0;
+  z-index: 0;
+}
+
+.sh-white-step-node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.sh-white-step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.sh-white-step-node.is-active .sh-white-step-circle {
+  background: #e10613;
+  border-color: #e10613;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(225, 6, 19, 0.15);
+}
+
+.sh-white-step-node.is-completed .sh-white-step-circle {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #ffffff;
+}
+
+.sh-white-step-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.sh-white-step-node.is-active .sh-white-step-label {
+  color: #0f172a;
+}
+
+/* Aadhaar Consent Checkbox */
+.sh-white-aadhaar-consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #334155;
+  text-align: left;
+  cursor: pointer;
+  margin: 6px 0 12px;
+  transition: all 0.15s ease;
+}
+
+.sh-white-aadhaar-consent-label:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.sh-white-aadhaar-consent-label input[type='checkbox'] {
+  margin-top: 2px;
+  accent-color: #e10613;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Scoped styles for the white auth page */
+.sh-white-page {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 24px 16px 48px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+

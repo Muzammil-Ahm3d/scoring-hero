@@ -1,0 +1,719 @@
+/* Sleek, Professional Product Details Page Styling */
+
+.pd-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 12px 120px;
+  width: 100%;
+  box-sizing: border-box;
+  color: #f1f5f9;
+}
+
+/* ── Topbar Actions (Share, Wishlist, Cart) ── */
+.pd-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pd-header-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+.pd-header-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.pd-header-btn.active {
+  border-color: rgba(255, 45, 58, 0.5);
+  background: rgba(255, 45, 58, 0.12);
+}
+.pd-header-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #e10613;
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(225, 6, 19, 0.6);
+  border: 1.5px solid #050d24;
+}
+
+/* ── Floating Toast ── */
+.pd-floating-toast {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 22, 52, 0.96);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 200, 61, 0.4);
+  color: #f8fafc;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+  animation: pdToastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+@keyframes pdToastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* ── 1. Compact Image Showcase (Clean White Background, Balanced Height) ── */
+.pd-gallery-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.pd-main-img-box {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  max-height: 250px;
+  border-radius: 16px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px;
+  box-sizing: border-box;
+}
+.pd-main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+.pd-main-img-box:hover .pd-main-img {
+  transform: scale(1.04);
+}
+.pd-discount-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #e10613;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  box-shadow: 0 3px 8px rgba(225, 6, 19, 0.45);
+  z-index: 2;
+}
+.pd-verified-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(5, 12, 32, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+}
+
+.pd-thumbs-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px;
+}
+.pd-thumb-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  background: #ffffff;
+  padding: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.pd-thumb-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.pd-thumb-btn.is-active {
+  border-color: #e10613;
+  box-shadow: 0 0 10px rgba(225, 6, 19, 0.45);
+  transform: scale(1.04);
+}
+
+/* ── 2. Product Info Card ── */
+.pd-info-card {
+  background: rgba(10, 22, 52, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pd-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pd-brand-tag {
+  color: #38bdf8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.pd-stock-pill {
+  font-size: 10.5px;
+  color: #34d399;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.pd-stock-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.pd-product-title {
+  margin: 0;
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.3;
+}
+.pd-spec-line {
+  margin: 0;
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.pd-rating-block {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+}
+.pd-rating-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.pd-review-count {
+  font-size: 11px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+.pd-verified-buyers {
+  font-size: 10.5px;
+  color: #64748b;
+}
+
+.pd-pricing-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pd-price-main-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.pd-current-price {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+.pd-mrp-price {
+  font-size: 13px;
+  color: #64748b;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+.pd-discount-tag {
+  background: rgba(225, 6, 19, 0.15);
+  border: 1px solid rgba(225, 6, 19, 0.4);
+  color: #ff3b50;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.pd-savings-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: #10b981;
+}
+.pd-tax-note {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* ── Section Cards (Variants, Highlights, Specs) ── */
+.pd-section-card {
+  background: rgba(10, 22, 52, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pd-section-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+}
+.pd-short-desc {
+  margin: 0;
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+/* ── Variants Grid ── */
+.pd-variants-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pd-variant-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pd-variant-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.pd-variant-btn.is-selected {
+  border-color: #e10613;
+  background: rgba(225, 6, 19, 0.15);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(225, 6, 19, 0.35);
+}
+.pd-variant-check {
+  color: #ff3b50;
+}
+
+/* ── Highlights List ── */
+.pd-highlights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.pd-highlight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 11.5px;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+.pd-hl-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Specs Table ── */
+.pd-specs-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.pd-spec-row {
+  display: flex;
+  padding: 7px 10px;
+  font-size: 11.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.pd-spec-row:last-child {
+  border-bottom: 0;
+}
+.pd-spec-row:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+.pd-spec-key {
+  width: 40%;
+  color: #94a3b8;
+  font-weight: 600;
+}
+.pd-spec-val {
+  width: 60%;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* ── Assurance Grid ── */
+.pd-assurance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.pd-assurance-item {
+  background: rgba(10, 22, 52, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 9px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pd-assurance-item strong {
+  display: block;
+  font-size: 11px;
+  color: #ffffff;
+  font-weight: 700;
+}
+.pd-assurance-item span {
+  display: block;
+  font-size: 9.5px;
+  color: #94a3b8;
+  line-height: 1.25;
+}
+
+/* ── 7. SUGGESTED PRODUCTS SECTION ── */
+.pd-suggested-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.pd-suggested-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.pd-suggested-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+}
+.pd-suggested-sub {
+  margin: 1px 0 0;
+  font-size: 10.5px;
+  color: #94a3b8;
+}
+.pd-suggested-all-btn {
+  background: transparent;
+  border: 0;
+  color: #e10613;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+.pd-suggested-all-btn:hover {
+  color: #ff3b50;
+}
+
+.pd-suggested-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.pd-suggested-card {
+  background: rgba(10, 22, 52, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.pd-suggested-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(225, 6, 19, 0.4);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+}
+.pd-suggested-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 110px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  box-sizing: border-box;
+}
+.pd-suggested-img {
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+.pd-suggested-card:hover .pd-suggested-img {
+  transform: scale(1.06);
+}
+.pd-suggested-discount {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: #e10613;
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.pd-suggested-info {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+.pd-suggested-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 9.5px;
+  color: #fbbf24;
+  font-weight: 700;
+}
+.pd-suggested-name {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 28px;
+}
+.pd-suggested-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-top: auto;
+}
+.pd-suggested-price {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #ffffff;
+}
+.pd-suggested-mrp {
+  font-size: 10px;
+  color: #64748b;
+  text-decoration: line-through;
+}
+.pd-suggested-add-btn {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pd-suggested-card:hover .pd-suggested-add-btn {
+  background: #e10613;
+  color: #ffffff;
+  border-color: #ff3b50;
+}
+
+/* ── 8. Sticky Bottom Action Bar ── */
+.pd-sticky-foot {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 500px;
+  background: rgba(5, 12, 32, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.75);
+  z-index: 105;
+  box-sizing: border-box;
+  padding: 10px 14px max(12px, env(safe-area-inset-bottom, 12px));
+}
+.pd-foot-content {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+.pd-foot-qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pd-foot-qty-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.pd-foot-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  padding: 2px 7px;
+}
+.pd-foot-step-btn {
+  background: transparent;
+  border: 0;
+  color: #cbd5e1;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+.pd-foot-step-btn:hover {
+  color: #ffffff;
+}
+.pd-foot-step-val {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #ffffff;
+  min-width: 16px;
+  text-align: center;
+}
+
+.pd-foot-buttons-row {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 8px;
+}
+.pd-foot-cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pd-foot-cart-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+.pd-foot-buy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #e10613 0%, #ff2d3b 100%);
+  border: 0;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(225, 6, 19, 0.45);
+}
+.pd-foot-buy-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(225, 6, 19, 0.6);
+}

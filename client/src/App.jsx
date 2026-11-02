@@ -34,6 +34,9 @@ import MatchTools from './pages/MatchTools'
 import GroundSlotBooking from './pages/GroundSlotBooking'
 import TournamentTicketing from './pages/TournamentTicketing'
 import SportsMarketplace from './pages/SportsMarketplace'
+import ProductDetail from './pages/ProductDetail'
+import CartPage from './pages/CartPage'
+import WishlistPage from './pages/WishlistPage'
 import ManufacturerPartners from './pages/ManufacturerPartners'
 import SponsorshipAds from './pages/SponsorshipAds'
 import AIMatchSystem from './pages/AIMatchSystem'
@@ -92,6 +95,8 @@ export default function App() {
         <Route path="academy" element={<AcademyCareer />} />
         <Route path="commentary" element={<AICommentary />} />
         <Route path="highlights" element={<Highlights />} />
+        <Route path="videos" element={<Highlights />} />
+        <Route path="reels" element={<Highlights />} />
         <Route path="journey" element={<CareerJourney />} />
         <Route path="match-tools" element={<MatchTools />} />
         <Route path="grounds" element={<GroundSlotBooking />} />
@@ -99,9 +104,19 @@ export default function App() {
         <Route path="ticketing" element={<TournamentTicketing />} />
         <Route path="tournaments" element={<TournamentTicketing />} />
         <Route path="marketplace" element={<SportsMarketplace />} />
+        <Route path="marketplace/product/:productId" element={<ProductDetail />} />
+        <Route path="marketplace/cart" element={<CartPage />} />
+        <Route path="marketplace/wishlist" element={<WishlistPage />} />
+        <Route path="cart" element={<CartPage />} />
+        <Route path="wishlist" element={<WishlistPage />} />
         <Route path="market" element={<SportsMarketplace />} />
+        <Route path="market/product/:productId" element={<ProductDetail />} />
         <Route path="store" element={<SportsMarketplace />} />
+        <Route path="store/product/:productId" element={<ProductDetail />} />
         <Route path="shop" element={<SportsMarketplace />} />
+        <Route path="shop/product/:productId" element={<ProductDetail />} />
+        <Route path="shop/cart" element={<CartPage />} />
+        <Route path="shop/wishlist" element={<WishlistPage />} />
         <Route path="partners" element={<ManufacturerPartners />} />
         <Route path="manufacturer" element={<ManufacturerPartners />} />
         <Route path="brands" element={<ManufacturerPartners />} />

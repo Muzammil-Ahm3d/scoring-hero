@@ -31,7 +31,7 @@ export default function VerifyEmail() {
       phoneCode: draft.phoneCode || '+91',
       phone: draft.phone || '9876543210',
       email: draft.email,
-      nickname: draft.nickname || activeRole.defaultUser?.nickname || 'Rohit_45',
+      nickname: draft.nickname || (draft.email ? draft.email.split('@')[0] : 'Athlete_User'),
       city: draft.city || 'Chennai',
       age: draft.age || '20',
       role: draft.role || 'player',

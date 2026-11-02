@@ -22,6 +22,10 @@ client/dist-ssr/
 .netlify/
 client/.netlify/
 
+# Vercel
+.vercel/
+client/.vercel/
+
 # Logs
 logs/
 *.log

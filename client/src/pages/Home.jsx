@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { LayoutGrid, UserCheck } from 'lucide-react'
 import Screen from '../components/Screen'
 import { useAuth } from '../context/AuthContext'
+import HeroBannerCarousel from '../components/HeroBannerCarousel'
 import RoleBanner from '../components/RoleBanner'
 import RoleProfileView from '../components/RoleProfileView'
 import PlayerDashboard from '../components/dashboards/PlayerDashboard'
@@ -56,6 +57,9 @@ export default function Home() {
   return (
     <Screen branded padded={false}>
       <div className="home-dashboard-container">
+        {/* Modular Hero Banner Carousel showcasing latest world updates, admin news, and gear offers */}
+        <HeroBannerCarousel />
+
         {/* Universal Role & Profile Switcher Banner */}
         <RoleBanner />
 

@@ -204,19 +204,29 @@ export default function RoleProfileView({ onRoleSwitch }) {
           { label: 'Verification Queue', value: '3 Pending Academy Approvals', icon: Check },
           { label: 'Audit Trail Ledger', value: 'Cryptographic SHA-256 Active', icon: FileText },
         ]
+      case 'streamer':
+        return [
+          { label: 'Broadcast Channel', value: roleDetails.channelName || roleDetails.specialField || 'ScoringCast Live Studio', icon: Radio, highlight: true },
+          { label: 'Streaming Hardware Setup', value: roleDetails.broadcastTier || 'Pro Broadcast Rig & Drones', icon: Layers },
+          { label: 'Primary Sport Coverage', value: roleDetails.primarySport || 'Cricket Tournaments & Multi-Sport Feeds', icon: Trophy },
+          { label: 'Stream Quality', value: '1080p 60fps Ultra-Low Latency', icon: Sparkles },
+          { label: 'Live Viewership Base', value: '48,200 Viewers • 12.4K Subscribers', icon: User },
+        ]
       case 'player':
       default:
         return [
-          { label: 'Playing Role', value: roleDetails.role || 'All-rounder', icon: Award, highlight: true },
+          { label: 'Registered Sport', value: `${user?.sportName || 'Cricket'} (${user?.competitionLevel || 'National Level'})`, icon: Trophy, highlight: true },
+          { label: 'Playing Role', value: roleDetails.role || 'All-rounder', icon: Award },
           { label: 'Batting Style', value: roleDetails.battingStyle || 'Right Hand Bat', icon: Sparkles },
           { label: 'Bowling Style', value: roleDetails.bowlingStyle || 'Right-arm Fast', icon: Flame },
-          { label: 'Enrolled Academy', value: roleDetails.academyName || 'Marina Titans Cricket Academy', icon: GraduationCap },
-          { label: 'Academy Division', value: roleDetails.stage || 'U19 Academy Pro', icon: Layers },
+          { label: 'Verified Age (Aadhaar)', value: `${user?.age || '20'} Years (UIDAI Verified)`, icon: Calendar },
+          { label: 'Verified Address (Aadhaar)', value: user?.address || 'Mylapore, Chennai, Tamil Nadu - 600004', icon: MapPin },
           { label: 'Aadhaar Identity Status', value: `Verified & Encrypted (${maskedAadhaar})`, icon: ShieldCheck },
-          { label: 'Emergency Guardian Contact', value: '+91 98410 11223 (Mr. Sharma)', icon: Phone },
+          { label: 'Enrolled Academy', value: roleDetails.academyName || 'Marina Titans Cricket Academy', icon: GraduationCap },
         ]
     }
   }
+
 
   const profileFields = getRoleProfileFields()
 
