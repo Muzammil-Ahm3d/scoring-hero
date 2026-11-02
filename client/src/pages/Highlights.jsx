@@ -6,7 +6,6 @@ import {
   Pause,
   Sparkles,
   Share2,
-  Download,
   Flame,
   Zap,
   RotateCcw,
@@ -59,13 +58,6 @@ export default function Highlights() {
       back
       title="Video Highlights"
       subtitle="AI Event Detection & Ball Tracking"
-      right={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span className="pill" style={{ background: 'rgba(225,6,19,0.15)', color: '#ff8a93', border: '1px solid var(--red-2)', fontSize: 10 }}>
-            4K 60FPS
-          </span>
-        </div>
-      }
     >
       <div className="highlights-page">
         {/* Main Interactive Stage (Screen as blueprint) */}
@@ -261,9 +253,6 @@ export default function Highlights() {
               onClick={() => navigate('/app/community')}
             >
               <Share2 size={14} color="var(--red-2)" /> Share to SH Community
-            </button>
-            <button type="button" className="social-chip">
-              <Download size={14} color="var(--cyan)" /> Export 4K MP4
             </button>
           </div>
         </div>
