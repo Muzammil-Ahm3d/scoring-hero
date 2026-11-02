@@ -50,7 +50,18 @@ import RoleProfile from './pages/RoleProfile'
 
 function SplashRoute() {
   const navigate = useNavigate()
-  return <FlashScreen onFinish={() => navigate('/welcome', { replace: true })} />
+  const { user } = useAuth()
+  return (
+    <FlashScreen
+      onFinish={() => {
+        if (user) {
+          navigate('/app', { replace: true })
+        } else {
+          navigate('/welcome', { replace: true })
+        }
+      }}
+    />
+  )
 }
 
 export default function App() {

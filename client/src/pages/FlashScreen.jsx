@@ -106,7 +106,7 @@ export default function FlashScreen({ onFinish, duration = 3000, autoTransition 
       </div>
 
       {/* Main Flash Stage / Mobile Frame */}
-      <div className="sh-flash-phone-frame" onClick={(e) => e.stopPropagation()}>
+      <div className="sh-flash-phone-frame">
         {/* Background Stadium & Batsman Artwork */}
         <div className="sh-flash-bg-container">
           <img
@@ -145,7 +145,10 @@ export default function FlashScreen({ onFinish, duration = 3000, autoTransition 
           <button
             type="button"
             className="sh-flash-skip-btn"
-            onClick={() => setSoundEnabled((prev) => !prev)}
+            onClick={(e) => {
+              e.stopPropagation()
+              setSoundEnabled((prev) => !prev)
+            }}
             title={soundEnabled ? 'Mute sound' : 'Enable sound'}
           >
             {soundEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
