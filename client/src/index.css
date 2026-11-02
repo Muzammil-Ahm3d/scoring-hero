@@ -12838,6 +12838,85 @@ img { max-width: 100%; display: block; }
   color: #9aa8c7;
 }
 
+/* Article Card Image */
+.art-card-img-wrap {
+  width: 100%;
+  height: 148px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  background: #020617;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 3px 0;
+}
+
+.feed-art-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.feed-article-item-card:hover .feed-art-img {
+  transform: scale(1.04);
+}
+
+.art-img-category-pill {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(3, 8, 24, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(61, 224, 255, 0.3);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #3de0ff;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Modal Article Hero Image */
+.modal-art-hero-wrap {
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(61, 224, 255, 0.2);
+  margin-bottom: 6px;
+  background: #020617;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+.modal-art-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Match Report Action Image */
+.match-report-img-wrap {
+  width: 100%;
+  height: 140px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 4px 0 8px;
+}
+
+.match-report-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .art-title {
   margin: 0;
   font-size: 13px;

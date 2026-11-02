@@ -57,6 +57,7 @@ export default function SportsEPaperSystem() {
       category: 'Cricket',
       reads: '18.4K',
       date: '15 JUL 2026',
+      image: '/market/banner-world.png',
       content: `In a breathtaking climax at the District Stadium, Hapur Heroes chased down 189 against Meerut Titans with just 2 balls to spare. A blistering 82 from opener Rohit and ice-cool finishing in the 20th over sealed the coveted trophy before a capacity crowd of 8,500 roaring fans.\n\n"We practiced hitting under high-pressure death overs throughout the season," the captain told reporters post-match. The victory books Hapur's ticket to next month's State Inter-District Trophy.`,
       sponsored: false,
       productAd: {
@@ -75,6 +76,7 @@ export default function SportsEPaperSystem() {
       category: 'Player Spotlight',
       reads: '12.1K',
       date: '15 JUL 2026',
+      image: '/market/banner-news.png',
       content: `Two years ago, Arjun Das was bowling barefoot in rural training camps. Today, his express 140km/h seam delivery is terrorizing top-order batsmen across the state league. This special interview feature dives into his relentless discipline, coach mentorship, and dream of making the national trials.`,
       sponsored: false,
     },
@@ -88,6 +90,7 @@ export default function SportsEPaperSystem() {
       category: 'Tournaments',
       reads: '29.7K',
       date: '15 JUL 2026',
+      image: '/market/banner-videos.png',
       content: `The Apex Sports Commission has officially locked Eden Grounds as the battleground for the 2026 Premier Cup Final. Full floodlit arrangements, DRS optical ball tracking, and live TV broadcasting confirmed.`,
       sponsored: false,
     },
@@ -101,6 +104,7 @@ export default function SportsEPaperSystem() {
       category: 'Equipment',
       reads: '8.3K',
       date: '15 JUL 2026',
+      image: '/market/banner-hero.png',
       content: `Discover how the new AeroSpeed spikes provide 30% greater traction on dry turf, reducing bowler knee impact during release stride. Available exclusively through the Scoring Heroes verified marketplace.`,
       sponsored: true,
       sponsorName: 'Spartan Athletics Official',
@@ -297,6 +301,18 @@ export default function SportsEPaperSystem() {
                       <span className="art-reads">👁️ {art.reads}</span>
                     </div>
 
+                    {art.image && (
+                      <div className="art-card-img-wrap">
+                        <img
+                          src={art.image}
+                          alt={art.title}
+                          className="feed-art-img"
+                          loading="lazy"
+                        />
+                        <div className="art-img-category-pill">{art.category}</div>
+                      </div>
+                    )}
+
                     <h4 className="art-title">{art.title}</h4>
                     <p className="art-subtitle">{art.subtitle}</p>
 
@@ -365,6 +381,12 @@ export default function SportsEPaperSystem() {
                 An electrifying 4th wicket partnership between Sharma (74*) and Verma (38) dismantled the Titans' pace battery in the death overs, sealing victory with 2 balls remaining.
               </p>
 
+              {articles[0].image && (
+                <div className="match-report-img-wrap">
+                  <img src={articles[0].image} alt="Match Action" className="match-report-img" />
+                </div>
+              )}
+
               <div className="report-actions-row">
                 <button
                   className="report-action-btn primary"
@@ -403,8 +425,12 @@ export default function SportsEPaperSystem() {
             {/* Rising Star of the Week Card (Matching Blueprint) */}
             <div className="spotlight-hero-card">
               <div className="spotlight-gold-badge">⭐ RISING STAR OF THE WEEK</div>
-              <div className="spotlight-avatar-box">
-                <span style={{ fontSize: 32 }}>⚡</span>
+              <div className="spotlight-avatar-box" style={{ overflow: 'hidden', padding: 0 }}>
+                <img
+                  src={articles[1].image}
+                  alt="Arjun Das"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
               </div>
               <h3 className="spotlight-player-name">Arjun Das (Age 19)</h3>
               <div className="spotlight-team-tag">Right-Arm Fast • 140 km/h</div>
@@ -430,7 +456,7 @@ export default function SportsEPaperSystem() {
 
               <button
                 className="epaper-red-cta-btn"
-                onClick={() => triggerToast('Full Spotlight Interview published to E-Paper!')}
+                onClick={() => setReadingArticle(articles[1])}
               >
                 <span>READ FULL SPOTLIGHT FEATURE</span>
               </button>
@@ -561,6 +587,16 @@ export default function SportsEPaperSystem() {
                   ✕
                 </button>
               </div>
+
+              {readingArticle.image && (
+                <div className="modal-art-hero-wrap">
+                  <img
+                    src={readingArticle.image}
+                    alt={readingArticle.title}
+                    className="modal-art-hero-img"
+                  />
+                </div>
+              )}
 
               <h2 className="modal-article-title">{readingArticle.title}</h2>
               <div className="modal-meta-row">
