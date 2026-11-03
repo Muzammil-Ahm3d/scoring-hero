@@ -9,6 +9,11 @@ import {
   Zap,
   Globe,
   Sparkles,
+  ArrowRight,
+  Plus,
+  ArrowLeft,
+  ShieldCheck,
+  Compass,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { OFFICIAL_BUSINESS_ROLES } from '../data/rolesData'
@@ -19,7 +24,7 @@ import '../AuthWhiteTheme.css'
 export default function Register({ defaultTab }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { draft, completeSignup, loginWithIdentifier } = useAuth()
+  const { draft, completeSignup, loginWithIdentifier, loginAsGuest } = useAuth()
 
   // 1. Two primary modes: 'register' vs 'login'
   const initialMode = defaultTab || (searchParams.get('mode') === 'login' ? 'login' : 'register')
@@ -270,38 +275,60 @@ export default function Register({ defaultTab }) {
 
   return (
     <div className="sh-white-page">
-      {/* Header with Top Logo */}
-      <header className="sh-white-header">
-        <div className="sh-white-logo-wrap">
+      {/* Round Back Button on Top Left */}
+      <button
+        type="button"
+        className="sh-modern-back-btn"
+        onClick={() => {
+          if (window.history.length > 1) {
+            navigate(-1)
+          } else {
+            navigate('/welcome')
+          }
+        }}
+        aria-label="Back"
+      >
+        <ArrowLeft size={18} color="#0f172a" />
+      </button>
+
+      {/* Header with Centered Logo, Title & Subtitle */}
+      <header className="sh-modern-header">
+        <div className="sh-modern-logo-wrap">
           <img src="/logo.png" alt="Scoring Heroes" />
         </div>
-        <h1 className="sh-white-title">SCORING HEROES</h1>
-        <p className="sh-white-subtitle">Universal Sports Platform · Indian & International Sports OS</p>
+        <h1 className="sh-modern-title">Customer access</h1>
+        <p className="sh-modern-subtitle">
+          {activeTab === 'login'
+            ? 'Verify your number to browse and access universal sports.'
+            : 'Register your athlete or business profile for national tournaments.'}
+        </p>
       </header>
 
-      {/* Main Card */}
-      <div className="sh-white-card">
-        {/* Top Segmented Tab: Sign In vs Register */}
-        <div className="sh-white-tab-bar">
+      {/* Main Modern Card */}
+      <div className="sh-modern-card-container">
+        {/* Top Segmented Tab Switcher (Matching Mobile Spec) */}
+        <div className="sh-modern-switcher">
           <button
             type="button"
-            className={`sh-white-tab ${activeTab === 'login' ? 'is-active' : ''}`}
+            className={`sh-modern-tab ${activeTab === 'login' ? 'is-active' : ''}`}
             onClick={() => {
               setActiveTab('login')
               setError('')
             }}
           >
-            Sign In
+            <ArrowRight size={15} strokeWidth={2.6} />
+            <span>Sign in</span>
           </button>
           <button
             type="button"
-            className={`sh-white-tab ${activeTab === 'register' ? 'is-active' : ''}`}
+            className={`sh-modern-tab ${activeTab === 'register' ? 'is-active' : ''}`}
             onClick={() => {
               setActiveTab('register')
               setError('')
             }}
           >
-            Register
+            <Plus size={16} strokeWidth={2.6} />
+            <span>Sign up</span>
           </button>
         </div>
 
@@ -694,212 +721,174 @@ export default function Register({ defaultTab }) {
           )}
 
           {/* ============================================================== */}
-          {/* PHASE 3: AUTH METHOD (EMAIL OTP, MOBILE OTP, GOOGLE SMALL TABS) */}
-          {/* Password removed completely - 100% passwordless OTP & Google!   */}
+          {/* PHASE 3: MODERN INPUT FIELDS & ACTION BUTTONS                  */}
           {/* ============================================================== */}
-          <div style={{ marginTop: activeTab === 'register' ? 6 : 0 }}>
-            <label className="sh-white-label">
-              <span>{activeTab === 'register' ? 'Verification & Contact Method' : 'Sign In Method'}</span>
-              <span className="sh-white-hint">Passwordless OTP</span>
-            </label>
-
-            {/* 3 Simple Small Tabs */}
-            <div className="sh-white-auth-tabs">
-              <button
-                type="button"
-                className={`sh-white-auth-tab ${authMethod === 'mobile' ? 'is-active' : ''}`}
-                onClick={() => {
-                  setAuthMethod('mobile')
-                  setError('')
-                }}
-              >
-                <Zap size={14} color={authMethod === 'mobile' ? '#e10613' : '#64748b'} />
-                <span>Mobile OTP</span>
-              </button>
-
-              <button
-                type="button"
-                className={`sh-white-auth-tab ${authMethod === 'email' ? 'is-active' : ''}`}
-                onClick={() => {
-                  setAuthMethod('email')
-                  setError('')
-                }}
-              >
-                <Mail size={14} color={authMethod === 'email' ? '#2563eb' : '#64748b'} />
-                <span>Email OTP</span>
-              </button>
-
-              <button
-                type="button"
-                className={`sh-white-auth-tab ${authMethod === 'google' ? 'is-active' : ''}`}
-                onClick={() => {
-                  setAuthMethod('google')
-                  setError('')
-                }}
-              >
-                <Globe size={14} color={authMethod === 'google' ? '#ea4335' : '#64748b'} />
-                <span>Google</span>
-              </button>
-            </div>
-
-            {/* TAB 1: MOBILE OTP INPUTS (FIXED HORIZONTAL FLEX WRAPPER) */}
-            {authMethod === 'mobile' && (
-              <>
-                <div className="sh-white-group">
-                  <label className="sh-white-label">
-                    <span>Mobile Number</span>
-                    <span className="sh-white-hint">
-                      {phone.length}/{maxPhoneDigits} digits
-                    </span>
-                  </label>
-                  <div className="sh-white-phone-wrap">
-                    <CountryCodePicker
-                      value={phoneCode}
-                      onChange={handlePhoneCodeChange}
-                    />
-                    <input
-                      type="tel"
-                      className="sh-white-input sh-white-phone-input"
-                      placeholder={phonePlaceholder}
-                      value={phone}
-                      onChange={(e) => handlePhoneChange(e.target.value)}
-                      required
-                    />
-                  </div>
+          <div style={{ marginTop: activeTab === 'register' ? 8 : 0 }}>
+            {authMethod === 'mobile' ? (
+              <div className="sh-modern-field-group">
+                <label className="sh-modern-field-label">
+                  <span>Mobile number</span>
+                  <span className="sh-white-hint">
+                    {phone.length}/{maxPhoneDigits} digits
+                  </span>
+                </label>
+                <div className="sh-modern-input-box">
+                  <CountryCodePicker
+                    value={phoneCode}
+                    onChange={handlePhoneCodeChange}
+                  />
+                  <div className="sh-modern-input-divider" />
+                  <input
+                    type="tel"
+                    className="sh-modern-input-field"
+                    placeholder={phonePlaceholder}
+                    value={phone}
+                    onChange={(e) => handlePhoneChange(e.target.value)}
+                    required
+                  />
                 </div>
-
-                {activeTab === 'register' && (
-                  <div className="sh-white-group">
-                    <label className="sh-white-label">
-                      <span>Your Name</span>
-                      <span className="sh-white-hint">Public handle</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="sh-white-input"
-                      placeholder="Enter your full name or handle"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      required
-                    />
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* TAB 2: EMAIL OTP INPUTS (PASSWORD REMOVED COMPLETELY!) */}
-            {authMethod === 'email' && (
-              <>
-                <div className="sh-white-group">
-                  <label className="sh-white-label">
-                    <span>Official Email Address</span>
-                    <span className="sh-white-hint">Will receive 4-digit OTP</span>
-                  </label>
+              </div>
+            ) : (
+              <div className="sh-modern-field-group">
+                <label className="sh-modern-field-label">
+                  <span>Official Email Address</span>
+                  <span className="sh-white-hint">Will receive 4-digit OTP</span>
+                </label>
+                <div className="sh-modern-input-box">
+                  <Mail size={18} color="#64748b" style={{ marginRight: 6 }} />
+                  <div className="sh-modern-input-divider" />
                   <input
                     type="email"
-                    className="sh-white-input"
+                    className="sh-modern-input-field"
                     placeholder="athlete@sports.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
-
-                {activeTab === 'register' && (
-                  <div className="sh-white-group">
-                    <label className="sh-white-label">
-                      <span>Your Name</span>
-                      <span className="sh-white-hint">Public handle</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="sh-white-input"
-                      placeholder="Enter your full name or handle"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      required
-                    />
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* TAB 3: GOOGLE AUTH 1-TAP */}
-            {authMethod === 'google' && (
-              <div style={{ padding: '8px 0 4px' }}>
-                {activeTab === 'register' && (
-                  <div className="sh-white-group" style={{ marginBottom: 12 }}>
-                    <label className="sh-white-label">
-                      <span>Preferred Nickname</span>
-                      <span className="sh-white-hint">Optional</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="sh-white-input"
-                      placeholder="e.g. Athlete_Pro"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                    />
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  className="sh-white-google-btn"
-                  onClick={handleGoogleAuth}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                    />
-                  </svg>
-                  <span>
-                    {activeTab === 'register' ? 'Sign Up with Google / Gmail' : 'Sign In with Google / Gmail'}
-                  </span>
-                </button>
               </div>
             )}
-          </div>
 
-          {/* Terms Checkbox */}
-          {activeTab === 'register' && (
-            <label className="sh-white-checkbox-label">
-              <input
-                type="checkbox"
-                checked={agreeTerms}
-                onChange={(e) => setAgreeTerms(e.target.checked)}
-              />
-              <span>I agree to the platform terms & privacy policy. Data is securely protected.</span>
-            </label>
-          )}
+            {activeTab === 'register' && (
+              <div className="sh-modern-field-group">
+                <label className="sh-modern-field-label">
+                  <span>Your Name</span>
+                  <span className="sh-white-hint">Public handle</span>
+                </label>
+                <div className="sh-modern-input-box">
+                  <User size={18} color="#64748b" style={{ marginRight: 6 }} />
+                  <div className="sh-modern-input-divider" />
+                  <input
+                    type="text"
+                    className="sh-modern-input-field"
+                    placeholder="Enter your full name or handle"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            )}
 
-          {error && <p className="sh-white-error">{error}</p>}
+            {/* Terms Checkbox in Register Mode */}
+            {activeTab === 'register' && (
+              <label className="sh-white-checkbox-label" style={{ marginTop: 4, marginBottom: 8 }}>
+                <input
+                  type="checkbox"
+                  checked={agreeTerms}
+                  onChange={(e) => setAgreeTerms(e.target.checked)}
+                />
+                <span>I agree to the platform terms & privacy policy. Data is securely protected.</span>
+              </label>
+            )}
 
-          {/* SUBMIT BUTTON (FOR MOBILE OTP & EMAIL OTP) */}
-          {authMethod !== 'google' && (
-            <button type="submit" className="sh-white-btn-primary">
-              {activeTab === 'register'
+            {error && <p className="sh-white-error">{error}</p>}
+
+            {/* PRIMARY ACTION BUTTON: Send OTP */}
+            <button type="submit" className="sh-modern-primary-btn">
+              {activeTab === 'login'
                 ? authMethod === 'mobile'
-                  ? 'Verify via Mobile OTP & Register →'
-                  : 'Verify via Email OTP & Register →'
+                  ? 'Send OTP'
+                  : 'Send Email OTP'
                 : authMethod === 'mobile'
-                ? 'Send Mobile OTP & Sign In →'
-                : 'Send Email OTP & Sign In →'}
+                ? 'Send OTP & Sign Up'
+                : 'Send Email OTP & Sign Up'}
             </button>
-          )}
+
+            {/* TRUST SHIELD BADGE */}
+            <div className="sh-modern-shield-badge">
+              <ShieldCheck size={16} color="#16a34a" />
+              <span>We will send a one-time password to verify your account.</span>
+            </div>
+
+            {/* OR CONTINUE WITH DIVIDER */}
+            <div className="sh-modern-divider">
+              <span>OR CONTINUE WITH</span>
+            </div>
+
+            {/* SOCIAL / ALTERNATE BUTTONS (50/50 ROW: Google & Email / Mobile) */}
+            <div className="sh-modern-social-row">
+              <button
+                type="button"
+                className="sh-modern-social-btn"
+                onClick={handleGoogleAuth}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+                <span>Google</span>
+              </button>
+
+              {authMethod === 'mobile' ? (
+                <button
+                  type="button"
+                  className="sh-modern-social-btn"
+                  onClick={() => {
+                    setAuthMethod('email')
+                    setError('')
+                  }}
+                >
+                  <Mail size={17} color="#ea580c" />
+                  <span>Email</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="sh-modern-social-btn"
+                  onClick={() => {
+                    setAuthMethod('mobile')
+                    setError('')
+                  }}
+                >
+                  <Zap size={17} color="#e10613" />
+                  <span>Mobile OTP</span>
+                </button>
+              )}
+            </div>
+
+            {/* GUEST BUTTON (NO EXTRA INFORMATION PER USER REQUEST - JUST GUEST BUTTON) */}
+            <button
+              type="button"
+              className="sh-modern-guest-btn"
+              onClick={() => {
+                loginAsGuest('player')
+                navigate('/app', { replace: true })
+              }}
+            >
+              <div className="sh-modern-guest-icon">
+                <Compass size={18} color="#ea580c" />
+              </div>
+              <span className="sh-modern-guest-text">Continue with Guest Account</span>
+            </button>
+
+            {/* FOOTER NOTE */}
+            <p className="sh-modern-footer-note">
+              Your credentials and data are securely protected.
+            </p>
+          </div>
         </form>
       </div>
 
@@ -988,7 +977,7 @@ export default function Register({ defaultTab }) {
 
               {error && <p className="sh-white-error">{error}</p>}
 
-              <button type="submit" className="sh-white-btn-primary">
+              <button type="submit" className="sh-modern-primary-btn" style={{ marginTop: 12 }}>
                 {activeTab === 'login' ? 'Verify OTP & Sign In →' : 'Verify OTP & Enter Arena →'}
               </button>
 
