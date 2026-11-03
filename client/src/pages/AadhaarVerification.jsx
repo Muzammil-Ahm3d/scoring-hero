@@ -36,7 +36,7 @@ export default function AadhaarVerification() {
   // Verification Form State
   const [aadhaarInput, setAadhaarInput] = useState('')
   const [hasConsent, setHasConsent] = useState(true)
-  const [step, setStep] = useState(user?.aadhaarVerified !== false ? 'verified' : 'input') // 'input' | 'otp' | 'verified'
+  const [step, setStep] = useState(user?.aadhaarVerified === true ? 'verified' : 'input') // 'input' | 'otp' | 'verified'
   const [otpInput, setOtpInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [toastMsg, setToastMsg] = useState(null)
@@ -233,6 +233,15 @@ export default function AadhaarVerification() {
                     >
                       {loading ? 'Connecting to UIDAI Gateway...' : 'Send Verification OTP →'}
                     </button>
+
+                    <button
+                      type="button"
+                      className="text-link"
+                      style={{ marginTop: 12, fontSize: 12, color: '#94a3b8', textAlign: 'center', width: '100%', display: 'block' }}
+                      onClick={() => navigate('/app', { replace: true })}
+                    >
+                      Skip for now & Continue to App →
+                    </button>
                   </form>
                 )}
 
@@ -333,14 +342,24 @@ export default function AadhaarVerification() {
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      className="btn btn--primary"
-                      style={{ width: '100%', marginTop: 14, background: 'linear-gradient(135deg, #e10613, #ff5722)' }}
-                      onClick={() => setActiveTab('trust')}
-                    >
-                      VIEW TRUST STATUS →
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
+                      <button
+                        type="button"
+                        className="btn btn--primary"
+                        style={{ width: '100%', background: 'linear-gradient(135deg, #00e676, #00b0ff)', color: '#020617', fontWeight: 'bold' }}
+                        onClick={() => navigate('/app', { replace: true })}
+                      >
+                        CONTINUE TO SCORING ARENA →
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn--secondary btn--sm"
+                        style={{ width: '100%' }}
+                        onClick={() => setActiveTab('trust')}
+                      >
+                        VIEW TRUST STATUS →
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

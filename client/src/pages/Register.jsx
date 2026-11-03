@@ -83,6 +83,40 @@ export default function Register({ defaultTab }) {
   const [businessCity, setBusinessCity] = useState('Chennai')
   const [businessSubField, setBusinessSubField] = useState('Day/Night 800 Lux Floodlights')
 
+  // Custom text field inputs when "Other" option is selected
+  const [customCompetitionLevel, setCustomCompetitionLevel] = useState('')
+  const [customPlayerRole, setCustomPlayerRole] = useState('')
+  const [customProductSpecialization, setCustomProductSpecialization] = useState('')
+  const [customCoachCertification, setCustomCoachCertification] = useState('')
+  const [customCoachSpecialization, setCustomCoachSpecialization] = useState('')
+  const [customVenueType, setCustomVenueType] = useState('')
+  const [customAcademyProgram, setCustomAcademyProgram] = useState('')
+  const [customStreamerRig, setCustomStreamerRig] = useState('')
+  const [customSponsorCategory, setCustomSponsorCategory] = useState('')
+
+  // Memoized display strings for previews & payload
+  const displayCompetitionLevel = useMemo(() => {
+    if (competitionLevel === 'Other') return customCompetitionLevel.trim() || 'Custom Tier'
+    return competitionLevel
+  }, [competitionLevel, customCompetitionLevel])
+
+  const displayPlayerRole = useMemo(() => {
+    if (playerRole === 'Other') return customPlayerRole.trim() || 'Custom Role'
+    return playerRole
+  }, [playerRole, customPlayerRole])
+
+  const displayBusinessField = useMemo(() => {
+    if (businessCustomField === 'Other' || businessCustomField?.startsWith('Other')) {
+      if (selectedBusinessRoleId === 'seller') return customProductSpecialization.trim() || 'Custom Merchandise'
+      if (selectedBusinessRoleId === 'coach') return customCoachSpecialization.trim() || 'Custom Coaching'
+      if (selectedBusinessRoleId === 'ground') return customVenueType.trim() || 'Custom Venue'
+      if (selectedBusinessRoleId === 'academy') return customAcademyProgram.trim() || 'Custom Academy'
+      if (selectedBusinessRoleId === 'streamer') return customStreamerRig.trim() || 'Custom Stream'
+      if (selectedBusinessRoleId === 'sponsor') return customSponsorCategory.trim() || 'Custom Sponsor'
+    }
+    return businessCustomField
+  }, [businessCustomField, selectedBusinessRoleId, customProductSpecialization, customCoachSpecialization, customVenueType, customAcademyProgram, customStreamerRig, customSponsorCategory])
+
   // 6. Three small auth tabs: 'mobile' | 'email' | 'google' (Passwordless - OTP based!)
   const [authMethod, setAuthMethod] = useState('mobile') // 'mobile' | 'email' | 'google'
 
@@ -195,21 +229,29 @@ export default function Register({ defaultTab }) {
   function buildRoleDetails() {
     if (accountType === 'player') {
       return {
-        role: playerRole,
+        role: displayPlayerRole,
         battingStyle: battingStance,
         bowlingStyle: bowlingAction,
-        competitionLevel,
+        competitionLevel: displayCompetitionLevel,
         sport: currentSportItem.name,
         sportId: currentSportItem.id,
         activityCategory,
-        stage: 'Active Competitive Athlete',
+        stage: displayCompetitionLevel || 'Active Competitive Athlete',
       }
     }
+
+    let resolvedSubField = businessSubField
+    if (businessSubField === 'Other' || businessSubField?.startsWith('Other')) {
+      if (selectedBusinessRoleId === 'coach' && customCoachCertification.trim()) {
+        resolvedSubField = customCoachCertification.trim()
+      }
+    }
+
     return {
       businessName: businessName.trim() || activeBusinessRole.name,
       roleTitle: activeBusinessRole.name,
-      specialField: businessCustomField,
-      subField: businessSubField,
+      specialField: displayBusinessField,
+      subField: resolvedSubField,
       city: businessCity.trim() || 'Chennai',
     }
   }
@@ -268,7 +310,7 @@ export default function Register({ defaultTab }) {
     }
   }
 
-  // Finalize signup and navigate to app
+  // Finalize signup and redirect to Aadhaar verification
   function executeSignup(cleanPhone, cleanEmail, handleName) {
     const targetRoleId = accountType === 'player' ? 'player' : selectedBusinessRoleId
     const finalRoleDetails = buildRoleDetails()
@@ -284,13 +326,15 @@ export default function Register({ defaultTab }) {
       email: cleanEmail || `${handleName.toLowerCase().replace(/\s+/g, '')}@scoringheroes.com`,
       sportId: currentSportItem.id,
       sportName: currentSportItem.name,
-      competitionLevel,
+      competitionLevel: displayCompetitionLevel,
       roleDetails: finalRoleDetails,
-      verified: true,
+      verified: false,
+      aadhaarVerified: false,
       onboardingComplete: true,
     })
 
-    navigate('/app', { replace: true })
+    // REDIRECT TO AADHAAR VERIFICATION ON MOBILE OTP PER USER SPECIFICATION
+    navigate('/aadhaar', { replace: true })
   }
 
   // Handle OTP verification for either Mobile or Email
@@ -311,7 +355,12 @@ export default function Register({ defaultTab }) {
     if (activeTab === 'login') {
       const identifier = otpTargetType === 'mobile' ? cleanPhone : cleanEmail
       loginWithIdentifier(identifier)
-      navigate('/app', { replace: true })
+      // Redirect to Aadhaar verification on mobile OTP as required
+      if (otpTargetType === 'mobile') {
+        navigate('/aadhaar', { replace: true })
+      } else {
+        navigate('/app', { replace: true })
+      }
       return
     }
 
@@ -409,12 +458,12 @@ export default function Register({ defaultTab }) {
                         <div className="sh-preview-text-block">
                           <div className="sh-preview-main-row">
                             <span className="sh-preview-sport-name">{currentSportItem.name}</span>
-                            <span className="sh-preview-role-tag">{playerRole}</span>
+                            <span className="sh-preview-role-tag">{displayPlayerRole}</span>
                           </div>
                           <span className="sh-preview-subtext">
                             {selectedSportId === 'cricket'
-                              ? `${battingStance} · ${bowlingAction} · ${competitionLevel}`
-                              : `${activityCategory === 'sports' ? 'Physical Sport' : 'Indoor Game'} · ${competitionLevel}`}
+                              ? `${battingStance} · ${bowlingAction} · ${displayCompetitionLevel}`
+                              : `${activityCategory === 'sports' ? 'Physical Sport' : 'Indoor Game'} · ${displayCompetitionLevel}`}
                           </span>
                         </div>
                       </div>
@@ -510,7 +559,7 @@ export default function Register({ defaultTab }) {
                       <div className="sh-white-group">
                         <label className="sh-white-label">
                           <span>Playing Role / Specialization</span>
-                          <span className="sh-white-hint">{playerRole}</span>
+                          <span className="sh-white-hint">{displayPlayerRole}</span>
                         </label>
                         <select
                           className="sh-white-select"
@@ -522,7 +571,20 @@ export default function Register({ defaultTab }) {
                               {r}
                             </option>
                           ))}
+                          <option value="Other">Other (Custom Playing Role)</option>
                         </select>
+                        {playerRole === 'Other' && (
+                          <div style={{ marginTop: 8 }}>
+                            <input
+                              type="text"
+                              className="sh-white-input"
+                              placeholder="Enter your custom playing role / title"
+                              value={customPlayerRole}
+                              onChange={(e) => setCustomPlayerRole(e.target.value)}
+                              required
+                            />
+                          </div>
+                        )}
                       </div>
 
                       {/* 4. CRICKET SPECIFIC STANCE & BOWLING ACTION */}
@@ -572,11 +634,18 @@ export default function Register({ defaultTab }) {
                       {/* 5. COMPETITION LEVEL */}
                       <div className="sh-white-group">
                         <label className="sh-white-label">
-                          <span>Competition Level</span>
-                          <span className="sh-white-hint">{competitionLevel}</span>
+                          <span>Competition Level / Tier</span>
+                          <span className="sh-white-hint">{displayCompetitionLevel}</span>
                         </label>
                         <div className="sh-white-option-pills">
-                          {['District / State', 'National Level', 'International Level'].map((level) => (
+                          {[
+                            'Independent / Club Player',
+                            'District Player (DCA)',
+                            'State / Ranji Trophy Player',
+                            'National Level',
+                            'International Level',
+                            'Other',
+                          ].map((level) => (
                             <button
                               key={level}
                               type="button"
@@ -588,6 +657,18 @@ export default function Register({ defaultTab }) {
                             </button>
                           ))}
                         </div>
+                        {competitionLevel === 'Other' && (
+                          <div style={{ marginTop: 8 }}>
+                            <input
+                              type="text"
+                              className="sh-white-input"
+                              placeholder="Specify custom competition level / tournament tier"
+                              value={customCompetitionLevel}
+                              onChange={(e) => setCustomCompetitionLevel(e.target.value)}
+                              required
+                            />
+                          </div>
+                        )}
                       </div>
 
                       {/* SAVE BUTTON */}
@@ -630,7 +711,7 @@ export default function Register({ defaultTab }) {
                             <span className="sh-preview-role-tag">{businessCity || 'Chennai'}</span>
                           </div>
                           <span className="sh-preview-subtext">
-                            {businessName} · {businessCustomField}
+                            {businessName} · {displayBusinessField}
                           </span>
                         </div>
                       </div>
@@ -728,10 +809,25 @@ export default function Register({ defaultTab }) {
                             onChange={(e) => setBusinessCustomField(e.target.value)}
                           >
                             <option value="Natural Red Soil Turf">Natural Red Soil Turf</option>
-                            <option value="Astro Turf Ground">Astro Turf Ground</option>
+                            <option value="Natural Clay Soil Turf">Natural Clay Soil Turf</option>
+                            <option value="Astro Turf Ground / Box Cricket Arena">Astro Turf / Box Arena</option>
+                            <option value="Multisport Turf Arena">Multisport Turf Arena</option>
                             <option value="Hybrid Grass Turf">Hybrid Grass Turf</option>
                             <option value="Concrete Practice Nets">Concrete Practice Nets</option>
+                            <option value="Other">Other Venue Type</option>
                           </select>
+                          {(businessCustomField === 'Other' || businessCustomField?.startsWith('Other')) && (
+                            <div style={{ marginTop: 8 }}>
+                              <input
+                                type="text"
+                                className="sh-white-input"
+                                placeholder="Specify custom pitch or venue type"
+                                value={customVenueType}
+                                onChange={(e) => setCustomVenueType(e.target.value)}
+                                required
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="sh-white-group" style={{ flex: 1 }}>
                           <label className="sh-white-label">Floodlight Setup</label>
@@ -740,9 +836,10 @@ export default function Register({ defaultTab }) {
                             value={businessSubField}
                             onChange={(e) => setBusinessSubField(e.target.value)}
                           >
-                            <option value="Floodlit Day/Night (800+ Lux)">Day/Night 800+ Lux</option>
+                            <option value="Floodlit Day/Night (800+ Lux - Broadcast Ready)">Day/Night 800+ Lux</option>
+                            <option value="Floodlit Standard (400-600 Lux)">Standard 400-600 Lux</option>
                             <option value="Day-Only Standard">Day-Only Standard</option>
-                            <option value="Indoor Nets Only">Indoor Nets Only</option>
+                            <option value="Indoor Nets LED Array">Indoor Nets LED Array</option>
                           </select>
                         </div>
                       </div>
@@ -771,9 +868,24 @@ export default function Register({ defaultTab }) {
                             onChange={(e) => setBusinessCustomField(e.target.value)}
                           >
                             <option value="U14, U19 & Pro Elite Batches">U14, U19 & Pro Batches</option>
+                            <option value="District & State Development Program">District & State Program</option>
                             <option value="Grassroots & School Only">Grassroots & School Only</option>
                             <option value="Elite High Performance">Elite High Performance</option>
+                            <option value="Independent Weekend Clinic">Independent Weekend Clinic</option>
+                            <option value="Other">Other Academy Program</option>
                           </select>
+                          {(businessCustomField === 'Other' || businessCustomField?.startsWith('Other')) && (
+                            <div style={{ marginTop: 8 }}>
+                              <input
+                                type="text"
+                                className="sh-white-input"
+                                placeholder="Specify custom academy program"
+                                value={customAcademyProgram}
+                                onChange={(e) => setCustomAcademyProgram(e.target.value)}
+                                required
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="sh-white-group" style={{ flex: 1 }}>
                           <label className="sh-white-label">Facilities</label>
@@ -784,7 +896,8 @@ export default function Register({ defaultTab }) {
                           >
                             <option value="4 Pitches + 6 Astro Nets">4 Pitches + 6 Astro Nets</option>
                             <option value="Indoor Turf Nets & Machine">Indoor Nets & Machine</option>
-                            <option value="Open Ground Turf">Open Ground Turf</option>
+                            <option value="Open Ground Turf Oval">Open Ground Turf Oval</option>
+                            <option value="Gymnasium & Recovery Center">Gym & Recovery Center</option>
                           </select>
                         </div>
                       </div>
@@ -805,17 +918,34 @@ export default function Register({ defaultTab }) {
                         />
                       </div>
                       <div className="sh-white-group">
-                        <label className="sh-white-label">Product Specialization</label>
+                        <label className="sh-white-label">Product Specialization & Categories</label>
                         <select
                           className="sh-white-select"
                           value={businessCustomField}
                           onChange={(e) => setBusinessCustomField(e.target.value)}
                         >
+                          <option value="Customised Team Jerseys & Uniforms">Customised Team Jerseys & Uniforms</option>
+                          <option value="Performance Training Tees & Activewear">Performance Training Tees & Activewear</option>
                           <option value="English Willow Bats & Kits">English Willow Bats & Kits</option>
-                          <option value="Turf Spike Shoes & Apparel">Turf Spike Shoes & Apparel</option>
-                          <option value="Helmets, Pads & Protective Gear">Helmets, Pads & Protective</option>
-                          <option value="Cricket Leather Balls & Accessories">Leather Balls & Accessories</option>
+                          <option value="Kashmir Willow Bats & Practice Gear">Kashmir Willow Bats & Practice Gear</option>
+                          <option value="Turf Spike Shoes & Athletic Footwear">Turf Spike Shoes & Athletic Footwear</option>
+                          <option value="Helmets, Pads & Protective Gear">Helmets, Pads & Protective Gear</option>
+                          <option value="Cricket Leather Balls & Accessories">Cricket Leather Balls & Accessories</option>
+                          <option value="Custom Team Badges & Merchandise">Custom Team Badges & Merchandise</option>
+                          <option value="Other">Other (Custom Product Category)</option>
                         </select>
+                        {(businessCustomField === 'Other' || businessCustomField?.startsWith('Other')) && (
+                          <div style={{ marginTop: 8 }}>
+                            <input
+                              type="text"
+                              className="sh-white-input"
+                              placeholder="Enter custom product specialization (e.g. Sublimation Tees, Custom Badges)"
+                              value={customProductSpecialization}
+                              onChange={(e) => setCustomProductSpecialization(e.target.value)}
+                              required
+                            />
+                          </div>
+                        )}
                       </div>
                     </>
                   )}
@@ -827,7 +957,7 @@ export default function Register({ defaultTab }) {
                         <input
                           type="text"
                           className="sh-white-input"
-                          placeholder="e.g. Coach Dev Anand"
+                          placeholder="e.g. Coach Dev Anand (Ranji Trophy Staff)"
                           value={businessName}
                           onChange={(e) => setBusinessName(e.target.value)}
                           required
@@ -844,21 +974,54 @@ export default function Register({ defaultTab }) {
                             <option value="Batting Technique & Biomechanics">Batting Technique</option>
                             <option value="Fast Bowling & Seam Release">Fast Bowling & Seam</option>
                             <option value="Spin Bowling & Tactical IQ">Spin Bowling & IQ</option>
-                            <option value="Fielding & Physical Fitness">Fielding & Fitness</option>
+                            <option value="Wicketkeeping & Fielding Drills">Wicketkeeping & Fielding</option>
+                            <option value="Strength & Conditioning (S&C)">Strength & Conditioning (S&C)</option>
+                            <option value="Mental Conditioning & Strategy">Mental Conditioning & Strategy</option>
+                            <option value="Grassroots & Youth Development">Grassroots & Youth Dev</option>
+                            <option value="Other">Other Specialization</option>
                           </select>
+                          {(businessCustomField === 'Other' || businessCustomField?.startsWith('Other')) && (
+                            <div style={{ marginTop: 8 }}>
+                              <input
+                                type="text"
+                                className="sh-white-input"
+                                placeholder="Specify custom coaching specialization"
+                                value={customCoachSpecialization}
+                                onChange={(e) => setCustomCoachSpecialization(e.target.value)}
+                                required
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="sh-white-group" style={{ flex: 1 }}>
-                          <label className="sh-white-label">License Certification</label>
+                          <label className="sh-white-label">License & Experience Level</label>
                           <select
                             className="sh-white-select"
                             value={businessSubField}
                             onChange={(e) => setBusinessSubField(e.target.value)}
                           >
+                            <option value="Ranji Trophy Coach / First-Class Staff">Ranji Trophy Coach</option>
+                            <option value="BCCI Level 3 Certified (Elite)">BCCI Level 3 Certified</option>
                             <option value="BCCI Level 2 Certified">BCCI Level 2 Certified</option>
                             <option value="BCCI Level 1 Certified">BCCI Level 1 Certified</option>
                             <option value="NIS National Diploma">NIS National Diploma</option>
-                            <option value="State Board Certified">State Board Certified</option>
+                            <option value="State Cricket Association Coach">State Association Coach</option>
+                            <option value="District Cricket Association Coach">District Coach (DCA)</option>
+                            <option value="Independent / Private Academy Coach">Independent Coach</option>
+                            <option value="Other">Other Certification</option>
                           </select>
+                          {(businessSubField === 'Other' || businessSubField?.startsWith('Other')) && (
+                            <div style={{ marginTop: 8 }}>
+                              <input
+                                type="text"
+                                className="sh-white-input"
+                                placeholder="Specify custom certification / affiliation"
+                                value={customCoachCertification}
+                                onChange={(e) => setCustomCoachCertification(e.target.value)}
+                                required
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </>
@@ -887,7 +1050,22 @@ export default function Register({ defaultTab }) {
                           <option value="1080p 60fps Multi-Cam Rig">1080p 60fps Multi-Cam Rig</option>
                           <option value="4K Optical Drone & Boundary Feed">4K Drone & Boundary Feed</option>
                           <option value="Mobile Live Broadcast Studio">Mobile Live Studio</option>
+                          <option value="YouTube / OTT Digital Stream Rig">YouTube / OTT Digital Stream Rig</option>
+                          <option value="Single Cam Live Score Graphics">Single Cam Live Score Graphics</option>
+                          <option value="Other">Other Broadcast Setup</option>
                         </select>
+                        {(businessCustomField === 'Other' || businessCustomField?.startsWith('Other')) && (
+                          <div style={{ marginTop: 8 }}>
+                            <input
+                              type="text"
+                              className="sh-white-input"
+                              placeholder="Specify custom broadcast rig / setup"
+                              value={customStreamerRig}
+                              onChange={(e) => setCustomStreamerRig(e.target.value)}
+                              required
+                            />
+                          </div>
+                        )}
                       </div>
                     </>
                   )}
@@ -913,9 +1091,25 @@ export default function Register({ defaultTab }) {
                           onChange={(e) => setBusinessCustomField(e.target.value)}
                         >
                           <option value="Tournament Title Sponsor">Tournament Title Sponsor</option>
-                          <option value="Perimeter LED & Boundary Boards">Perimeter LED & Boundary</option>
-                          <option value="Digital Live Stream Ad Partner">Digital Stream Ad Partner</option>
+                          <option value="Customized Team Jersey & Apparel Sponsor">Customized Team Jersey & Apparel Sponsor</option>
+                          <option value="Perimeter LED & Boundary Boards">Perimeter LED & Boundary Boards</option>
+                          <option value="Digital Live Stream Ad Partner">Digital Live Stream Ad Partner</option>
+                          <option value="Trophy & Prize Money Partner">Trophy & Prize Money Partner</option>
+                          <option value="Hydration & Energy Drink Sponsor">Hydration & Energy Drink Sponsor</option>
+                          <option value="Other">Other Sponsorship Category</option>
                         </select>
+                        {(businessCustomField === 'Other' || businessCustomField?.startsWith('Other')) && (
+                          <div style={{ marginTop: 8 }}>
+                            <input
+                              type="text"
+                              className="sh-white-input"
+                              placeholder="Specify custom sponsorship category"
+                              value={customSponsorCategory}
+                              onChange={(e) => setCustomSponsorCategory(e.target.value)}
+                              required
+                            />
+                          </div>
+                        )}
                       </div>
                     </>
                   )}
