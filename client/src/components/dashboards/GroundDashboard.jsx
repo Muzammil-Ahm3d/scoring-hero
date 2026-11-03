@@ -13,235 +13,1551 @@ import {
   Wrench,
   Megaphone,
   Activity,
+  Users,
+  ShieldCheck,
+  Download,
+  Plus,
+  QrCode,
+  FileText,
+  Check,
+  X,
+  Phone,
+  TrendingUp,
+  Building,
+  ArrowUpRight,
+  Lock,
+  Printer,
+  Share2,
+  Sparkles,
 } from 'lucide-react'
 
 export default function GroundDashboard({ user }) {
   const navigate = useNavigate()
   const details = user?.roleDetails || {}
 
-  // Slot calendar for ground
+  // Active navigation sub-tab
+  const [activeTab, setActiveTab] = useState('slots') // 'slots' | 'finance' | 'staff' | 'equipment' | 'leases'
+
+  // Selected Pitch filter
+  const [selectedPitch, setSelectedPitch] = useState('all') // 'all' | 'p1' | 'p2' | 'p3'
+
+  // Calendar Day Picker
+  const [selectedDay, setSelectedDay] = useState(12)
+
+  // Feedback Toast Message
+  const [toastMsg, setToastMsg] = useState('')
+
+  // Modals state
+  const [showBookingModal, setShowBookingModal] = useState(false)
+  const [showGatePassModal, setShowGatePassModal] = useState(null)
+  const [showStatementModal, setShowStatementModal] = useState(false)
+  const [showInspectionModal, setShowInspectionModal] = useState(false)
+
+  // Booking Form State for quick walk-in counter booking
+  const [newBooking, setNewBooking] = useState({
+    time: '14:00 - 17:00',
+    pitch: 'Main Stadium Oval (Red Soil)',
+    teamA: 'Marina Super Kings',
+    teamB: 'Chennai Rhinos',
+    captainPhone: '9876543210',
+    matchFormat: 'T20 Match Challenge',
+    price: 3500,
+    floodlights: false,
+    paymentMode: 'UPI QR Scan',
+  })
+
+  // Time Slots state (Feature 13.2 & 13.4)
   const [slots, setSlots] = useState([
-    { id: 's1', time: '06:00 AM - 09:00 AM', pitch: 'Turf Pitch 1 (Red Soil)', team: 'Scoring Heroes Academy', status: 'Booked', paid: true, floodlight: false },
-    { id: 's2', time: '09:30 AM - 12:30 PM', pitch: 'Turf Pitch 2 (Black Soil)', team: 'Marina Corporate Cup', status: 'Booked', paid: true, floodlight: false },
-    { id: 's3', time: '02:00 PM - 05:00 PM', pitch: 'Turf Pitch 1 (Red Soil)', team: 'Maintenance & Rolling', status: 'Maintenance', paid: false, floodlight: false },
-    { id: 's4', time: '06:00 PM - 09:30 PM', pitch: 'Main Stadium Pitch', team: 'Chennai Street Cup (T20)', status: 'Booked', paid: true, floodlight: true },
-    { id: 's5', time: '10:00 PM - 12:30 AM', pitch: 'Astroturf Box Net', team: 'Available for Slot Booking', status: 'Available', paid: false, floodlight: true },
+    {
+      id: 's1',
+      time: '06:00 AM - 09:00 AM',
+      pitch: 'Main Stadium Oval (Red Soil)',
+      pitchId: 'p1',
+      teamA: 'Scoring Heroes Academy',
+      teamB: 'Marina Strikers',
+      matchType: '25-Over Practice Match',
+      captainA: 'Dev Anand (9876543210)',
+      captainB: 'Vignesh R. (9840123456)',
+      status: 'Booked',
+      paid: true,
+      amount: '₹4,500',
+      floodlight: false,
+    },
+    {
+      id: 's2',
+      time: '09:30 AM - 12:30 PM',
+      pitch: 'Practice Turf 2 (Black Soil)',
+      pitchId: 'p2',
+      teamA: 'Coastal Kings XI',
+      teamB: 'City Tigers Club',
+      matchType: 'Corporate T20 Trophy',
+      captainA: 'Rajesh K. (9840998877)',
+      captainB: 'Arun Prasad (9884112233)',
+      status: 'Booked',
+      paid: true,
+      amount: '₹5,000',
+      floodlight: false,
+    },
+    {
+      id: 's3',
+      time: '01:00 PM - 04:00 PM',
+      pitch: 'Main Stadium Oval (Red Soil)',
+      pitchId: 'p1',
+      teamA: 'Curator Maintenance',
+      teamB: 'Heavy Roller Work',
+      matchType: 'Curator Pitch Restoration',
+      status: 'Maintenance',
+      paid: false,
+      amount: '₹0',
+      floodlight: false,
+    },
+    {
+      id: 's4',
+      time: '04:30 PM - 07:30 PM',
+      pitch: 'Astroturf Box Arena',
+      pitchId: 'p3',
+      teamA: 'Tech Titans Box XI',
+      teamB: 'Marina Velocity Box',
+      matchType: 'Floodlit Box 10-Over Cup',
+      captainA: 'Sunil M. (9789012345)',
+      captainB: 'Gautam S. (9840776655)',
+      status: 'Booked',
+      paid: true,
+      amount: '₹3,600',
+      floodlight: true,
+    },
+    {
+      id: 's5',
+      time: '08:00 PM - 11:30 PM',
+      pitch: 'Main Stadium Oval (Red Soil)',
+      pitchId: 'p1',
+      teamA: 'Available for Slot Booking',
+      teamB: '',
+      matchType: 'Night Floodlight Standard Match',
+      status: 'Available',
+      paid: false,
+      amount: '₹7,500',
+      floodlight: true,
+    },
   ])
 
-  function bookAvailableSlot(id) {
-    setSlots((prev) =>
-      prev.map((s) =>
-        s.id === id ? { ...s, status: 'Booked', team: 'Walk-In Customer XI', paid: true } : s
-      )
-    )
+  // Ground Staff Roster (Feature 13.9 & 13.10)
+  const [staffList, setStaffList] = useState([
+    {
+      id: 1,
+      name: 'Murugan S.',
+      role: 'Head Pitch Curator',
+      experience: '12 Yrs Exp • BCCI Level 1 Ground',
+      salary: '₹28,000',
+      status: 'Present',
+      duty: 'Main Pitch 1 Moisture & 2-Ton Rolling Complete',
+      checkedIn: '05:45 AM',
+    },
+    {
+      id: 2,
+      name: 'Rajesh K.',
+      role: 'Ground Superintendent',
+      experience: '8 Yrs Exp • Operations Lead',
+      salary: '₹32,000',
+      status: 'Present',
+      duty: 'Dressing Rooms & Pavilion Gate Turnstiles Active',
+      checkedIn: '06:15 AM',
+    },
+    {
+      id: 3,
+      name: 'Sundar V.',
+      role: 'Floodlight & Electrical Tech',
+      experience: '6 Yrs Exp • High-Voltage Tech',
+      salary: '₹22,000',
+      status: 'Present',
+      duty: '800-Lux Tower Diesel Gen-Set at 92% Capacity',
+      checkedIn: '02:00 PM',
+    },
+    {
+      id: 4,
+      name: 'Karthik R.',
+      role: 'Net & Practice Pitch Caretaker',
+      experience: '4 Yrs Exp • Ground Assistant',
+      salary: '₹18,000',
+      status: 'Present',
+      duty: 'Boundary Ropes & 30-Yard Circle Paint Lines Marked',
+      checkedIn: '06:00 AM',
+    },
+  ])
+
+  // Equipment Stock Register (Feature 13.11 & 14.11)
+  const [equipmentList, setEquipmentList] = useState([
+    { id: 'eq1', name: 'Heavy Motorized Pitch Roller (2-Ton)', status: 'OPERATIONAL', lastService: '3 days ago', health: '98%', color: '#00e676' },
+    { id: 'eq2', name: 'Electronic Stumps & LED Flashing Bails', status: '12 UNITS READY', lastService: 'Battery at 94%', health: '100%', color: '#3de0ff' },
+    { id: 'eq3', name: 'Practice Netting & Bowling Machine', status: '4 NETS ACTIVE', lastService: 'Speed calibrated 145km/h', health: '95%', color: '#ffc83d' },
+    { id: 'eq4', name: 'Day/Night High-Mast Floodlight Towers', status: '800-LUX ACTIVE', lastService: 'Tested for Night Fixture', health: '100%', color: '#00e676' },
+    { id: 'eq5', name: 'Super Sopper Rain Water Evaporator', status: 'MONSOON READY', lastService: 'Dry test cleared', health: '100%', color: '#00e676' },
+  ])
+
+  // Tournament Leases (Feature 14.8 & 15.3)
+  const [tournamentLeases, setTournamentLeases] = useState([
+    {
+      id: 'lse-1',
+      name: 'Chennai Premier Youth Cup (U19)',
+      organizer: 'South Zone Cricket Federation',
+      duration: '14 Match Days Booked',
+      contractValue: '₹2,40,000',
+      status: 'Confirmed & Advance Paid',
+      dates: 'July 14 - July 28, 2026',
+    },
+    {
+      id: 'lse-2',
+      name: 'Tamil Nadu Corporate Champions Trophy',
+      organizer: 'Marina Corporate Sports Council',
+      duration: '8 Weekend Days Booked',
+      contractValue: '₹1,60,000',
+      status: 'Confirmed & Advance Paid',
+      dates: 'August 01 - August 22, 2026',
+    },
+  ])
+
+  // Boundary LED Billboards (Feature 15.10 & 18.5)
+  const [billboards, setBillboards] = useState([
+    { id: 'bb1', position: 'Perimeter Board 1 (Mid-Wicket Pavilion)', advertiser: 'Velocity Sports Nutrition', rate: '₹16,000 / mo', status: 'Active' },
+    { id: 'bb2', position: 'Perimeter Board 2 (Cover Boundary)', advertiser: 'Velocity Sports Nutrition', rate: '₹16,000 / mo', status: 'Active' },
+    { id: 'bb3', position: 'Perimeter Board 3 (Sight Screen Right)', advertiser: 'Apex Willow & Pro Gear Co.', rate: '₹16,000 / mo', status: 'Active' },
+    { id: 'bb4', position: 'Perimeter Board 4 (Long-Off Boundary)', advertiser: 'Apex Willow & Pro Gear Co.', rate: '₹16,000 / mo', status: 'Active' },
+    { id: 'bb5', position: 'Perimeter Board 5 (Scoreboard Lower Tier)', advertiser: 'Available for Brand Sponsor', rate: '₹16,000 / mo', status: 'Available' },
+    { id: 'bb6', position: 'Perimeter Board 6 (Main Entrance Turnstile)', advertiser: 'Available for Brand Sponsor', rate: '₹16,000 / mo', status: 'Available' },
+  ])
+
+  function triggerToast(msg) {
+    setToastMsg(msg)
+    setTimeout(() => setToastMsg(''), 3500)
   }
 
+  // Toggle staff attendance
+  function toggleStaffAttendance(id) {
+    setStaffList((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, status: s.status === 'Present' ? 'Absent' : 'Present' } : s))
+    )
+    triggerToast('Staff attendance status updated!')
+  }
+
+  // Disburse payroll
+  function handleDisbursePayroll() {
+    triggerToast('✓ Staff payroll batch of ₹1,00,000 initiated via Bank NEFT!')
+  }
+
+  // Handle Quick Counter Booking
+  function handleCreateBooking(e) {
+    e.preventDefault()
+    const newId = `s-${Date.now()}`
+    const created = {
+      id: newId,
+      time: newBooking.time,
+      pitch: newBooking.pitch,
+      pitchId: newBooking.pitch.includes('Main') ? 'p1' : newBooking.pitch.includes('Black') ? 'p2' : 'p3',
+      teamA: newBooking.teamA,
+      teamB: newBooking.teamB,
+      matchType: newBooking.matchFormat,
+      captainA: `${newBooking.teamA} Captain (${newBooking.captainPhone})`,
+      captainB: `${newBooking.teamB} Captain`,
+      status: 'Booked',
+      paid: true,
+      amount: `₹${Number(newBooking.price).toLocaleString('en-IN')}`,
+      floodlight: newBooking.floodlights,
+    }
+
+    setSlots((prev) => [created, ...prev])
+    setShowBookingModal(false)
+    triggerToast(`✓ Slot confirmed for ${newBooking.teamA} vs ${newBooking.teamB}! Gate Pass QR issued.`)
+    setShowGatePassModal(created)
+  }
+
+  // Filtered Slots
+  const filteredSlots = slots.filter((s) => {
+    if (selectedPitch === 'all') return true
+    return s.pitchId === selectedPitch
+  })
+
   return (
-    <div className="sh-dashboard-layout">
-      {/* Ground Hero Card */}
-      <section className="sh-dash-hero-card sh-dash-hero-card--ground">
-        <div className="sh-dash-hero-top">
-          <div className="sh-dash-avatar-box">
-            <div className="sh-avatar-hex" style={{ background: 'rgba(0, 176, 255, 0.2)', borderColor: '#00b0ff' }}>
-              <MapPin size={24} color="#00b0ff" />
+    <div className="sh-dashboard-layout" style={{ maxWidth: 840, margin: '0 auto', paddingBottom: 60 }}>
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+            background: 'linear-gradient(135deg, #0f172a, #1e293b)',
+            color: '#00e676',
+            border: '1px solid #00e676',
+            boxShadow: '0 8px 30px rgba(0, 230, 118, 0.25)',
+            padding: '10px 18px',
+            borderRadius: 12,
+            fontSize: 13,
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <CheckCircle2 size={16} color="#00e676" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
+      {/* 1. STADIUM MASTER HERO CARD (Feature 13.1 & 14.1) */}
+      <section
+        className="sh-dash-hero-card"
+        style={{
+          background: 'radial-gradient(ellipse at top right, rgba(0, 176, 255, 0.15), rgba(15, 23, 42, 0.95)), #090e17',
+          border: '1px solid rgba(0, 176, 255, 0.3)',
+          borderRadius: 16,
+          padding: '20px 22px',
+          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.6)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14 }}>
+          {/* Stadium Details */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+            <div
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 14,
+                background: 'linear-gradient(135deg, rgba(0, 176, 255, 0.25), rgba(0, 230, 118, 0.15))',
+                border: '1px solid #00b0ff',
+                display: 'grid',
+                placeItems: 'center',
+                boxShadow: '0 0 20px rgba(0, 176, 255, 0.3)',
+              }}
+            >
+              <Building size={32} color="#00b0ff" />
             </div>
+
             <div>
-              <div className="sh-dash-hero-title-row">
-                <h2>{details.venueName || 'Marina International Arena & Turfs'}</h2>
-                <span className="sh-badge-chip" style={{ color: '#00b0ff', borderColor: '#00b0ff55' }}>
-                  VENUE VERIFIED
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <h1 style={{ fontSize: 20, fontWeight: 900, color: '#f8fafc', margin: 0, letterSpacing: -0.5 }}>
+                  {details.venueName || 'Marina International Cricket Arena & Turfs'}
+                </h1>
+                <span
+                  style={{
+                    background: 'rgba(0, 176, 255, 0.15)',
+                    color: '#00b0ff',
+                    border: '1px solid rgba(0, 176, 255, 0.4)',
+                    padding: '2px 8px',
+                    borderRadius: 999,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <ShieldCheck size={12} /> VENUE VERIFIED
+                </span>
+                <span
+                  style={{
+                    background: 'rgba(0, 230, 118, 0.15)',
+                    color: '#00e676',
+                    border: '1px solid rgba(0, 230, 118, 0.4)',
+                    padding: '2px 8px',
+                    borderRadius: 999,
+                    fontSize: 10,
+                    fontWeight: 800,
+                  }}
+                >
+                  AADHAAR COMPLIANT
                 </span>
               </div>
-              <p className="sh-dash-hero-sub">
-                Manager: <strong>{user.nickname}</strong> • {details.pitchesCount || 3} Standard Pitches
+
+              <p style={{ margin: '4px 0 0', fontSize: 13, color: '#94a3b8' }}>
+                Stadium Director: <strong style={{ color: '#f8fafc' }}>{user?.fullName || 'Dev Anand'}</strong> • {details.city || 'Chennai'}
               </p>
-              <small style={{ color: 'var(--muted)', fontSize: 11 }}>
-                Location: {user.city} • Floodlights: {details.floodlights || '800-Lux Night Match Ready'}
-              </small>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6, fontSize: 11, color: '#64748b' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#38bdf8' }}>
+                  <MapPin size={13} /> Marina Beach Road, Chennai 600005
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#ffd600' }}>
+                  <Sun size={13} /> 800-Lux Night Floodlights Active
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="sh-dash-stat-pill" style={{ borderColor: '#00b0ff55' }}>
-            <strong style={{ color: '#00b0ff' }}>{details.weeklyRevenue || '₹1.48L'}</strong>
-            <span>WEEK REVENUE</span>
+          {/* Net Month Revenue Callout */}
+          <div
+            style={{
+              padding: '10px 16px',
+              borderRadius: 12,
+              background: 'rgba(0, 230, 118, 0.08)',
+              border: '1px solid rgba(0, 230, 118, 0.3)',
+              textAlign: 'right',
+            }}
+          >
+            <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--muted)', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+              Monthly Net P&L (Feature 14.7)
+            </span>
+            <div style={{ fontSize: 22, fontWeight: 900, color: '#00e676', lineHeight: 1.1, marginTop: 2 }}>
+              ₹ 8,42,600
+            </div>
+            <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 600 }}>
+              +78.3% Margin • Audited
+            </span>
           </div>
         </div>
 
-        {/* Ground Overview Metrics */}
-        <div className="sh-player-stats-bar" style={{ marginTop: 14 }}>
-          <div className="sh-stat-box">
-            <strong style={{ color: '#00b0ff' }}>{details.todayBookings || 8}</strong>
-            <span>Today Slots</span>
+        {/* Multi-Pitch Status Bar (Feature 14.1) */}
+        <div
+          style={{
+            marginTop: 16,
+            padding: '10px 14px',
+            background: 'rgba(15, 23, 42, 0.7)',
+            borderRadius: 12,
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 10,
+          }}
+        >
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8' }}>Venues in Complex:</span>
+            <span className="pill" style={{ background: 'rgba(0, 176, 255, 0.15)', color: '#00b0ff', fontSize: 11 }}>
+              Pitch 1: Main Stadium Oval (Red Soil • Ready)
+            </span>
+            <span className="pill" style={{ background: 'rgba(255, 200, 61, 0.15)', color: '#ffc83d', fontSize: 11 }}>
+              Pitch 2: Black Soil Turf
+            </span>
+            <span className="pill" style={{ background: 'rgba(0, 230, 118, 0.15)', color: '#00e676', fontSize: 11 }}>
+              Pitch 3: Box Astroturf Net
+            </span>
           </div>
-          <div className="sh-stat-box">
-            <strong style={{ color: '#00e676' }}>92%</strong>
-            <span>Occupancy</span>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#00e676', fontWeight: 700 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00e676', display: 'inline-block', boxShadow: '0 0 8px #00e676' }} />
+            LIVE STATUS: HEALTHY
           </div>
-          <div className="sh-stat-box">
-            <strong>2</strong>
-            <span>Active Leases</span>
+        </div>
+
+        {/* 4 KPI Telemetry Cards (Feature 13.1 & 14.9) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginTop: 14 }}>
+          <div style={{ padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+            <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>GROUNDS</span>
+            <strong style={{ fontSize: 18, color: '#00b0ff', display: 'block', marginTop: 2 }}>3 Active</strong>
+            <small style={{ fontSize: 10, color: '#64748b' }}>Multi-Venue Complex</small>
           </div>
-          <div className="sh-stat-box">
-            <strong style={{ color: '#ffc83d' }}>₹1,800</strong>
-            <span>Hourly Tariff</span>
+
+          <div style={{ padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+            <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>STAFF ON DUTY</span>
+            <strong style={{ fontSize: 18, color: '#00e676', display: 'block', marginTop: 2 }}>8 Present</strong>
+            <small style={{ fontSize: 10, color: '#64748b' }}>Curator & Tech</small>
+          </div>
+
+          <div style={{ padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+            <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>HOURLY SLOT</span>
+            <strong style={{ fontSize: 18, color: '#ffc83d', display: 'block', marginTop: 2 }}>₹2,500</strong>
+            <small style={{ fontSize: 10, color: '#64748b' }}>Standard Tariff</small>
+          </div>
+
+          <div style={{ padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+            <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>UTILISATION</span>
+            <strong style={{ fontSize: 18, color: '#38bdf8', display: 'block', marginTop: 2 }}>92%</strong>
+            <small style={{ fontSize: 10, color: '#64748b' }}>High Demand</small>
           </div>
         </div>
       </section>
 
-      {/* Quick Action Shortcuts (Allocated Features) */}
-      <div className="sh-quick-actions-grid">
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/grounds')}>
-          <div className="sh-action-icon" style={{ background: 'rgba(0,176,255,0.15)', color: '#00b0ff' }}>
-            <Calendar size={18} />
-          </div>
-          <span>Turf Slots</span>
+      {/* 2. SUB-SYSTEM NAVIGATION TABS (Features 13 & 14 from Master Blueprint) */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 6,
+          marginTop: 16,
+          marginBottom: 16,
+          overflowX: 'auto',
+          paddingBottom: 4,
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setActiveTab('slots')}
+          style={{
+            padding: '8px 14px',
+            borderRadius: 10,
+            fontSize: 12,
+            fontWeight: 800,
+            cursor: 'pointer',
+            border: activeTab === 'slots' ? '1px solid #00b0ff' : '1px solid rgba(255, 255, 255, 0.08)',
+            background: activeTab === 'slots' ? 'rgba(0, 176, 255, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+            color: activeTab === 'slots' ? '#00b0ff' : 'var(--text)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <Calendar size={15} />
+          <span>📅 Slot Booking & Match Calendar</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/matches')}>
-          <div className="sh-action-icon" style={{ background: 'rgba(255,145,0,0.15)', color: '#ff9100' }}>
-            <Layers size={18} />
-          </div>
-          <span>Match Fixtures</span>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('finance')}
+          style={{
+            padding: '8px 14px',
+            borderRadius: 10,
+            fontSize: 12,
+            fontWeight: 800,
+            cursor: 'pointer',
+            border: activeTab === 'finance' ? '1px solid #00e676' : '1px solid rgba(255, 255, 255, 0.08)',
+            background: activeTab === 'finance' ? 'rgba(0, 230, 118, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+            color: activeTab === 'finance' ? '#00e676' : 'var(--text)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <DollarSign size={15} />
+          <span>💰 Dual Module Accounts & P&L</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/sponsorship')}>
-          <div className="sh-action-icon" style={{ background: 'rgba(255,214,0,0.15)', color: '#ffd600' }}>
-            <Megaphone size={18} />
-          </div>
-          <span>Stadium Ads</span>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('staff')}
+          style={{
+            padding: '8px 14px',
+            borderRadius: 10,
+            fontSize: 12,
+            fontWeight: 800,
+            cursor: 'pointer',
+            border: activeTab === 'staff' ? '1px solid #ffc83d' : '1px solid rgba(255, 255, 255, 0.08)',
+            background: activeTab === 'staff' ? 'rgba(255, 200, 61, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+            color: activeTab === 'staff' ? '#ffc83d' : 'var(--text)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <Users size={15} />
+          <span>👷 Central Staff & Shift Payroll</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/partners')}>
-          <div className="sh-action-icon" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676' }}>
-            <Wrench size={18} />
-          </div>
-          <span>Turf Gear</span>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('equipment')}
+          style={{
+            padding: '8px 14px',
+            borderRadius: 10,
+            fontSize: 12,
+            fontWeight: 800,
+            cursor: 'pointer',
+            border: activeTab === 'equipment' ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.08)',
+            background: activeTab === 'equipment' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+            color: activeTab === 'equipment' ? '#38bdf8' : 'var(--text)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <Wrench size={15} />
+          <span>🛠️ Asset & Equipment Stock</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('leases')}
+          style={{
+            padding: '8px 14px',
+            borderRadius: 10,
+            fontSize: 12,
+            fontWeight: 800,
+            cursor: 'pointer',
+            border: activeTab === 'leases' ? '1px solid #e10613' : '1px solid rgba(255, 255, 255, 0.08)',
+            background: activeTab === 'leases' ? 'rgba(225, 6, 19, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+            color: activeTab === 'leases' ? '#e10613' : 'var(--text)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <Megaphone size={15} />
+          <span>🤝 Tournament Leases & Ads</span>
         </button>
       </div>
 
-      {/* Pitch & Turf Slot Booking Schedule (Core requirement) */}
-      <section className="panel" style={{ padding: '14px 16px' }}>
-        <header style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Calendar size={18} color="#00b0ff" />
-            <h3 style={{ margin: 0, fontSize: 15 }}>Today's Turf & Pitch Slots</h3>
-          </div>
-          <button type="button" className="text-link" onClick={() => navigate('/app/grounds')}>
-            Full calendar →
-          </button>
-        </header>
+      {/* =========================================================================
+          TAB 1: SLOT BOOKING & MATCH SCHEDULER (Feature 13.2, 13.4, 13.5)
+      ========================================================================= */}
+      {activeTab === 'slots' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Header & Quick Action Row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+            <div>
+              <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: '#f8fafc' }}>
+                Time Slot Booking & Match Schedule
+              </h2>
+              <small style={{ color: 'var(--muted)', fontSize: 11 }}>
+                Real-time pitch allocation, walk-in reservations & match fixture linking
+              </small>
+            </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {slots.map((s) => (
-            <div
-              key={s.id}
+            <button
+              type="button"
+              className="btn btn--primary btn--sm"
               style={{
+                background: 'linear-gradient(135deg, #00b0ff, #00e676)',
+                color: '#020617',
+                fontWeight: 800,
                 display: 'flex',
-                justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '10px 12px',
-                background:
-                  s.status === 'Booked'
-                    ? 'rgba(0,176,255,0.06)'
-                    : s.status === 'Available'
-                    ? 'rgba(0,230,118,0.06)'
-                    : 'rgba(255,200,61,0.06)',
-                border: `1px solid ${
-                  s.status === 'Booked'
-                    ? 'rgba(0,176,255,0.2)'
-                    : s.status === 'Available'
-                    ? 'rgba(0,230,118,0.2)'
-                    : 'rgba(255,200,61,0.2)'
-                }`,
-                borderRadius: 10,
+                gap: 6,
               }}
+              onClick={() => setShowBookingModal(true)}
             >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <strong style={{ fontSize: 13 }}>{s.time}</strong>
-                  {s.floodlight && (
-                    <span style={{ fontSize: 10, color: '#ffd600', display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Moon size={11} /> Floodlight
-                    </span>
-                  )}
-                </div>
-                <small style={{ display: 'block', color: 'var(--muted)', fontSize: 11 }}>
-                  {s.pitch} • <strong style={{ color: '#f4f7ff' }}>{s.team}</strong>
-                </small>
-              </div>
+              <Plus size={15} /> + Quick Walk-In Booking
+            </button>
+          </div>
 
-              <div>
-                {s.status === 'Available' ? (
-                  <button
-                    type="button"
-                    className="btn btn--secondary btn--sm"
-                    style={{ fontSize: 11, background: '#00e676', color: '#020617', fontWeight: 'bold' }}
-                    onClick={() => bookAvailableSlot(s.id)}
-                  >
-                    + Book Slot
-                  </button>
-                ) : (
-                  <span
-                    className="pill"
+          {/* Interactive Date Picker (July 2026, 28 Days) */}
+          <div
+            style={{
+              padding: 12,
+              background: 'rgba(15, 23, 42, 0.6)',
+              borderRadius: 14,
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 800, color: '#38bdf8', letterSpacing: 0.5 }}>
+                JULY 2026 CALENDAR (FEATURE 13.2)
+              </span>
+              <span className="pill" style={{ background: 'rgba(0, 230, 118, 0.15)', color: '#00e676', fontSize: 10 }}>
+                MATCH DAY SELECTED: JULY {selectedDay}
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, textAlign: 'center' }}>
+              {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((d) => (
+                <span key={d} style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 800 }}>
+                  {d}
+                </span>
+              ))}
+
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map((day) => (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => setSelectedDay(day)}
+                  style={{
+                    padding: '8px 4px',
+                    borderRadius: 8,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: selectedDay === day ? '1px solid #00b0ff' : '1px solid rgba(255, 255, 255, 0.04)',
+                    background:
+                      selectedDay === day
+                        ? '#00b0ff'
+                        : day === 12 || day === 19
+                        ? 'rgba(0, 230, 118, 0.12)'
+                        : 'rgba(255, 255, 255, 0.02)',
+                    color: selectedDay === day ? '#020617' : day === 12 || day === 19 ? '#00e676' : 'var(--text)',
+                    boxShadow: selectedDay === day ? '0 0 10px rgba(0, 176, 255, 0.5)' : 'none',
+                  }}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Pitch Filter Pills */}
+          <div style={{ display: 'flex', gap: 6 }}>
+            {[
+              { id: 'all', label: 'All Complex Pitches' },
+              { id: 'p1', label: '🏟️ Pitch 1: Main Stadium Oval' },
+              { id: 'p2', label: '🌱 Pitch 2: Black Soil Turf' },
+              { id: 'p3', label: '🥅 Pitch 3: Box Astroturf' },
+            ].map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={`pill ${selectedPitch === p.id ? 'is-active' : ''}`}
+                style={{
+                  background: selectedPitch === p.id ? '#00b0ff' : 'rgba(255, 255, 255, 0.04)',
+                  color: selectedPitch === p.id ? '#020617' : 'var(--text)',
+                  cursor: 'pointer',
+                  fontSize: 11,
+                  fontWeight: selectedPitch === p.id ? 800 : 500,
+                }}
+                onClick={() => setSelectedPitch(p.id)}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Slot Cards List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {filteredSlots.map((slot) => (
+              <div
+                key={slot.id}
+                style={{
+                  padding: '14px 16px',
+                  borderRadius: 14,
+                  background:
+                    slot.status === 'Booked'
+                      ? 'rgba(0, 176, 255, 0.04)'
+                      : slot.status === 'Available'
+                      ? 'rgba(0, 230, 118, 0.04)'
+                      : 'rgba(255, 200, 61, 0.04)',
+                  border: `1px solid ${
+                    slot.status === 'Booked'
+                      ? 'rgba(0, 176, 255, 0.25)'
+                      : slot.status === 'Available'
+                      ? 'rgba(0, 230, 118, 0.25)'
+                      : 'rgba(255, 200, 61, 0.25)'
+                  }`,
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <strong style={{ fontSize: 15, color: '#f8fafc' }}>{slot.time}</strong>
+                      {slot.floodlight && (
+                        <span style={{ fontSize: 10, color: '#ffd600', display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <Moon size={12} /> Floodlights Active
+                        </span>
+                      )}
+                    </div>
+                    <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 600 }}>{slot.pitch}</span>
+                  </div>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <span
+                      style={{
+                        padding: '3px 10px',
+                        borderRadius: 999,
+                        fontSize: 10,
+                        fontWeight: 800,
+                        background:
+                          slot.status === 'Booked'
+                            ? 'rgba(0, 176, 255, 0.15)'
+                            : slot.status === 'Available'
+                            ? 'rgba(0, 230, 118, 0.15)'
+                            : 'rgba(255, 200, 61, 0.15)',
+                        color:
+                          slot.status === 'Booked'
+                            ? '#00b0ff'
+                            : slot.status === 'Available'
+                            ? '#00e676'
+                            : '#ffc83d',
+                        border: `1px solid ${
+                          slot.status === 'Booked'
+                            ? 'rgba(0, 176, 255, 0.3)'
+                            : slot.status === 'Available'
+                            ? 'rgba(0, 230, 118, 0.3)'
+                            : 'rgba(255, 200, 61, 0.3)'
+                        }`,
+                      }}
+                    >
+                      {slot.status === 'Booked' ? 'CONFIRMED BOOKING' : slot.status === 'Available' ? 'AVAILABLE' : 'CURATOR MAINTENANCE'}
+                    </span>
+                    <strong style={{ display: 'block', fontSize: 14, color: '#f8fafc', marginTop: 4 }}>
+                      {slot.amount}
+                    </strong>
+                  </div>
+                </div>
+
+                {/* Match Information (Feature 13.4: Team A vs Team B) */}
+                {slot.status === 'Booked' && (
+                  <div
                     style={{
-                      background: s.status === 'Booked' ? 'rgba(0,176,255,0.15)' : 'rgba(255,200,61,0.15)',
-                      color: s.status === 'Booked' ? '#00b0ff' : '#ffc83d',
-                      fontSize: 10,
+                      marginTop: 10,
+                      padding: '8px 12px',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      borderRadius: 8,
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: 8,
                     }}
                   >
-                    {s.status === 'Booked' ? 'CONFIRMED' : 'MAINTENANCE'}
-                  </span>
+                    <div>
+                      <strong style={{ fontSize: 13, color: '#f8fafc' }}>
+                        {slot.teamA} <span style={{ color: '#e10613' }}>VS</span> {slot.teamB}
+                      </strong>
+                      <small style={{ display: 'block', color: 'var(--muted)', fontSize: 11 }}>
+                        {slot.matchType} • Captains: {slot.captainA}
+                      </small>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button
+                        type="button"
+                        className="btn btn--sm"
+                        style={{ background: 'rgba(0, 176, 255, 0.15)', color: '#00b0ff', fontSize: 11 }}
+                        onClick={() => setShowGatePassModal(slot)}
+                      >
+                        <QrCode size={13} /> Gate Pass QR
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Available Slot Actions */}
+                {slot.status === 'Available' && (
+                  <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
+                    <button
+                      type="button"
+                      className="btn btn--primary btn--sm"
+                      style={{ background: '#00e676', color: '#020617', fontWeight: 800, fontSize: 11 }}
+                      onClick={() => {
+                        setNewBooking((prev) => ({ ...prev, time: slot.time, pitch: slot.pitch }))
+                        setShowBookingModal(true)
+                      }}
+                    >
+                      + Book Walk-In Match
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--outline btn--sm"
+                      style={{ fontSize: 11 }}
+                      onClick={() => {
+                        setSlots((prev) =>
+                          prev.map((s) => (s.id === slot.id ? { ...s, status: 'Maintenance', teamA: 'Pitch Roller Rest' } : s))
+                        )
+                        triggerToast('Slot marked for Pitch Curator Rolling / Rest!')
+                      }}
+                    >
+                      Block for Maintenance
+                    </button>
+                  </div>
                 )}
               </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB 2: DUAL MODULE ACCOUNTS & PROFIT/LOSS (Feature 13.3, 13.6, 13.7, 13.8)
+      ========================================================================= */}
+      {activeTab === 'finance' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Financial Header Banner */}
+          <div
+            style={{
+              padding: '18px 20px',
+              borderRadius: 16,
+              background: 'linear-gradient(135deg, rgba(0, 230, 118, 0.1), rgba(15, 23, 42, 0.95))',
+              border: '1px solid rgba(0, 230, 118, 0.3)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 12,
+            }}
+          >
+            <div>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#00e676', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+                DUAL MODULE ACCOUNTING SHEET (OCTOBER 2026)
+              </span>
+              <h2 style={{ fontSize: 26, fontWeight: 900, color: '#f8fafc', margin: '4px 0 0' }}>
+                ₹ 8,42,600 <span style={{ fontSize: 14, color: '#00e676', fontWeight: 600 }}>NET PROFIT</span>
+              </h2>
+              <small style={{ color: 'var(--muted)', fontSize: 11 }}>
+                Calculated automatically from Slot Bookings, Tournament Leases & Ground Maintenance Expenses
+              </small>
             </div>
-          ))}
+
+            <button
+              type="button"
+              className="btn btn--outline btn--sm"
+              style={{ borderColor: '#00e676', color: '#00e676', display: 'flex', alignItems: 'center', gap: 6 }}
+              onClick={() => setShowStatementModal(true)}
+            >
+              <Download size={14} /> Download Account Sheet (PDF / Excel)
+            </button>
+          </div>
+
+          {/* Dual Module Ledger Grid (Feature 13.3 & 14.5/14.6) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
+            {/* Income Card */}
+            <div
+              style={{
+                padding: '14px 16px',
+                borderRadius: 14,
+                background: 'rgba(0, 230, 118, 0.04)',
+                border: '1px solid rgba(0, 230, 118, 0.2)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <strong style={{ fontSize: 14, color: '#00e676', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <TrendingUp size={16} /> Total Income Collections
+                </strong>
+                <span style={{ fontSize: 16, fontWeight: 900, color: '#00e676' }}>₹ 10,75,000</span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
+                  <span>Ground & Pitch Slot Bookings (74 Slots)</span>
+                  <strong style={{ color: '#f8fafc' }}>₹ 6,85,000</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
+                  <span>Tournament League Leases (2 Tournaments)</span>
+                  <strong style={{ color: '#f8fafc' }}>₹ 2,40,000</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
+                  <span>Academy Practice Net Tie-Up (Marina Titans)</span>
+                  <strong style={{ color: '#f8fafc' }}>₹ 1,02,000</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
+                  <span>Perimeter Billboard & Stadium Ads</span>
+                  <strong style={{ color: '#f8fafc' }}>₹ 48,000</strong>
+                </div>
+              </div>
+            </div>
+
+            {/* Expenditure Card */}
+            <div
+              style={{
+                padding: '14px 16px',
+                borderRadius: 14,
+                background: 'rgba(239, 68, 68, 0.04)',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <strong style={{ fontSize: 14, color: '#f87171', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <DollarSign size={16} /> Total Ground Expenditures
+                </strong>
+                <span style={{ fontSize: 16, fontWeight: 900, color: '#f87171' }}>₹ 2,32,400</span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
+                  <span>Staff Salaries & Curator Payroll</span>
+                  <strong style={{ color: '#f8fafc' }}>₹ 1,00,000</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
+                  <span>Pitch Red Soil, Clay & Grass Fertilizers</span>
+                  <strong style={{ color: '#f8fafc' }}>₹ 45,000</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
+                  <span>Heavy Roller Diesel & Equipment Fuel</span>
+                  <strong style={{ color: '#f8fafc' }}>₹ 32,400</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
+                  <span>800-Lux Floodlight Tower Electricity</span>
+                  <strong style={{ color: '#f8fafc' }}>₹ 55,000</strong>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
+      )}
 
-      {/* Pitch Maintenance & Curator Log */}
-      <section className="panel" style={{ padding: '14px 16px' }}>
-        <header style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Wrench size={17} color="#ffd600" />
-            <h3 style={{ margin: 0, fontSize: 15 }}>Curator Log & Turf Maintenance</h3>
-          </div>
-          <span className="pill" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676' }}>
-            {details.maintenanceStatus || 'Pitch 1 Match Ready'}
-          </span>
-        </header>
+      {/* =========================================================================
+          TAB 3: CENTRAL STAFF & SHIFT PAYROLL (Feature 13.9, 13.10, 14.2, 14.3, 14.4)
+      ========================================================================= */}
+      {activeTab === 'staff' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+            <div>
+              <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: '#f8fafc' }}>
+                Central Staff & Shift Payroll System
+              </h2>
+              <small style={{ color: 'var(--muted)', fontSize: 11 }}>
+                Curators, groundsmen, electricians & turnstile security attendance
+              </small>
+            </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12, color: 'var(--muted)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--line)' }}>
-            <span>Heavy Roller on Pitch 1 (Main Stadium)</span>
-            <strong style={{ color: '#00e676' }}>Done (2 hrs)</strong>
+            <button
+              type="button"
+              className="btn btn--primary btn--sm"
+              style={{ background: 'linear-gradient(135deg, #ffc83d, #ff9100)', color: '#020617', fontWeight: 800 }}
+              onClick={handleDisbursePayroll}
+            >
+              Disburse Staff Payroll (₹1,00,000) →
+            </button>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--line)' }}>
-            <span>Boundary Rope & 30-Yard Circle Spray</span>
-            <strong style={{ color: '#00e676' }}>Completed</strong>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
-            <span>Floodlight Tower Generator Fuel (800-Lux)</span>
-            <strong style={{ color: '#3de0ff' }}>92% Full</strong>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {staffList.map((staff) => (
+              <div
+                key={staff.id}
+                style={{
+                  padding: '12px 14px',
+                  borderRadius: 12,
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 10,
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <strong style={{ fontSize: 14, color: '#f8fafc' }}>{staff.name}</strong>
+                    <span className="pill" style={{ background: 'rgba(0, 176, 255, 0.15)', color: '#00b0ff', fontSize: 10 }}>
+                      {staff.role}
+                    </span>
+                  </div>
+                  <small style={{ display: 'block', color: 'var(--muted)', fontSize: 11, marginTop: 2 }}>
+                    {staff.experience} • Shift Check-In: {staff.checkedIn}
+                  </small>
+                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#38bdf8' }}>
+                    Active Task: {staff.duty}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>Salary</span>
+                    <strong style={{ fontSize: 14, color: '#f8fafc', display: 'block' }}>{staff.salary}</strong>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => toggleStaffAttendance(staff.id)}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: 8,
+                      fontSize: 11,
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: staff.status === 'Present' ? '#00e676' : '#ef4444',
+                      color: '#020617',
+                    }}
+                  >
+                    {staff.status === 'Present' ? '✓ PRESENT' : '✗ ABSENT'}
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </section>
+      )}
 
-      {/* Stadium Boundary Ads & Commercial Billboard Slots */}
-      <section className="panel" style={{ padding: '14px 16px' }}>
-        <header style={{ marginBottom: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Megaphone size={17} color="#ffd600" />
-            <h3 style={{ margin: 0, fontSize: 15 }}>Boundary Perimeter Billboard Slots</h3>
+      {/* =========================================================================
+          TAB 4: EQUIPMENT STOCK & CURATOR LOG (Feature 13.11, 14.11)
+      ========================================================================= */}
+      {activeTab === 'equipment' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+            <div>
+              <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: '#f8fafc' }}>
+                Asset & Equipment Stock Register
+              </h2>
+              <small style={{ color: 'var(--muted)', fontSize: 11 }}>
+                Pitch rollers, electronic stumps, practice cages & floodlight towers
+              </small>
+            </div>
+
+            <button
+              type="button"
+              className="btn btn--outline btn--sm"
+              style={{ fontSize: 11 }}
+              onClick={() => {
+                triggerToast('Curator equipment inspection logged in register!')
+              }}
+            >
+              + Log Curator Inspection
+            </button>
           </div>
-          <button type="button" className="text-link" onClick={() => navigate('/app/sponsorship')}>
-            Manage Ads →
-          </button>
-        </header>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', background: 'rgba(255,214,0,0.04)', borderRadius: 8, border: '1px solid rgba(255,214,0,0.15)' }}>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {equipmentList.map((eq) => (
+              <div
+                key={eq.id}
+                style={{
+                  padding: '12px 14px',
+                  borderRadius: 12,
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <strong style={{ fontSize: 13, color: '#f8fafc' }}>{eq.name}</strong>
+                  <small style={{ display: 'block', color: 'var(--muted)', fontSize: 11 }}>
+                    Condition: {eq.lastService} • System Reliability: {eq.health}
+                  </small>
+                </div>
+
+                <span
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: 8,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    background: `${eq.color}22`,
+                    color: eq.color,
+                    border: `1px solid ${eq.color}55`,
+                  }}
+                >
+                  {eq.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB 5: TOURNAMENT LEASES & BILLBOARD ADS (Feature 14.8, 15.2, 15.10)
+      ========================================================================= */}
+      {activeTab === 'leases' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Tournament Leases */}
           <div>
-            <strong style={{ fontSize: 13, color: '#f4f7ff' }}>4 of 6 Perimeter Boards Occupied</strong>
-            <small style={{ display: 'block', color: 'var(--muted)', fontSize: 11 }}>Active Advertisers: Velocity Nutrition, Apex Willow</small>
+            <h2 style={{ fontSize: 16, fontWeight: 900, margin: '0 0 4px', color: '#f8fafc' }}>
+              Seasonal Tournament Leases & Contracts (Feature 15.3)
+            </h2>
+            <small style={{ color: 'var(--muted)', fontSize: 11 }}>
+              Guaranteed stadium booking contracts with federations and tournament bodies
+            </small>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
+              {tournamentLeases.map((lse) => (
+                <div
+                  key={lse.id}
+                  style={{
+                    padding: '12px 14px',
+                    borderRadius: 12,
+                    background: 'rgba(0, 176, 255, 0.04)',
+                    border: '1px solid rgba(0, 176, 255, 0.2)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: 10,
+                  }}
+                >
+                  <div>
+                    <strong style={{ fontSize: 14, color: '#f8fafc' }}>{lse.name}</strong>
+                    <small style={{ display: 'block', color: 'var(--muted)', fontSize: 11 }}>
+                      Organizer: {lse.organizer} • {lse.duration}
+                    </small>
+                    <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 600 }}>Schedule: {lse.dates}</span>
+                  </div>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <span className="pill" style={{ background: 'rgba(0, 230, 118, 0.15)', color: '#00e676', fontSize: 10 }}>
+                      {lse.status}
+                    </span>
+                    <strong style={{ display: 'block', fontSize: 15, color: '#f8fafc', marginTop: 4 }}>
+                      {lse.contractValue}
+                    </strong>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <span className="pill" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676' }}>₹48,000 / mo</span>
+
+          {/* Stadium Boundary Billboards (Feature 15.10 & 18.5) */}
+          <div style={{ marginTop: 10 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 900, margin: '0 0 4px', color: '#f8fafc' }}>
+              Stadium Boundary LED & Perimeter Advertising Slots
+            </h2>
+            <small style={{ color: 'var(--muted)', fontSize: 11 }}>
+              Monetize stadium boundary perimeter with brand sponsor banners
+            </small>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 10, marginTop: 10 }}>
+              {billboards.map((b) => (
+                <div
+                  key={b.id}
+                  style={{
+                    padding: '10px 12px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    border: `1px solid ${b.status === 'Active' ? 'rgba(0, 230, 118, 0.2)' : 'rgba(255, 214, 0, 0.2)'}`,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <strong style={{ fontSize: 12, color: '#f8fafc' }}>{b.position}</strong>
+                    <span
+                      className="pill"
+                      style={{
+                        background: b.status === 'Active' ? 'rgba(0, 230, 118, 0.15)' : 'rgba(255, 214, 0, 0.15)',
+                        color: b.status === 'Active' ? '#00e676' : '#ffd600',
+                        fontSize: 9,
+                      }}
+                    >
+                      {b.status.toUpperCase()}
+                    </span>
+                  </div>
+                  <small style={{ display: 'block', color: 'var(--muted)', fontSize: 11, margin: '4px 0' }}>
+                    Advertiser: {b.advertiser}
+                  </small>
+                  <strong style={{ fontSize: 12, color: '#38bdf8' }}>{b.rate}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </section>
+      )}
+
+      {/* =========================================================================
+          MODAL: QUICK WALK-IN / COUNTER BOOKING
+      ========================================================================= */}
+      {showBookingModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(2, 6, 23, 0.85)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 10000,
+            display: 'grid',
+            placeItems: 'center',
+            padding: 16,
+          }}
+        >
+          <div
+            style={{
+              background: '#0f172a',
+              border: '1px solid rgba(0, 176, 255, 0.4)',
+              borderRadius: 18,
+              maxWidth: 460,
+              width: '100%',
+              padding: 22,
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: '#f8fafc' }}>
+                  Quick Walk-In Slot Booking
+                </h3>
+                <small style={{ color: 'var(--muted)', fontSize: 11 }}>
+                  Counter reservation for teams & tournament matches
+                </small>
+              </div>
+              <button
+                type="button"
+                className="icon-btn"
+                onClick={() => setShowBookingModal(false)}
+                style={{ width: 28, height: 28 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateBooking} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div>
+                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Team A Name</label>
+                  <input
+                    type="text"
+                    className="sh-white-input"
+                    value={newBooking.teamA}
+                    onChange={(e) => setNewBooking({ ...newBooking, teamA: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Team B Name</label>
+                  <input
+                    type="text"
+                    className="sh-white-input"
+                    value={newBooking.teamB}
+                    onChange={(e) => setNewBooking({ ...newBooking, teamB: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Captain Phone Number</label>
+                <input
+                  type="tel"
+                  className="sh-white-input"
+                  value={newBooking.captainPhone}
+                  onChange={(e) => setNewBooking({ ...newBooking, captainPhone: e.target.value })}
+                  placeholder="10-digit mobile number"
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div>
+                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Pitch Allocation</label>
+                  <select
+                    className="sh-white-select"
+                    value={newBooking.pitch}
+                    onChange={(e) => setNewBooking({ ...newBooking, pitch: e.target.value })}
+                  >
+                    <option value="Main Stadium Oval (Red Soil)">Main Stadium Oval</option>
+                    <option value="Practice Turf 2 (Black Soil)">Practice Turf 2</option>
+                    <option value="Astroturf Box Arena">Astroturf Box Arena</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Slot Time</label>
+                  <select
+                    className="sh-white-select"
+                    value={newBooking.time}
+                    onChange={(e) => setNewBooking({ ...newBooking, time: e.target.value })}
+                  >
+                    <option value="06:00 AM - 09:00 AM">06:00 AM - 09:00 AM</option>
+                    <option value="09:30 AM - 12:30 PM">09:30 AM - 12:30 PM</option>
+                    <option value="01:00 PM - 04:00 PM">01:00 PM - 04:00 PM</option>
+                    <option value="04:30 PM - 07:30 PM">04:30 PM - 07:30 PM</option>
+                    <option value="08:00 PM - 11:30 PM">08:00 PM - 11:30 PM (Night)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div>
+                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Tariff Amount (₹)</label>
+                  <input
+                    type="number"
+                    className="sh-white-input"
+                    value={newBooking.price}
+                    onChange={(e) => setNewBooking({ ...newBooking, price: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Payment Mode</label>
+                  <select
+                    className="sh-white-select"
+                    value={newBooking.paymentMode}
+                    onChange={(e) => setNewBooking({ ...newBooking, paymentMode: e.target.value })}
+                  >
+                    <option value="UPI QR Scan">UPI QR Scan (Instant)</option>
+                    <option value="Cash at Counter">Cash at Counter</option>
+                    <option value="Bank NEFT">Bank NEFT / Net Banking</option>
+                  </select>
+                </div>
+              </div>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#ffd600', cursor: 'pointer', margin: '4px 0' }}>
+                <input
+                  type="checkbox"
+                  checked={newBooking.floodlights}
+                  onChange={(e) => setNewBooking({ ...newBooking, floodlights: e.target.checked })}
+                />
+                <span>Include Night Floodlight Tower Rental (800-Lux)</span>
+              </label>
+
+              <button
+                type="submit"
+                className="btn btn--primary"
+                style={{ width: '100%', marginTop: 8, background: 'linear-gradient(135deg, #00b0ff, #00e676)', color: '#020617', fontWeight: 800 }}
+              >
+                Confirm & Issue Digital Gate Pass QR →
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL: DIGITAL GATE ENTRY PASS QR (Feature 15.7)
+      ========================================================================= */}
+      {showGatePassModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(2, 6, 23, 0.85)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 10000,
+            display: 'grid',
+            placeItems: 'center',
+            padding: 16,
+          }}
+        >
+          <div
+            style={{
+              background: '#0f172a',
+              border: '1px solid rgba(0, 176, 255, 0.4)',
+              borderRadius: 18,
+              maxWidth: 380,
+              width: '100%',
+              padding: 22,
+              textAlign: 'center',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <span className="pill" style={{ background: 'rgba(0, 176, 255, 0.15)', color: '#00b0ff', fontSize: 10 }}>
+                STADIUM GATE PASS • FEATURE 15.7
+              </span>
+              <button
+                type="button"
+                className="icon-btn"
+                onClick={() => setShowGatePassModal(null)}
+                style={{ width: 26, height: 26 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <h3 style={{ margin: 0, fontSize: 18, color: '#f8fafc', fontWeight: 900 }}>
+              {showGatePassModal.teamA} VS {showGatePassModal.teamB}
+            </h3>
+            <p style={{ margin: '4px 0 14px', fontSize: 12, color: '#38bdf8' }}>
+              {showGatePassModal.pitch} • {showGatePassModal.time}
+            </p>
+
+            {/* Simulated QR Code Canvas */}
+            <div
+              style={{
+                width: 170,
+                height: 170,
+                margin: '0 auto 14px',
+                background: '#fff',
+                borderRadius: 14,
+                padding: 12,
+                display: 'grid',
+                placeItems: 'center',
+              }}
+            >
+              <QrCode size={140} color="#020617" />
+            </div>
+
+            <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 14 }}>
+              Pass Code: <strong style={{ color: '#f8fafc' }}>SH-GATE-{showGatePassModal.id.toUpperCase()}</strong>
+              <div style={{ fontSize: 11, color: '#00e676', marginTop: 2 }}>Scan at Turnstile Gate A for entry</div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                className="btn btn--outline btn--sm"
+                style={{ flex: 1 }}
+                onClick={() => triggerToast('Gate Pass QR copied to clipboard for WhatsApp dispatch!')}
+              >
+                <Share2 size={13} /> Send to Captain
+              </button>
+              <button
+                type="button"
+                className="btn btn--primary btn--sm"
+                style={{ flex: 1, background: '#00b0ff', color: '#020617', fontWeight: 800 }}
+                onClick={() => setShowGatePassModal(null)}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL: MONTHLY ACCOUNT STATEMENT DOWNLOAD (Feature 13.8)
+      ========================================================================= */}
+      {showStatementModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(2, 6, 23, 0.85)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 10000,
+            display: 'grid',
+            placeItems: 'center',
+            padding: 16,
+          }}
+        >
+          <div
+            style={{
+              background: '#0f172a',
+              border: '1px solid rgba(0, 230, 118, 0.4)',
+              borderRadius: 18,
+              maxWidth: 480,
+              width: '100%',
+              padding: 22,
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: '#f8fafc' }}>
+                  Monthly Account Sheet & Audit Export
+                </h3>
+                <small style={{ color: 'var(--muted)', fontSize: 11 }}>
+                  Dual Module Ledger • Certified by Scoring Heroes Platform
+                </small>
+              </div>
+              <button
+                type="button"
+                className="icon-btn"
+                onClick={() => setShowStatementModal(false)}
+                style={{ width: 28, height: 28 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
+                <span style={{ color: 'var(--muted)' }}>Statement Period:</span>
+                <strong style={{ color: '#f8fafc' }}>01 Oct 2026 – 31 Oct 2026</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
+                <span style={{ color: 'var(--muted)' }}>Total Gross Inflow:</span>
+                <strong style={{ color: '#00e676' }}>₹ 10,75,000</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
+                <span style={{ color: 'var(--muted)' }}>Total Operating Cost:</span>
+                <strong style={{ color: '#ef4444' }}>₹ 2,32,400</strong>
+              </div>
+              <div style={{ borderTop: '1px solid var(--line)', paddingTop: 6, display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                <strong style={{ color: '#f8fafc' }}>Net Settled Profit:</strong>
+                <strong style={{ color: '#00e676' }}>₹ 8,42,600</strong>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                className="btn btn--primary btn--sm"
+                style={{ flex: 1, background: '#00e676', color: '#020617', fontWeight: 800 }}
+                onClick={() => {
+                  setShowStatementModal(false)
+                  triggerToast('Monthly statement downloaded as PDF!')
+                }}
+              >
+                <Download size={14} /> Download PDF
+              </button>
+              <button
+                type="button"
+                className="btn btn--outline btn--sm"
+                style={{ flex: 1 }}
+                onClick={() => {
+                  setShowStatementModal(false)
+                  triggerToast('Excel spreadsheet exported!')
+                }}
+              >
+                <FileText size={14} /> Export Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

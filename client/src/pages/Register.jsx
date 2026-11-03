@@ -354,10 +354,14 @@ export default function Register({ defaultTab }) {
     // IF IN SIGN IN MODE
     if (activeTab === 'login') {
       const identifier = otpTargetType === 'mobile' ? cleanPhone : cleanEmail
-      loginWithIdentifier(identifier)
-      // Redirect to Aadhaar verification on mobile OTP as required
+      const loggedUser = loginWithIdentifier(identifier)
+      // If user already verified, go directly to app dashboard! Otherwise redirect to Aadhaar verification
       if (otpTargetType === 'mobile') {
-        navigate('/aadhaar', { replace: true })
+        if (loggedUser?.aadhaarVerified) {
+          navigate('/app', { replace: true })
+        } else {
+          navigate('/aadhaar', { replace: true })
+        }
       } else {
         navigate('/app', { replace: true })
       }
@@ -1302,6 +1306,55 @@ export default function Register({ defaultTab }) {
                 <span className="sh-modern-guest-text">Continue with Guest Account</span>
               </button>
             )}
+
+            {/* DEMO BUSINESS ACCOUNTS (9999999999 down to 4444444444) */}
+            <div style={{ marginTop: 14, padding: '12px 14px', background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: 0.6 }}>
+                  ⚡ Quick Demo Business Accounts
+                </span>
+                <span style={{ fontSize: 10, color: '#64748b' }}>1-Tap Fill & Test</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+                {[
+                  { icon: '🏟️', label: '1. Grounds', phone: '9999999999' },
+                  { icon: '🏫', label: '2. Academies', phone: '8888888888' },
+                  { icon: '🏭', label: '3. Manufacturers', phone: '7777777777' },
+                  { icon: '🏃', label: '4. Coach', phone: '6666666666' },
+                  { icon: '📹', label: '5. Streamer', phone: '5555555555' },
+                  { icon: '🤝', label: '6. Sponsor', phone: '4444444444' },
+                ].map((acc) => (
+                  <button
+                    key={acc.phone}
+                    type="button"
+                    style={{
+                      padding: '6px 8px',
+                      borderRadius: 8,
+                      border: phone === acc.phone ? '1.5px solid #00b0ff' : '1px solid #cbd5e1',
+                      background: phone === acc.phone ? '#f0f9ff' : '#ffffff',
+                      color: '#0f172a',
+                      fontSize: 11,
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                    onClick={() => {
+                      setPhone(acc.phone)
+                      setAuthMethod('mobile')
+                      setError('')
+                    }}
+                  >
+                    <span style={{ fontSize: 14 }}>{acc.icon}</span>
+                    <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                      <div style={{ fontWeight: 800, fontSize: 11, color: '#0f172a', whiteSpace: 'nowrap' }}>{acc.label}</div>
+                      <div style={{ fontSize: 10, color: '#64748b' }}>{acc.phone}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {/* FOOTER NOTE */}
             <p className="sh-modern-footer-note">

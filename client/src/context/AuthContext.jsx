@@ -15,12 +15,189 @@ function readUser() {
   }
 }
 
+// 6 Predefined Demo Business Accounts requested by platform specification:
+// 9999999999 -> 1. GROUNDS / Stadium
+// 8888888888 -> 2. Academics (Sports Academies)
+// 7777777777 -> 3. Manufacturers / Factory Outlet / Seller
+// 6666666666 -> 4. Coach / Trainer
+// 5555555555 -> 5. Live Streamers
+// 4444444444 -> 6. Sponsor
+export const DEMO_BUSINESS_ACCOUNTS = {
+  '9999999999': {
+    phone: '9999999999',
+    phoneCode: '+91',
+    email: 'marina.arena@scoringheroes.com',
+    role: 'ground',
+    roleCategory: 'official',
+    nickname: 'GroundMaster_Dev',
+    fullName: 'Dev Anand (Stadium Director)',
+    city: 'Chennai',
+    age: '42',
+    address: 'Marina Sports Arena, Marina Beach Road, Chennai, Tamil Nadu 600005',
+    verified: true,
+    aadhaarVerified: true,
+    aadhaarMasked: 'XXXX-XXXX-9999',
+    trust: 99,
+    onboardingComplete: true,
+    businessType: '1. GROUNDS / Stadium',
+    roleDetails: {
+      venueName: 'Marina International Cricket Arena & Turfs',
+      pitchesCount: 3,
+      turfType: 'Natural Red Soil Turf Oval + 2 Astro Turfs',
+      floodlights: 'LED 800-Lux Match Ready (4 Towers)',
+      todayBookings: 8,
+      totalSlots: 10,
+      weeklyRevenue: '₹1,48,500',
+      monthlyRevenue: '₹8,42,600',
+      hourlyRate: '₹2,500',
+      maintenanceStatus: 'Pitch 1 Rolled & Match Ready',
+      activeLeases: 2,
+      staffCount: 8,
+      occupancyRate: '92%',
+    },
+  },
+  '8888888888': {
+    phone: '8888888888',
+    phoneCode: '+91',
+    email: 'academy.director@scoringheroes.com',
+    role: 'academy',
+    roleCategory: 'official',
+    nickname: 'Director_Murthy',
+    fullName: 'K. S. Murthy (Director)',
+    city: 'Coimbatore',
+    age: '46',
+    address: 'Scoring Heroes Apex Academy, Coimbatore, Tamil Nadu',
+    verified: true,
+    aadhaarVerified: true,
+    aadhaarMasked: 'XXXX-XXXX-8888',
+    trust: 98,
+    onboardingComplete: true,
+    businessType: '2. Academics (Sports Academies)',
+    roleDetails: {
+      academyName: 'Scoring Heroes Elite Academy',
+      regNumber: 'TN-SPO-2023-771',
+      totalStudents: 128,
+      activeCoaches: 6,
+      monthlyFeesCollected: '₹3,84,000',
+      pendingFees: '₹42,000',
+      availableSlots: 18,
+    },
+  },
+  '7777777777': {
+    phone: '7777777777',
+    phoneCode: '+91',
+    email: 'factory.outlet@scoringheroes.com',
+    role: 'seller',
+    roleCategory: 'official',
+    nickname: 'Brand_SS_Willow',
+    fullName: 'Suresh Singhania',
+    city: 'Meerut',
+    age: '44',
+    address: 'SS Sports Gear Factory Outlet, Meerut, UP',
+    verified: true,
+    aadhaarVerified: true,
+    aadhaarMasked: 'XXXX-XXXX-7777',
+    trust: 99,
+    onboardingComplete: true,
+    businessType: '3. Manufacturers / Factory Outlet / Seller',
+    roleDetails: {
+      businessName: 'Apex Willow & Pro Gear Co.',
+      gstNumber: '09AAACA1234F1Z8 (Verified)',
+      category: 'Customised Team Jerseys, Willow Bats & Kits',
+      activeListings: 38,
+      pendingOrders: 14,
+      escrowSettlementBalance: '₹1,82,400',
+      averageRating: '4.9 ★',
+    },
+  },
+  '6666666666': {
+    phone: '6666666666',
+    phoneCode: '+91',
+    email: 'coach.venkat@scoringheroes.com',
+    role: 'coach',
+    roleCategory: 'official',
+    nickname: 'Coach_Venkat',
+    fullName: 'Venkatesh Prasad',
+    city: 'Chennai',
+    age: '45',
+    address: 'National Cricket High-Performance Center, Chennai',
+    verified: true,
+    aadhaarVerified: true,
+    aadhaarMasked: 'XXXX-XXXX-6666',
+    trust: 98,
+    onboardingComplete: true,
+    businessType: '4. Coach / Trainer',
+    roleDetails: {
+      coachSpecialization: 'Ranji Trophy Staff & Fast Bowling Specialist',
+      licenseLevel: 'BCCI Level 2 Certified / Ranji Staff',
+      academyAffiliation: 'Scoring Heroes Apex Academy',
+      activeStudents: 42,
+      batchesToday: 3,
+      attendanceRate: '96.4%',
+    },
+  },
+  '5555555555': {
+    phone: '5555555555',
+    phoneCode: '+91',
+    email: 'streamer.karan@scoringheroes.com',
+    role: 'streamer',
+    roleCategory: 'official',
+    nickname: 'Streamer_Karan',
+    fullName: 'Karan Mehra',
+    city: 'Mumbai',
+    age: '28',
+    address: 'ScoringCast Live Broadcast Studios, Mumbai',
+    verified: true,
+    aadhaarVerified: true,
+    aadhaarMasked: 'XXXX-XXXX-5555',
+    trust: 97,
+    onboardingComplete: true,
+    businessType: '5. Live Streamers',
+    roleDetails: {
+      channelName: 'ScoringCast Live Studio',
+      broadcastTier: 'Pro Multi-Cam Rig & 4K Drone Feed',
+      primarySport: 'Cricket Tournaments',
+      activeStreams: 2,
+      totalViewers: '48,200',
+      subscribers: '12.4K',
+      quality: '1080p 60fps Ultra-Low Latency',
+    },
+  },
+  '4444444444': {
+    phone: '4444444444',
+    phoneCode: '+91',
+    email: 'sponsor.velocity@scoringheroes.com',
+    role: 'sponsor',
+    roleCategory: 'official',
+    nickname: 'Sponsor_Velocity',
+    fullName: 'Vikramaditya Rao',
+    city: 'Mumbai',
+    age: '37',
+    address: 'Velocity Brands & Media Tower, Mumbai',
+    verified: true,
+    aadhaarVerified: true,
+    aadhaarMasked: 'XXXX-XXXX-4444',
+    trust: 99,
+    onboardingComplete: true,
+    businessType: '6. Sponsor',
+    roleDetails: {
+      companyName: 'Velocity Sports Nutrition',
+      activeCampaigns: 4,
+      totalImpressions: '1,420,000',
+      clickThroughRate: '3.8%',
+      sponsoredTournaments: ['Chennai Street Cup', 'Academy Super League'],
+      walletBalance: '₹84,500',
+    },
+  },
+}
+
 function readRegisteredAccounts() {
   try {
     const raw = localStorage.getItem(ACCOUNTS_KEY)
-    return raw ? JSON.parse(raw) : {}
+    const stored = raw ? JSON.parse(raw) : {}
+    return { ...DEMO_BUSINESS_ACCOUNTS, ...stored }
   } catch {
-    return {}
+    return { ...DEMO_BUSINESS_ACCOUNTS }
   }
 }
 
@@ -166,8 +343,8 @@ export function AuthProvider({ children }) {
           }
         }
 
-        // 2. Check if account already registered and completed:
-        const matched = accounts[cleanDigits] || accounts[clean.toLowerCase()]
+        // 2. Check predefined demo accounts or registered accounts:
+        const matched = DEMO_BUSINESS_ACCOUNTS[cleanDigits] || accounts[cleanDigits] || accounts[clean.toLowerCase()]
         if (matched) {
           sessionStorage.setItem(KEY, JSON.stringify(matched))
           setUser(matched)

@@ -11,6 +11,7 @@ import StaffDashboard from '../components/dashboards/StaffDashboard'
 import OrganizerDashboard from '../components/dashboards/OrganizerDashboard'
 import SellerDashboard from '../components/dashboards/SellerDashboard'
 import SponsorDashboard from '../components/dashboards/SponsorDashboard'
+import StreamerDashboard from '../components/dashboards/StreamerDashboard'
 import AdminDashboard from '../components/dashboards/AdminDashboard'
 
 export default function Home() {
@@ -39,6 +40,8 @@ export default function Home() {
         return <SellerDashboard user={user} />
       case 'sponsor':
         return <SponsorDashboard user={user} />
+      case 'streamer':
+        return <StreamerDashboard user={user} />
       case 'admin':
         return <AdminDashboard user={user} />
       case 'player':
