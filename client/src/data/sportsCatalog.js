@@ -45,7 +45,7 @@ export const INTERNATIONAL_SPORTS = [
   { id: 'lacrosse', name: 'Lacrosse', icon: '🥍', category: 'International', players: '10v10' },
   { id: 'afl', name: 'Australian Rules Football', icon: '🏉', category: 'International', players: '18v18' },
   { id: 'snowboarding', name: 'Skiing & Snowboarding', icon: '🏂', category: 'International', players: 'Individual' },
-  { id: 'esports', name: 'eSports / Competitive Gaming', icon: '🎮', category: 'International', players: 'Solo/Team' },
+  { id: 'billiards', name: 'Billiards & Snooker', icon: '🎱', category: 'International', players: 'Singles/Doubles' },
   { id: 'bowling', name: 'Tenpin Bowling', icon: '🎳', category: 'International', players: 'Individual' },
   { id: 'frisbee', name: 'Ultimate Frisbee', icon: '🥏', category: 'International', players: '7v7' },
 ]
@@ -524,20 +524,20 @@ export const SPORT_SPECIFIC_QUESTIONS = {
       default: 'Orthodox Stance',
     },
   ],
-  esports: [
+  billiards: [
     {
-      id: 'gameTitle',
-      label: 'Primary Competitive Title',
+      id: 'discipline',
+      label: 'Primary Cue Discipline',
       type: 'select',
-      options: ['BGMI / PUBG Mobile', 'Free Fire MAX', 'Valorant', 'CS2 / Counter-Strike', 'EA Sports FC / FIFA', 'DOTA 2 / MOBA'],
-      default: 'BGMI / PUBG Mobile',
+      options: ['Snooker (15 Reds)', '8-Ball Pool', '9-Ball Pool', 'English Billiards'],
+      default: 'Snooker (15 Reds)',
     },
     {
-      id: 'role',
-      label: 'In-Game Role',
+      id: 'cueRole',
+      label: 'Playing Style',
       type: 'select',
-      options: ['IGL (In-Game Leader)', 'Assaulter / Entry Fragger', 'Sniper / Long Range', 'Support & Utility Specialist'],
-      default: 'IGL (In-Game Leader)',
+      options: ['Break Builder (High Century Scorer)', 'Tactical Safety Specialist', 'Shotmaker & Potting Expert'],
+      default: 'Break Builder (High Century Scorer)',
     },
   ],
   pickleball: [

@@ -26,11 +26,10 @@ const SPORTS_LIST = [
   { id: 'football', name: 'Football (Soccer)', icon: '⚽', roles: ['Striker / Forward', 'Winger (LW/RW)', 'Midfielder (CAM/CM)', 'Defender (CB/LB/RB)', 'Goalkeeper (GK)'] },
   { id: 'badminton', name: 'Badminton', icon: '🏸', roles: ['Singles Specialist', 'Doubles Specialist', 'Mixed Doubles'] },
   { id: 'kabaddi', name: 'Kabaddi', icon: '🤼', roles: ['Lead Raider', 'Corner Defender', 'Cover Defender', 'All-Rounder'] },
-  { id: 'tennis', name: 'Tennis', icon: '🎾', roles: ['Singles Specialist', 'Doubles Specialist'] },
+  { id: 'tennis', name: 'Lawn Tennis', icon: '🎾', roles: ['Singles Specialist', 'Doubles Specialist'] },
   { id: 'basketball', name: 'Basketball', icon: '🏀', roles: ['Point Guard (PG)', 'Shooting Guard (SG)', 'Small Forward (SF)', 'Power Forward (PF)', 'Center (C)'] },
   { id: 'hockey', name: 'Field Hockey', icon: '🏑', roles: ['Forward / Striker', 'Midfielder', 'Defender / Full-Back', 'Goalkeeper'] },
   { id: 'volleyball', name: 'Volleyball', icon: '🏐', roles: ['Outside Hitter (Spiker)', 'Setter (Playmaker)', 'Middle Blocker', 'Libero'] },
-  { id: 'table-tennis', name: 'Table Tennis', icon: '🏓', roles: ['Shakehand Attacker', 'Penhold Attacker', 'Defensive Chopper'] },
   { id: 'athletics', name: 'Athletics & Track', icon: '👟', roles: ['Sprints (100m/200m)', 'Javelin Throw', 'Middle Distance', 'Long Jump'] },
   { id: 'wrestling', name: 'Wrestling (Kushti)', icon: '🤼‍♂️', roles: ['Freestyle (Olympic)', 'Traditional Kushti (Akhada)', 'Greco-Roman'] },
   { id: 'swimming', name: 'Swimming', icon: '🏊', roles: ['Freestyle Sprint', 'Butterfly', 'Breaststroke', 'Individual Medley'] },
@@ -38,14 +37,17 @@ const SPORTS_LIST = [
 ]
 
 const GAMES_LIST = [
-  { id: 'chess', name: 'Chess (Mind Sport)', icon: '♟️', roles: ['Club Competitor (<1400)', 'Intermediate (1400-1800)', 'Candidate Master (1800-2200)', 'Titled Master (2200+)'] },
-  { id: 'carrom', name: 'Carrom (Board Sport)', icon: '🎯', roles: ['White Slam Specialist', 'Pocketing Strategist', 'Board Defensive Striker'] },
-  { id: 'bgmi', name: 'BGMI / PUBG Mobile', icon: '🎮', roles: ['IGL (In-Game Leader)', 'Assaulter / Entry Fragger', 'Sniper / Long Range', 'Support & Utility'] },
-  { id: 'freefire', name: 'Free Fire MAX', icon: '🔥', roles: ['Assaulter / Rusher', 'Sniper Specialist', 'Flanker', 'IGL Leader'] },
-  { id: 'valorant', name: 'Valorant (Tactical FPS)', icon: '🎯', roles: ['Duelist / Entry', 'Initiator / Recon', 'Controller / Smokes', 'Sentinel / Anchor'] },
-  { id: 'cs2', name: 'Counter-Strike 2 (CS2)', icon: '💥', roles: ['Entry Rifler', 'AWP Sniper', 'Lurker', 'Support Flash'] },
-  { id: 'fifa', name: 'EA Sports FC / FIFA', icon: '⚽', roles: ['Ultimate Team Competitive', 'Pro Clubs Player', 'Career Champion'] },
-  { id: 'dota2', name: 'DOTA 2 / MOBA', icon: '⚔️', roles: ['Carry / Position 1', 'Mid Laner / Position 2', 'Offlaner / Position 3', 'Support / Position 4-5'] },
+  { id: 'chess', name: 'Chess', icon: '♟️', roles: ['Club Competitor (<1400)', 'Intermediate (1400-1800)', 'Candidate Master (1800-2200)', 'Titled Master (2200+)'] },
+  { id: 'carrom', name: 'Carrom', icon: '🎯', roles: ['White Slam Specialist', 'Pocketing & Defensive Strategist', 'Board Captain / Pro Striker'] },
+  { id: 'billiards', name: 'Billiards & Snooker', icon: '🎱', roles: ['Break Builder (147 Hunter)', 'Safety & Tactical Player', '8-Ball / 9-Ball Specialist'] },
+  { id: 'table-tennis', name: 'Table Tennis / Ping Pong', icon: '🏓', roles: ['Offensive Loop Attacker', 'Fast Block Counter', 'Defensive Chopper'] },
+  { id: 'kho-kho', name: 'Kho Kho', icon: '🏃', roles: ['Wazir / Attacking Chaser', 'Defender / Dodging Runner', 'All-Round Player'] },
+  { id: 'darts', name: 'Darts', icon: '🎯', roles: ['501 Checkout Finisher', 'Bullseye Specialist', 'Triple-20 Scorer'] },
+  { id: 'bowling', name: 'Tenpin Bowling', icon: '🎳', roles: ['Hook Ball Striker', 'Straight Spare Converter', 'Two-Handed Power Bowler'] },
+  { id: 'squash', name: 'Squash', icon: '🎾', roles: ['Fast Pace Volleyer', 'Drop Shot & Nick Maestro', 'Retrieval Specialist'] },
+  { id: 'archery', name: 'Archery', icon: '🏹', roles: ['Recurve Target Archer', 'Compound Bow Specialist', 'Traditional Barebow'] },
+  { id: 'shooting', name: 'Shooting Sports', icon: '🎯', roles: ['10m Air Rifle', '25m Rapid Fire Pistol', 'Trap & Skeet (Clay)'] },
+  { id: 'mallakhamb', name: 'Mallakhamb', icon: '🤸', roles: ['Pole Mallakhamb', 'Rope Mallakhamb', 'Hanging Mallakhamb'] },
 ]
 
 export default function Register({ defaultTab }) {
@@ -438,7 +440,7 @@ export default function Register({ defaultTab }) {
                           <span className="sh-preview-subtext">
                             {selectedSportId === 'cricket'
                               ? `${battingStance} · ${bowlingAction} · ${competitionLevel}`
-                              : `${activityCategory === 'sports' ? 'Athletic Sport' : 'Mind & eSport'} · ${competitionLevel}`}
+                              : `${activityCategory === 'sports' ? 'Physical Sport' : 'Indoor Game'} · ${competitionLevel}`}
                           </span>
                         </div>
                       </div>
@@ -458,7 +460,7 @@ export default function Register({ defaultTab }) {
                           <span className="sh-white-questions-dot" />
                           <span>Choose Sport or Game</span>
                         </div>
-                        <span className="sh-white-hint">{activityCategory === 'sports' ? 'Physical Sports' : 'Games & eSports'}</span>
+                        <span className="sh-white-hint">{activityCategory === 'sports' ? 'Physical Sports' : 'Indoor & Board Games'}</span>
                       </div>
 
                       {/* 1. DIFFERENTIATE: SPORTS VS GAMES TABS */}
@@ -475,7 +477,7 @@ export default function Register({ defaultTab }) {
                           className={`sh-differentiator-tab ${activityCategory === 'games' ? 'is-active' : ''}`}
                           onClick={() => handleActivityCategoryChange('games')}
                         >
-                          <span>🎮 Games & Mind Sports</span>
+                          <span>🎯 Indoor & Board Games</span>
                         </button>
                       </div>
 
