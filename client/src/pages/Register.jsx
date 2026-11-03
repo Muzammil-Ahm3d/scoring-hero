@@ -21,6 +21,33 @@ import CountryCodePicker from '../components/CountryCodePicker'
 import { getMaxPhoneDigits, getPhonePlaceholder } from '../data/countries'
 import '../AuthWhiteTheme.css'
 
+const SPORTS_LIST = [
+  { id: 'cricket', name: 'Cricket', icon: '🏏', roles: ['All-rounder', 'Batsman', 'Fast Bowler', 'Spin Bowler', 'Wicketkeeper'] },
+  { id: 'football', name: 'Football (Soccer)', icon: '⚽', roles: ['Striker / Forward', 'Winger (LW/RW)', 'Midfielder (CAM/CM)', 'Defender (CB/LB/RB)', 'Goalkeeper (GK)'] },
+  { id: 'badminton', name: 'Badminton', icon: '🏸', roles: ['Singles Specialist', 'Doubles Specialist', 'Mixed Doubles'] },
+  { id: 'kabaddi', name: 'Kabaddi', icon: '🤼', roles: ['Lead Raider', 'Corner Defender', 'Cover Defender', 'All-Rounder'] },
+  { id: 'tennis', name: 'Tennis', icon: '🎾', roles: ['Singles Specialist', 'Doubles Specialist'] },
+  { id: 'basketball', name: 'Basketball', icon: '🏀', roles: ['Point Guard (PG)', 'Shooting Guard (SG)', 'Small Forward (SF)', 'Power Forward (PF)', 'Center (C)'] },
+  { id: 'hockey', name: 'Field Hockey', icon: '🏑', roles: ['Forward / Striker', 'Midfielder', 'Defender / Full-Back', 'Goalkeeper'] },
+  { id: 'volleyball', name: 'Volleyball', icon: '🏐', roles: ['Outside Hitter (Spiker)', 'Setter (Playmaker)', 'Middle Blocker', 'Libero'] },
+  { id: 'table-tennis', name: 'Table Tennis', icon: '🏓', roles: ['Shakehand Attacker', 'Penhold Attacker', 'Defensive Chopper'] },
+  { id: 'athletics', name: 'Athletics & Track', icon: '👟', roles: ['Sprints (100m/200m)', 'Javelin Throw', 'Middle Distance', 'Long Jump'] },
+  { id: 'wrestling', name: 'Wrestling (Kushti)', icon: '🤼‍♂️', roles: ['Freestyle (Olympic)', 'Traditional Kushti (Akhada)', 'Greco-Roman'] },
+  { id: 'swimming', name: 'Swimming', icon: '🏊', roles: ['Freestyle Sprint', 'Butterfly', 'Breaststroke', 'Individual Medley'] },
+  { id: 'boxing', name: 'Boxing', icon: '🥊', roles: ['Orthodox Fighter', 'Southpaw Fighter', 'Counter Puncher'] },
+]
+
+const GAMES_LIST = [
+  { id: 'chess', name: 'Chess (Mind Sport)', icon: '♟️', roles: ['Club Competitor (<1400)', 'Intermediate (1400-1800)', 'Candidate Master (1800-2200)', 'Titled Master (2200+)'] },
+  { id: 'carrom', name: 'Carrom (Board Sport)', icon: '🎯', roles: ['White Slam Specialist', 'Pocketing Strategist', 'Board Defensive Striker'] },
+  { id: 'bgmi', name: 'BGMI / PUBG Mobile', icon: '🎮', roles: ['IGL (In-Game Leader)', 'Assaulter / Entry Fragger', 'Sniper / Long Range', 'Support & Utility'] },
+  { id: 'freefire', name: 'Free Fire MAX', icon: '🔥', roles: ['Assaulter / Rusher', 'Sniper Specialist', 'Flanker', 'IGL Leader'] },
+  { id: 'valorant', name: 'Valorant (Tactical FPS)', icon: '🎯', roles: ['Duelist / Entry', 'Initiator / Recon', 'Controller / Smokes', 'Sentinel / Anchor'] },
+  { id: 'cs2', name: 'Counter-Strike 2 (CS2)', icon: '💥', roles: ['Entry Rifler', 'AWP Sniper', 'Lurker', 'Support Flash'] },
+  { id: 'fifa', name: 'EA Sports FC / FIFA', icon: '⚽', roles: ['Ultimate Team Competitive', 'Pro Clubs Player', 'Career Champion'] },
+  { id: 'dota2', name: 'DOTA 2 / MOBA', icon: '⚔️', roles: ['Carry / Position 1', 'Mid Laner / Position 2', 'Offlaner / Position 3', 'Support / Position 4-5'] },
+]
+
 export default function Register({ defaultTab }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -36,12 +63,17 @@ export default function Register({ defaultTab }) {
   // 3. Business type selection (when Business tab active)
   const [selectedBusinessRoleId, setSelectedBusinessRoleId] = useState('ground')
 
-  // 4. Player stats state
+  // 4. Player category & sport selection state (differentiate Sports vs Games!)
+  const [activityCategory, setActivityCategory] = useState('sports') // 'sports' | 'games'
+  const [selectedSportId, setSelectedSportId] = useState('cricket')
   const [playerRole, setPlayerRole] = useState('All-rounder')
   const [battingStance, setBattingStance] = useState('Right Hand Bat')
   const [bowlingAction, setBowlingAction] = useState('Right-arm Fast')
   const [competitionLevel, setCompetitionLevel] = useState('National Level')
-  const [sportName, _setSportName] = useState('Cricket')
+
+  // Minimization toggles for preview card view
+  const [isPlayerStatsMinimized, setIsPlayerStatsMinimized] = useState(true)
+  const [isBusinessStatsMinimized, setIsBusinessStatsMinimized] = useState(true)
 
   // 5. Business stats state (dynamic according to selected business type)
   const [businessName, setBusinessName] = useState('Marina International Stadium')
@@ -64,6 +96,29 @@ export default function Register({ defaultTab }) {
   const [showOtpDialog, setShowOtpDialog] = useState(false)
   const [otpTargetType, setOtpTargetType] = useState('mobile') // 'mobile' | 'email'
   const [inputOtp, setInputOtp] = useState('')
+
+  // Active sport or game object
+  const currentSportItem = useMemo(() => {
+    const list = activityCategory === 'sports' ? SPORTS_LIST : GAMES_LIST
+    return list.find((s) => s.id === selectedSportId) || list[0]
+  }, [activityCategory, selectedSportId])
+
+  // Handle differentiator tab switch between sports and games
+  function handleActivityCategoryChange(cat) {
+    setActivityCategory(cat)
+    const nextList = cat === 'sports' ? SPORTS_LIST : GAMES_LIST
+    const firstItem = nextList[0]
+    setSelectedSportId(firstItem.id)
+    setPlayerRole(firstItem.roles[0])
+  }
+
+  // Handle specific sport / game selection
+  function handleSportSelect(sportId) {
+    setSelectedSportId(sportId)
+    const list = activityCategory === 'sports' ? SPORTS_LIST : GAMES_LIST
+    const item = list.find((s) => s.id === sportId) || list[0]
+    setPlayerRole(item.roles[0])
+  }
 
   // Country code national digit limits
   const maxPhoneDigits = useMemo(() => {
@@ -142,7 +197,9 @@ export default function Register({ defaultTab }) {
         battingStyle: battingStance,
         bowlingStyle: bowlingAction,
         competitionLevel,
-        sport: sportName,
+        sport: currentSportItem.name,
+        sportId: currentSportItem.id,
+        activityCategory,
         stage: 'Active Competitive Athlete',
       }
     }
@@ -223,7 +280,8 @@ export default function Register({ defaultTab }) {
       phoneCode,
       phone: cleanPhone || '9876543210',
       email: cleanEmail || `${handleName.toLowerCase().replace(/\s+/g, '')}@scoringheroes.com`,
-      sportName,
+      sportId: currentSportItem.id,
+      sportName: currentSportItem.name,
       competitionLevel,
       roleDetails: finalRoleDetails,
       verified: true,
@@ -364,109 +422,228 @@ export default function Register({ defaultTab }) {
                 </div>
               </div>
 
-              {/* PHASE 2A: IF PLAYER SELECTED -> OPEN PLAYER STATS */}
+              {/* PHASE 2A: IF PLAYER SELECTED -> EITHER SMALL PREVIEW CARD OR EXPANDED SELECTOR */}
               {accountType === 'player' && (
-                <div className="sh-white-stats-box">
-                  <div className="sh-white-stats-header">
-                    <div className="sh-white-stats-title">
-                      <span className="sh-white-questions-dot" />
-                      <span>Player Playstyle & Career Stats</span>
+                <>
+                  {isPlayerStatsMinimized ? (
+                    /* SMALL PREVIEW CARD (MINIMIZED VIEW) */
+                    <div className="sh-small-preview-card">
+                      <div className="sh-preview-card-left">
+                        <div className="sh-preview-icon-wrap">{currentSportItem.icon}</div>
+                        <div className="sh-preview-text-block">
+                          <div className="sh-preview-main-row">
+                            <span className="sh-preview-sport-name">{currentSportItem.name}</span>
+                            <span className="sh-preview-role-tag">{playerRole}</span>
+                          </div>
+                          <span className="sh-preview-subtext">
+                            {selectedSportId === 'cricket'
+                              ? `${battingStance} · ${bowlingAction} · ${competitionLevel}`
+                              : `${activityCategory === 'sports' ? 'Athletic Sport' : 'Mind & eSport'} · ${competitionLevel}`}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="sh-preview-change-btn"
+                        onClick={() => setIsPlayerStatsMinimized(false)}
+                      >
+                        Change
+                      </button>
                     </div>
-                    <span className="sh-white-hint">Cricket OS</span>
-                  </div>
+                  ) : (
+                    /* EXPANDED SELECTOR: DIFFERENTIATE SPORTS VS GAMES & SELECT */
+                    <div className="sh-white-stats-box" style={{ animation: 'shWhiteFadeIn 0.2s ease-out', marginBottom: 14 }}>
+                      <div className="sh-white-stats-header">
+                        <div className="sh-white-stats-title">
+                          <span className="sh-white-questions-dot" />
+                          <span>Choose Sport or Game</span>
+                        </div>
+                        <span className="sh-white-hint">{activityCategory === 'sports' ? 'Physical Sports' : 'Games & eSports'}</span>
+                      </div>
 
-                  {/* Cricket Playing Role */}
-                  <div className="sh-white-group">
-                    <label className="sh-white-label">
-                      <span>Cricket Playing Role</span>
-                      <span className="sh-white-hint">{playerRole}</span>
-                    </label>
-                    <select
-                      className="sh-white-select"
-                      value={playerRole}
-                      onChange={(e) => setPlayerRole(e.target.value)}
-                    >
-                      <option value="All-rounder">All-rounder</option>
-                      <option value="Batsman">Batsman</option>
-                      <option value="Bowler">Bowler</option>
-                      <option value="Wicketkeeper">Wicketkeeper</option>
-                    </select>
-                  </div>
-
-                  {/* Batting Stance */}
-                  <div className="sh-white-group">
-                    <label className="sh-white-label">
-                      <span>Batting Stance</span>
-                      <span className="sh-white-hint">{battingStance}</span>
-                    </label>
-                    <div className="sh-white-option-pills">
-                      {['Right Hand Bat', 'Left Hand Bat'].map((stance) => (
+                      {/* 1. DIFFERENTIATE: SPORTS VS GAMES TABS */}
+                      <div className="sh-differentiator-tabs">
                         <button
-                          key={stance}
                           type="button"
-                          className={`sh-white-option-pill ${battingStance === stance ? 'is-active' : ''}`}
-                          onClick={() => setBattingStance(stance)}
+                          className={`sh-differentiator-tab ${activityCategory === 'sports' ? 'is-active' : ''}`}
+                          onClick={() => handleActivityCategoryChange('sports')}
                         >
-                          {battingStance === stance && <Check size={12} strokeWidth={3} />}
-                          <span>{stance}</span>
+                          <span>🏃 Physical Sports</span>
                         </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Bowling Action */}
-                  <div className="sh-white-group">
-                    <label className="sh-white-label">
-                      <span>Bowling Action</span>
-                      <span className="sh-white-hint">{bowlingAction}</span>
-                    </label>
-                    <select
-                      className="sh-white-select"
-                      value={bowlingAction}
-                      onChange={(e) => setBowlingAction(e.target.value)}
-                    >
-                      <option value="Right-arm Fast">Right-arm Fast (Express Seam)</option>
-                      <option value="Left-arm Fast">Left-arm Fast (Swing)</option>
-                      <option value="Right-arm Offspin">Right-arm Offspin</option>
-                      <option value="Left-arm Orthodox">Left-arm Orthodox Spin</option>
-                      <option value="Legbreak Googly">Legbreak / Googly</option>
-                      <option value="None">None (Pure Batsman / Wicketkeeper)</option>
-                    </select>
-                  </div>
-
-                  {/* Competition Level */}
-                  <div className="sh-white-group">
-                    <label className="sh-white-label">
-                      <span>Competition Level</span>
-                      <span className="sh-white-hint">{competitionLevel}</span>
-                    </label>
-                    <div className="sh-white-option-pills">
-                      {['District / State', 'National Level', 'International Level'].map((level) => (
                         <button
-                          key={level}
                           type="button"
-                          className={`sh-white-option-pill ${competitionLevel === level ? 'is-active' : ''}`}
-                          onClick={() => setCompetitionLevel(level)}
+                          className={`sh-differentiator-tab ${activityCategory === 'games' ? 'is-active' : ''}`}
+                          onClick={() => handleActivityCategoryChange('games')}
                         >
-                          {competitionLevel === level && <Check size={12} strokeWidth={3} />}
-                          <span>{level}</span>
+                          <span>🎮 Games & Mind Sports</span>
                         </button>
-                      ))}
+                      </div>
+
+                      {/* 2. SPECIFIC SPORT / GAME SELECTOR */}
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">
+                          <span>{activityCategory === 'sports' ? 'Select Sport' : 'Select Game'}</span>
+                          <span className="sh-white-hint">{currentSportItem.name}</span>
+                        </label>
+                        <select
+                          className="sh-white-select"
+                          value={selectedSportId}
+                          onChange={(e) => handleSportSelect(e.target.value)}
+                        >
+                          {(activityCategory === 'sports' ? SPORTS_LIST : GAMES_LIST).map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.icon} {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* 3. DYNAMIC PLAYING ROLE FOR CHOSEN SPORT */}
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">
+                          <span>Playing Role / Specialization</span>
+                          <span className="sh-white-hint">{playerRole}</span>
+                        </label>
+                        <select
+                          className="sh-white-select"
+                          value={playerRole}
+                          onChange={(e) => setPlayerRole(e.target.value)}
+                        >
+                          {currentSportItem.roles.map((r) => (
+                            <option key={r} value={r}>
+                              {r}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* 4. CRICKET SPECIFIC STANCE & BOWLING ACTION */}
+                      {selectedSportId === 'cricket' && (
+                        <>
+                          <div className="sh-white-group">
+                            <label className="sh-white-label">
+                              <span>Batting Stance</span>
+                              <span className="sh-white-hint">{battingStance}</span>
+                            </label>
+                            <div className="sh-white-option-pills">
+                              {['Right Hand Bat', 'Left Hand Bat'].map((stance) => (
+                                <button
+                                  key={stance}
+                                  type="button"
+                                  className={`sh-white-option-pill ${battingStance === stance ? 'is-active' : ''}`}
+                                  onClick={() => setBattingStance(stance)}
+                                >
+                                  {battingStance === stance && <Check size={12} strokeWidth={3} />}
+                                  <span>{stance}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="sh-white-group">
+                            <label className="sh-white-label">
+                              <span>Bowling Action</span>
+                              <span className="sh-white-hint">{bowlingAction}</span>
+                            </label>
+                            <select
+                              className="sh-white-select"
+                              value={bowlingAction}
+                              onChange={(e) => setBowlingAction(e.target.value)}
+                            >
+                              <option value="Right-arm Fast">Right-arm Fast (Express Seam)</option>
+                              <option value="Left-arm Fast">Left-arm Fast (Swing)</option>
+                              <option value="Right-arm Offspin">Right-arm Offspin</option>
+                              <option value="Left-arm Orthodox">Left-arm Orthodox Spin</option>
+                              <option value="Legbreak Googly">Legbreak / Googly</option>
+                              <option value="None">None (Pure Batsman / Wicketkeeper)</option>
+                            </select>
+                          </div>
+                        </>
+                      )}
+
+                      {/* 5. COMPETITION LEVEL */}
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">
+                          <span>Competition Level</span>
+                          <span className="sh-white-hint">{competitionLevel}</span>
+                        </label>
+                        <div className="sh-white-option-pills">
+                          {['District / State', 'National Level', 'International Level'].map((level) => (
+                            <button
+                              key={level}
+                              type="button"
+                              className={`sh-white-option-pill ${competitionLevel === level ? 'is-active' : ''}`}
+                              onClick={() => setCompetitionLevel(level)}
+                            >
+                              {competitionLevel === level && <Check size={12} strokeWidth={3} />}
+                              <span>{level}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* MINIMIZE BUTTON */}
+                      <button
+                        type="button"
+                        className="sh-minimize-btn"
+                        onClick={() => setIsPlayerStatsMinimized(true)}
+                      >
+                        <Check size={16} strokeWidth={2.5} />
+                        <span>Save & Minimize Selection</span>
+                      </button>
                     </div>
-                  </div>
-                </div>
+                  )}
+                </>
               )}
 
-              {/* PHASE 2B: IF BUSINESS SELECTED -> DROPDOWN FOR BUSINESS TYPE THEN STATS ACCORDING TO TYPE */}
+              {/* PHASE 2B: IF BUSINESS SELECTED -> EITHER SMALL PREVIEW CARD OR EXPANDED SELECTOR */}
               {accountType === 'business' && (
-                <div className="sh-white-stats-box">
-                  <div className="sh-white-stats-header">
-                    <div className="sh-white-stats-title">
-                      <span className="sh-white-questions-dot" />
-                      <span>Business Type & Profile Stats</span>
+                <>
+                  {isBusinessStatsMinimized ? (
+                    /* SMALL PREVIEW CARD (MINIMIZED VIEW) */
+                    <div className="sh-small-preview-card">
+                      <div className="sh-preview-card-left">
+                        <div className="sh-preview-icon-wrap">
+                          {selectedBusinessRoleId === 'ground'
+                            ? '🏟️'
+                            : selectedBusinessRoleId === 'academy'
+                            ? '🏫'
+                            : selectedBusinessRoleId === 'seller'
+                            ? '🛍️'
+                            : selectedBusinessRoleId === 'coach'
+                            ? '📋'
+                            : selectedBusinessRoleId === 'streamer'
+                            ? '🎥'
+                            : '💼'}
+                        </div>
+                        <div className="sh-preview-text-block">
+                          <div className="sh-preview-main-row">
+                            <span className="sh-preview-sport-name">{activeBusinessRole.name}</span>
+                            <span className="sh-preview-role-tag">{businessCity || 'Chennai'}</span>
+                          </div>
+                          <span className="sh-preview-subtext">
+                            {businessName} · {businessCustomField}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="sh-preview-change-btn"
+                        onClick={() => setIsBusinessStatsMinimized(false)}
+                      >
+                        Change
+                      </button>
                     </div>
-                    <span className="sh-white-hint">{activeBusinessRole.name}</span>
-                  </div>
+                  ) : (
+                    /* EXPANDED BUSINESS SELECTOR */
+                    <div className="sh-white-stats-box" style={{ animation: 'shWhiteFadeIn 0.2s ease-out', marginBottom: 14 }}>
+                      <div className="sh-white-stats-header">
+                        <div className="sh-white-stats-title">
+                          <span className="sh-white-questions-dot" />
+                          <span>Business Type & Profile Stats</span>
+                        </div>
+                        <span className="sh-white-hint">{activeBusinessRole.name}</span>
+                      </div>
 
                   {/* Dropdown to select Business Type */}
                   <div className="sh-white-group">
@@ -715,10 +892,22 @@ export default function Register({ defaultTab }) {
                       required
                     />
                   </div>
+
+                  {/* MINIMIZE BUTTON */}
+                  <button
+                    type="button"
+                    className="sh-minimize-btn"
+                    onClick={() => setIsBusinessStatsMinimized(true)}
+                  >
+                    <Check size={16} strokeWidth={2.5} />
+                    <span>Save & Minimize Selection</span>
+                  </button>
                 </div>
               )}
             </>
           )}
+        </>
+      )}
 
           {/* ============================================================== */}
           {/* PHASE 3: MODERN INPUT FIELDS & ACTION BUTTONS                  */}
