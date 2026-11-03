@@ -398,37 +398,11 @@ export default function Register({ defaultTab }) {
           {/* ============================================================== */}
           {activeTab === 'register' && (
             <>
-              {/* PHASE 1: TWO SIMPLE TABS FOR PLAYER VS BUSINESS */}
-              <div style={{ marginBottom: 2 }}>
-                <label className="sh-white-label" style={{ marginBottom: 6 }}>
-                  <span>Select Registration Type</span>
-                  <span className="sh-white-hint">Player or Business</span>
-                </label>
-                <div className="sh-white-role-tabs">
-                  <button
-                    type="button"
-                    className={`sh-white-role-tab ${accountType === 'player' ? 'is-active' : ''}`}
-                    onClick={() => setAccountType('player')}
-                  >
-                    <User size={16} color={accountType === 'player' ? '#e10613' : '#64748b'} />
-                    <span>Player</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`sh-white-role-tab ${accountType === 'business' ? 'is-active' : ''}`}
-                    onClick={() => setAccountType('business')}
-                  >
-                    <Building size={16} color={accountType === 'business' ? '#e10613' : '#64748b'} />
-                    <span>Business</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* PHASE 2A: IF PLAYER SELECTED -> EITHER SMALL PREVIEW CARD OR EXPANDED SELECTOR */}
+              {/* ACCOUNT SELECTION: MINIMIZED PREVIEW OR EXPANDED TWO-OPTION SELECTOR */}
               {accountType === 'player' && (
                 <>
                   {isPlayerStatsMinimized ? (
-                    /* SMALL PREVIEW CARD (MINIMIZED VIEW) */
+                    /* SMALL PREVIEW CARD (MINIMIZED VIEW - BUSINESS REMOVED) */
                     <div className="sh-small-preview-card">
                       <div className="sh-preview-card-left">
                         <div className="sh-preview-icon-wrap">{currentSportItem.icon}</div>
@@ -453,14 +427,46 @@ export default function Register({ defaultTab }) {
                       </button>
                     </div>
                   ) : (
-                    /* EXPANDED SELECTOR: DIFFERENTIATE SPORTS VS GAMES & SELECT */
+                    /* EXPANDED SELECTOR: GIVES TWO OPTIONS (PLAYER VS BUSINESS) & SELECTION */
                     <div className="sh-white-stats-box" style={{ animation: 'shWhiteFadeIn 0.2s ease-out', marginBottom: 14 }}>
                       <div className="sh-white-stats-header">
                         <div className="sh-white-stats-title">
                           <span className="sh-white-questions-dot" />
-                          <span>Choose Sport or Game</span>
+                          <span>Player Profile & Sport</span>
                         </div>
                         <span className="sh-white-hint">{activityCategory === 'sports' ? 'Physical Sports' : 'Indoor & Board Games'}</span>
+                      </div>
+
+                      {/* TWO OPTIONS: PLAYER VS BUSINESS */}
+                      <div style={{ marginBottom: 6 }}>
+                        <label className="sh-white-label" style={{ marginBottom: 6 }}>
+                          <span>Registration Type</span>
+                          <span className="sh-white-hint">Athlete or Organization</span>
+                        </label>
+                        <div className="sh-white-role-tabs">
+                          <button
+                            type="button"
+                            className={`sh-white-role-tab ${accountType === 'player' ? 'is-active' : ''}`}
+                            onClick={() => {
+                              setAccountType('player')
+                              setIsPlayerStatsMinimized(false)
+                            }}
+                          >
+                            <User size={16} color={accountType === 'player' ? '#e10613' : '#64748b'} />
+                            <span>Player</span>
+                          </button>
+                          <button
+                            type="button"
+                            className={`sh-white-role-tab ${accountType === 'business' ? 'is-active' : ''}`}
+                            onClick={() => {
+                              setAccountType('business')
+                              setIsBusinessStatsMinimized(false)
+                            }}
+                          >
+                            <Building size={16} color={accountType === 'business' ? '#e10613' : '#64748b'} />
+                            <span>Business</span>
+                          </button>
+                        </div>
                       </div>
 
                       {/* 1. DIFFERENTIATE: SPORTS VS GAMES TABS */}
@@ -584,14 +590,14 @@ export default function Register({ defaultTab }) {
                         </div>
                       </div>
 
-                      {/* MINIMIZE BUTTON */}
+                      {/* SAVE BUTTON */}
                       <button
                         type="button"
                         className="sh-minimize-btn"
                         onClick={() => setIsPlayerStatsMinimized(true)}
                       >
                         <Check size={16} strokeWidth={2.5} />
-                        <span>Save & Minimize Selection</span>
+                        <span>Save</span>
                       </button>
                     </div>
                   )}
@@ -637,7 +643,7 @@ export default function Register({ defaultTab }) {
                       </button>
                     </div>
                   ) : (
-                    /* EXPANDED BUSINESS SELECTOR */
+                    /* EXPANDED BUSINESS SELECTOR: GIVES TWO OPTIONS (PLAYER VS BUSINESS) & SELECTION */
                     <div className="sh-white-stats-box" style={{ animation: 'shWhiteFadeIn 0.2s ease-out', marginBottom: 14 }}>
                       <div className="sh-white-stats-header">
                         <div className="sh-white-stats-title">
@@ -645,6 +651,38 @@ export default function Register({ defaultTab }) {
                           <span>Business Type & Profile Stats</span>
                         </div>
                         <span className="sh-white-hint">{activeBusinessRole.name}</span>
+                      </div>
+
+                      {/* TWO OPTIONS: PLAYER VS BUSINESS */}
+                      <div style={{ marginBottom: 6 }}>
+                        <label className="sh-white-label" style={{ marginBottom: 6 }}>
+                          <span>Registration Type</span>
+                          <span className="sh-white-hint">Athlete or Organization</span>
+                        </label>
+                        <div className="sh-white-role-tabs">
+                          <button
+                            type="button"
+                            className={`sh-white-role-tab ${accountType === 'player' ? 'is-active' : ''}`}
+                            onClick={() => {
+                              setAccountType('player')
+                              setIsPlayerStatsMinimized(false)
+                            }}
+                          >
+                            <User size={16} color={accountType === 'player' ? '#e10613' : '#64748b'} />
+                            <span>Player</span>
+                          </button>
+                          <button
+                            type="button"
+                            className={`sh-white-role-tab ${accountType === 'business' ? 'is-active' : ''}`}
+                            onClick={() => {
+                              setAccountType('business')
+                              setIsBusinessStatsMinimized(false)
+                            }}
+                          >
+                            <Building size={16} color={accountType === 'business' ? '#e10613' : '#64748b'} />
+                            <span>Business</span>
+                          </button>
+                        </div>
                       </div>
 
                   {/* Dropdown to select Business Type */}
@@ -895,14 +933,14 @@ export default function Register({ defaultTab }) {
                     />
                   </div>
 
-                  {/* MINIMIZE BUTTON */}
+                  {/* SAVE BUTTON */}
                   <button
                     type="button"
                     className="sh-minimize-btn"
                     onClick={() => setIsBusinessStatsMinimized(true)}
                   >
                     <Check size={16} strokeWidth={2.5} />
-                    <span>Save & Minimize Selection</span>
+                    <span>Save</span>
                   </button>
                 </div>
               )}
@@ -997,13 +1035,7 @@ export default function Register({ defaultTab }) {
 
             {/* PRIMARY ACTION BUTTON: Send OTP */}
             <button type="submit" className="sh-modern-primary-btn">
-              {activeTab === 'login'
-                ? authMethod === 'mobile'
-                  ? 'Send OTP'
-                  : 'Send Email OTP'
-                : authMethod === 'mobile'
-                ? 'Send OTP & Sign Up'
-                : 'Send Email OTP & Sign Up'}
+              Send OTP
             </button>
 
             {/* TRUST SHIELD BADGE */}
@@ -1060,20 +1092,22 @@ export default function Register({ defaultTab }) {
               )}
             </div>
 
-            {/* GUEST BUTTON (NO EXTRA INFORMATION PER USER REQUEST - JUST GUEST BUTTON) */}
-            <button
-              type="button"
-              className="sh-modern-guest-btn"
-              onClick={() => {
-                loginAsGuest('player')
-                navigate('/app', { replace: true })
-              }}
-            >
-              <div className="sh-modern-guest-icon">
-                <Compass size={18} color="#ea580c" />
-              </div>
-              <span className="sh-modern-guest-text">Continue with Guest Account</span>
-            </button>
+            {/* GUEST BUTTON: ONLY IN LOGIN / SIGN IN (REMOVED FROM REGISTRATION PER USER REQUEST) */}
+            {activeTab === 'login' && (
+              <button
+                type="button"
+                className="sh-modern-guest-btn"
+                onClick={() => {
+                  loginAsGuest('player')
+                  navigate('/app', { replace: true })
+                }}
+              >
+                <div className="sh-modern-guest-icon">
+                  <Compass size={18} color="#ea580c" />
+                </div>
+                <span className="sh-modern-guest-text">Continue with Guest Account</span>
+              </button>
+            )}
 
             {/* FOOTER NOTE */}
             <p className="sh-modern-footer-note">
