@@ -1,34 +1,19 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
-  Search,
-  Check,
-  ShieldCheck,
-  Zap,
   User,
   Building,
-  KeyRound,
-  Lock,
-  ArrowRight,
-  Sparkles,
-  Globe,
-  MapPin,
-  Calendar,
-  Mail,
+  Check,
   Eye,
   EyeOff,
   AlertCircle,
-  RotateCcw,
+  Mail,
+  Zap,
+  Globe,
+  Sparkles,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { OFFICIAL_BUSINESS_ROLES } from '../data/rolesData'
-import {
-  ALL_SPORTS,
-  INDIAN_PRIORITY_SPORTS,
-  INTERNATIONAL_SPORTS,
-  NATIONALITIES,
-  getSportQuestions,
-} from '../data/sportsCatalog'
+import { OFFICIAL_BUSINESS_ROLES, getRoleById } from '../data/rolesData'
 import CountryCodePicker from '../components/CountryCodePicker'
 import { getMaxPhoneDigits, getPhonePlaceholder } from '../data/countries'
 import '../AuthWhiteTheme.css'
@@ -36,22 +21,33 @@ import '../AuthWhiteTheme.css'
 export default function Register() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const {
-    draft,
-    updateDraft,
-    loginWithIdentifier,
-    loginAsGuest,
-    completeSignup,
-    savePendingOnboarding,
-    getPendingOnboarding,
-  } = useAuth()
+  const { draft, completeSignup, loginWithIdentifier } = useAuth()
 
-  // Two primary tabs: 'login' | 'register'
-  const initialTab = searchParams.get('mode') === 'login' ? 'login' : 'register'
-  const [activeTab, setActiveTab] = useState(initialTab)
+  // 1. Two primary modes: 'register' vs 'login'
+  const initialMode = searchParams.get('mode') === 'login' ? 'login' : 'register'
+  const [activeTab, setActiveTab] = useState(initialMode) // 'register' | 'login'
 
-  // Auth method: 'mobile' | 'email'
-  const [authMethod, setAuthMethod] = useState('mobile') // 'mobile' | 'email'
+  // 2. Role selection: 'player' vs 'business' (Two simple tabs)
+  const [accountType, setAccountType] = useState('player') // 'player' | 'business'
+
+  // 3. Business type selection (when Business tab active)
+  const [selectedBusinessRoleId, setSelectedBusinessRoleId] = useState('ground')
+
+  // 4. Player stats state
+  const [playerRole, setPlayerRole] = useState('All-rounder')
+  const [battingStance, setBattingStance] = useState('Right Hand Bat')
+  const [bowlingAction, setBowlingAction] = useState('Right-arm Fast')
+  const [competitionLevel, setCompetitionLevel] = useState('National Level')
+  const [sportName, _setSportName] = useState('Cricket')
+
+  // 5. Business stats state (dynamic according to selected business type)
+  const [businessName, setBusinessName] = useState('Marina International Stadium')
+  const [businessCustomField, setBusinessCustomField] = useState('Natural Red Soil Turf')
+  const [businessCity, setBusinessCity] = useState('Chennai')
+  const [businessSubField, setBusinessSubField] = useState('Day/Night 800 Lux Floodlights')
+
+  // 6. Three small auth tabs: 'mobile' | 'email' | 'google'
+  const [authMethod, setAuthMethod] = useState('mobile') // 'mobile' | 'email' | 'google'
 
   // Input states
   const [phoneCode, setPhoneCode] = useState(draft.phoneCode || '+91')
@@ -59,12 +55,13 @@ export default function Register() {
   const [email, setEmail] = useState(draft.email || '')
   const [username, setUsername] = useState(draft.nickname || '')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [agreeTerms, setAgreeTerms] = useState(true)
   const [error, setError] = useState('')
-  const [resumeNotice, setResumeNotice] = useState('')
+
+  // Mobile OTP dialog state
+  const [showOtpDialog, setShowOtpDialog] = useState(false)
+  const [inputOtp, setInputOtp] = useState('')
 
   // Country code national digit limits
   const maxPhoneDigits = useMemo(() => {
@@ -89,205 +86,125 @@ export default function Register() {
     }
   }
 
-  // Verification dialog & code states
-  const [showOtpDialog, setShowOtpDialog] = useState(false)
-  const [inputOtp, setInputOtp] = useState('')
-
-  // -------------------------------------------------------------
-  // ONBOARDING WIZARD STATES (Triggered after contact verification)
-  // Step 1: Role (Player vs Official)
-  // Step 2: Sport / Business details
-  // Step 3: Aadhaar identity verification & Profile minting
-  // -------------------------------------------------------------
-  const [isOnboarding, setIsOnboarding] = useState(false)
-  const [onboardingStep, setOnboardingStep] = useState(1) // 1 | 2 | 3 | 4 (Done)
-  const [accountType, setAccountType] = useState('player') // 'player' | 'official'
-  const [selectedBusinessRoleId, setSelectedBusinessRoleId] = useState('ground')
-
-  // Player Onboarding details
-  const [sportSearch, setSportSearch] = useState('')
-  const [sportFilter, setSportFilter] = useState('all') // 'all' | 'indian' | 'international'
-  const [selectedSport, setSelectedSport] = useState({
-    id: 'cricket',
-    name: 'Cricket',
-    icon: '🏏',
-    category: 'Indian Priority',
-    tag: '#1 in India',
-  })
-  const [isSportPickerExpanded, setIsSportPickerExpanded] = useState(false)
-
-  // Sport-specific technical questions answers (e.g. Cricket: Playing Role, Batting Stance, etc.)
-  const [sportAnswers, setSportAnswers] = useState(() => {
-    const initialQuestions = getSportQuestions('cricket')
-    const initialMap = {}
-    initialQuestions.forEach((q) => {
-      initialMap[q.id] = q.default
-    })
-    return initialMap
-  })
-  const [nationality, setNationality] = useState('India')
-  const [competitionLevel, setCompetitionLevel] = useState('National Level') // 'National Level' | 'International Level'
-
-  // Look up questions for the currently selected sport
-  const currentSportQuestions = useMemo(() => {
-    return getSportQuestions(selectedSport.id)
-  }, [selectedSport.id])
-
-  // Select sport handler: minimizes the sport card immediately and updates dynamic questions
-  function handleSelectSport(sport) {
-    setSelectedSport(sport)
-    setIsSportPickerExpanded(false) // Automatically minimize selection cards!
-    const questions = getSportQuestions(sport.id)
-    const initialMap = {}
-    questions.forEach((q) => {
-      initialMap[q.id] = q.default
-    })
-    setSportAnswers(initialMap)
-  }
-
-  // Official Onboarding details
-  const [businessName, setBusinessName] = useState('Marina International Stadium')
-  const [representativeName, setRepresentativeName] = useState('Dev Anand')
-  const [businessCity, setBusinessCity] = useState('Chennai')
-  const [businessCustomField, setBusinessCustomField] = useState('Natural Red Soil Turf')
-
-  // Aadhaar flow state
-  const [aadhaarNumber, setAadhaarNumber] = useState('')
-  const [aadhaarOtp, setAadhaarOtp] = useState('')
-  const [aadhaarConsent, setAadhaarConsent] = useState(false)
-  const [aadhaarSubStep, setAadhaarSubStep] = useState('input') // 'input' | 'otp' | 'verified'
-  const [isVerifyingAadhaar, setIsVerifyingAadhaar] = useState(false)
-
-  // Filtered sports list
-  const filteredSports = useMemo(() => {
-    let list = ALL_SPORTS
-    if (sportFilter === 'indian') list = INDIAN_PRIORITY_SPORTS
-    if (sportFilter === 'international') list = INTERNATIONAL_SPORTS
-
-    if (!sportSearch.trim()) return list
-    const q = sportSearch.toLowerCase().trim()
-    return list.filter((s) => s.name.toLowerCase().includes(q) || s.category.toLowerCase().includes(q))
-  }, [sportSearch, sportFilter])
-
   // Active business role metadata
   const activeBusinessRole = useMemo(() => {
     return OFFICIAL_BUSINESS_ROLES.find((b) => b.id === selectedBusinessRoleId) || OFFICIAL_BUSINESS_ROLES[0]
   }, [selectedBusinessRoleId])
 
-  // Auto-save onboarding progress whenever states change
-  useEffect(() => {
-    if (isOnboarding) {
-      const identifier = phone.replace(/\D/g, '') || email.toLowerCase().trim()
-      if (identifier) {
-        savePendingOnboarding(identifier, {
-          onboardingStep,
-          accountType,
-          selectedBusinessRoleId,
-          selectedSport,
-          sportAnswers,
-          nationality,
-          competitionLevel,
-          phoneCode,
-          phone,
-          email,
-          username,
-          businessName,
-          representativeName,
-          businessCity,
-          businessCustomField,
-          onboardingComplete: false,
-        })
+  // Change business type and reset default field suggestions
+  function handleBusinessTypeChange(newRoleId) {
+    setSelectedBusinessRoleId(newRoleId)
+    switch (newRoleId) {
+      case 'ground':
+        setBusinessName('Marina International Stadium')
+        setBusinessCustomField('Natural Red Soil Turf')
+        setBusinessSubField('Floodlit Day/Night (800+ Lux)')
+        break
+      case 'academy':
+        setBusinessName('Marina Titans Cricket Academy')
+        setBusinessCustomField('U14, U19 & Pro Elite Batches')
+        setBusinessSubField('4 Pitches + 6 Astro Nets')
+        break
+      case 'seller':
+        setBusinessName('Titans Pro Willow & Gear Store')
+        setBusinessCustomField('English Willow Bats & Kits')
+        setBusinessSubField('Verified Factory Outlet')
+        break
+      case 'coach':
+        setBusinessName('Coach Dev Anand (BCCI L2)')
+        setBusinessCustomField('Batting Technique & Biomechanics')
+        setBusinessSubField('BCCI Level 2 Certified')
+        break
+      case 'streamer':
+        setBusinessName('ScoringCast Live Studio')
+        setBusinessCustomField('1080p 60fps Broadcast Rig')
+        setBusinessSubField('Cricket Tournament Specialist')
+        break
+      case 'sponsor':
+        setBusinessName('Zenith Energy & Hydration')
+        setBusinessCustomField('Tournament Title Sponsor')
+        setBusinessSubField('Perimeter LED & Digital Banners')
+        break
+      default:
+        setBusinessName('Sports Organization Entity')
+        setBusinessCustomField('Standard Partner')
+        setBusinessSubField('Verified Official')
+    }
+  }
+
+  // Build roleDetails payload
+  function buildRoleDetails() {
+    if (accountType === 'player') {
+      return {
+        role: playerRole,
+        battingStyle,
+        bowlingStyle: bowlingAction,
+        competitionLevel,
+        sport: sportName,
+        stage: 'Active Competitive Athlete',
       }
     }
-  }, [
-    isOnboarding,
-    onboardingStep,
-    accountType,
-    selectedBusinessRoleId,
-    selectedSport,
-    sportAnswers,
-    nationality,
-    competitionLevel,
-    phone,
-    email,
-    username,
-    businessName,
-    representativeName,
-    businessCity,
-    businessCustomField,
-  ])
+    return {
+      businessName: businessName.trim() || activeBusinessRole.name,
+      roleTitle: activeBusinessRole.name,
+      specialField: businessCustomField,
+      subField: businessSubField,
+      city: businessCity.trim() || 'Chennai',
+    }
+  }
 
-  // =============================================================
-  // 1. SIGN IN (LOGIN) HANDLER
-  // =============================================================
-  function handleLoginSubmit(e) {
-    e.preventDefault()
+  // Complete Registration or Sign In
+  function handleFormSubmit(e) {
+    if (e) e.preventDefault()
     setError('')
-    setResumeNotice('')
 
     const cleanPhone = phone.replace(/\D/g, '')
     const cleanEmail = email.trim()
-    const identifier = authMethod === 'mobile' ? cleanPhone : cleanEmail
+    const handleName = username.trim() || (accountType === 'player' ? 'Athlete_Pro' : businessName || 'Official_Partner')
 
-    if (!identifier) {
-      setError(
-        authMethod === 'mobile'
-          ? 'Please enter your registered mobile number.'
-          : 'Please enter your registered email address.'
-      )
-      return
-    }
-
-    if (authMethod === 'mobile' && cleanPhone.length !== maxPhoneDigits) {
-      setError(`Please enter a valid ${maxPhoneDigits}-digit mobile number for ${phoneCode}.`)
-      return
-    }
-
-    if (authMethod === 'email' && !password.trim()) {
-      setError('Please enter your account password.')
-      return
-    }
-
-    // Attempt login with auto-detection
-    const result = loginWithIdentifier(identifier)
-
-    // CHECK FORCED ONBOARDING:
-    // If the user left previously without finishing registration, redirect them back!
-    if (result && result.needsOnboarding) {
-      setResumeNotice('Welcome back! Resuming your incomplete registration setup where you left off.')
-      setIsOnboarding(true)
-      setOnboardingStep(result.onboardingStep || 1)
-      if (result.accountType) setAccountType(result.accountType)
-      if (result.selectedSport) setSelectedSport(result.selectedSport)
-      if (result.username) setUsername(result.username)
-      if (result.selectedBusinessRoleId) setSelectedBusinessRoleId(result.selectedBusinessRoleId)
-      return
-    }
-
-    // Normal successful login directly to user dashboard
-    navigate('/app', { replace: true })
-  }
-
-  // =============================================================
-  // 2. REGISTER: INITIAL CONTACT VERIFICATION
-  // =============================================================
-  function handleRegisterInitialSubmit(e) {
-    e.preventDefault()
-    setError('')
-    setResumeNotice('')
-
-    if (authMethod === 'mobile') {
-      const cleanPhone = phone.replace(/\D/g, '')
-      if (cleanPhone.length !== maxPhoneDigits) {
+    // --- SIGN IN MODE ---
+    if (activeTab === 'login') {
+      const identifier = authMethod === 'mobile' ? cleanPhone : cleanEmail
+      if (!identifier) {
+        setError(authMethod === 'mobile' ? 'Please enter your mobile number.' : 'Please enter your email.')
+        return
+      }
+      if (authMethod === 'mobile' && cleanPhone.length !== maxPhoneDigits) {
         setError(`Please enter a valid ${maxPhoneDigits}-digit mobile number for ${phoneCode}.`)
         return
       }
-      if (!username.trim() || username.trim().length < 2) {
-        setError('Please enter your name.')
+      if (authMethod === 'email' && !password.trim()) {
+        setError('Please enter your account password.')
         return
       }
-    } else {
-      if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+
+      loginWithIdentifier(identifier)
+      navigate('/app', { replace: true })
+      return
+    }
+
+    // --- REGISTER MODE ---
+    if (!agreeTerms) {
+      setError('Please agree to the platform terms and privacy policy to continue.')
+      return
+    }
+
+    if (authMethod === 'mobile') {
+      if (!cleanPhone || cleanPhone.length !== maxPhoneDigits) {
+        setError(`Please enter a valid ${maxPhoneDigits}-digit mobile number for ${phoneCode}.`)
+        return
+      }
+      if (!username.trim()) {
+        setError('Please enter your name or handle.')
+        return
+      }
+      // Open clean Mobile OTP dialog
+      setShowOtpDialog(true)
+      return
+    }
+
+    if (authMethod === 'email') {
+      if (!cleanEmail || !cleanEmail.includes('@')) {
         setError('Please enter a valid email address.')
         return
       }
@@ -295,196 +212,60 @@ export default function Register() {
         setError('Password must be at least 6 characters.')
         return
       }
-      if (password !== confirmPassword) {
-        setError('Passwords do not match. Please verify.')
-        return
-      }
-      if (!username.trim() || username.trim().length < 2) {
-        setError('Please enter your name.')
+      if (!username.trim()) {
+        setError('Please enter your name or handle.')
         return
       }
     }
 
-    if (!agreeTerms) {
-      setError('Please agree to the platform terms & privacy policy.')
-      return
-    }
-
-    // Open Contact OTP modal
-    setShowOtpDialog(true)
+    // Direct registration with Email or Google
+    executeSignup(cleanPhone, cleanEmail, handleName)
   }
 
-  // Confirm Contact OTP
-  function handleConfirmContactOtp(e) {
-    e.preventDefault()
+  // Finalize signup and navigate to app
+  function executeSignup(cleanPhone, cleanEmail, handleName) {
+    const targetRoleId = accountType === 'player' ? 'player' : selectedBusinessRoleId
+    const finalRoleDetails = buildRoleDetails()
+
+    completeSignup({
+      role: targetRoleId,
+      roleCategory: accountType === 'player' ? 'player' : 'official',
+      nickname: handleName,
+      fullName: handleName,
+      city: businessCity.trim() || 'Chennai',
+      phoneCode,
+      phone: cleanPhone || '9876543210',
+      email: cleanEmail || `${handleName.toLowerCase().replace(/\s+/g, '')}@scoringheroes.com`,
+      sportName,
+      competitionLevel,
+      roleDetails: finalRoleDetails,
+      verified: true,
+      onboardingComplete: true,
+    })
+
+    navigate('/app', { replace: true })
+  }
+
+  // Handle Mobile OTP verification
+  function handleVerifyOtpSubmit(e) {
+    if (e) e.preventDefault()
     if (inputOtp !== '1234' && inputOtp !== '0000') {
       setError('Invalid OTP code. Please enter demo OTP: 1234')
       return
     }
 
-    setError('')
     setShowOtpDialog(false)
     setInputOtp('')
-
-    // Lead captured! Save initial progress and enter the stepped onboarding process
-    const identifier = authMethod === 'mobile' ? phone.replace(/\D/g, '') : email.toLowerCase().trim()
-    savePendingOnboarding(identifier, {
-      phoneCode,
-      phone: phone.replace(/\D/g, ''),
-      email: email.trim(),
-      username: username.trim(),
-      onboardingStep: 1,
-      accountType: 'player',
-      onboardingComplete: false,
-    })
-
-    // Advance to Step 1 of onboarding wizard!
-    setIsOnboarding(true)
-    setOnboardingStep(1)
+    const cleanPhone = phone.replace(/\D/g, '')
+    const handleName = username.trim() || (accountType === 'player' ? 'Athlete_Pro' : businessName || 'Official_Partner')
+    executeSignup(cleanPhone, email.trim(), handleName)
   }
 
-  // Quick 1-Tap Google / Gmail Authentication
+  // 1-Tap Google Registration
   function handleGoogleAuth() {
-    setEmail('athlete.sports@gmail.com')
-    setUsername('Athlete_Pro')
-    setPhone('9876543210')
-
-    const identifier = 'athlete.sports@gmail.com'
-    const pending = getPendingOnboarding(identifier)
-
-    if (activeTab === 'login') {
-      const result = loginWithIdentifier(identifier)
-      if (result && result.needsOnboarding) {
-        setResumeNotice('Welcome back! Resuming your incomplete registration setup.')
-        setIsOnboarding(true)
-        setOnboardingStep(result.onboardingStep || 1)
-        return
-      }
-      navigate('/app', { replace: true })
-    } else {
-      // Direct registration with Google
-      setIsOnboarding(true)
-      setOnboardingStep(1)
-    }
-  }
-
-  // Quick Demo Guest Access
-  function handleGuestAccess() {
-    loginAsGuest(accountType === 'player' ? 'player' : selectedBusinessRoleId)
-    navigate('/app', { replace: true })
-  }
-
-  // =============================================================
-  // 3. ONBOARDING STEPS PROCEED / SUBMIT
-  // =============================================================
-  function handleProceedToStep2() {
-    setOnboardingStep(2)
-  }
-
-  function handleProceedToStep3() {
-    setOnboardingStep(3)
-  }
-
-  // Aadhaar UID Submission
-  function handleSendAadhaarOtp(e) {
-    e.preventDefault()
-    const cleanAadhaar = aadhaarNumber.replace(/\D/g, '')
-    if (cleanAadhaar.length !== 12) {
-      setError('Please enter a valid 12-digit Aadhaar UID number.')
-      return
-    }
-    if (!aadhaarConsent) {
-      setError('Please agree to the Aadhaar verification consent to proceed.')
-      return
-    }
-    setError('')
-    setIsVerifyingAadhaar(true)
-    setTimeout(() => {
-      setIsVerifyingAadhaar(false)
-      setAadhaarSubStep('otp')
-    }, 600)
-  }
-
-  // Aadhaar OTP & Final Completion
-  function handleConfirmAadhaarOtp(e) {
-    e.preventDefault()
-    if (aadhaarOtp.length < 4) {
-      setError('Please enter the 6-digit Aadhaar OTP (Demo: 123456).')
-      return
-    }
-
-    setError('')
-    setIsVerifyingAadhaar(true)
-
-    setTimeout(() => {
-      setIsVerifyingAadhaar(false)
-      setAadhaarSubStep('verified')
-
-      // Complete registration:
-      // Legal Name, Verified Age, and Address are fetched directly from Aadhaar!
-      // Username remains the athlete's custom selection.
-      const finalNickname = username.trim() || 'Athlete_' + Math.floor(1000 + Math.random() * 9000)
-      const primaryRole =
-        sportAnswers.playingRole ||
-        sportAnswers.position ||
-        sportAnswers.kabaddiRole ||
-        sportAnswers.discipline ||
-        sportAnswers.category ||
-        'Athlete'
-
-      completeSignup({
-        role: 'player',
-        roleCategory: 'player',
-        nickname: finalNickname,
-        fullName: username.trim() ? username.trim().replace(/_/g, ' ') : 'Verified Athlete',
-        age: '20', // Extracted from Aadhaar DOB
-        city: 'Chennai',
-        address: 'No. 42, Sports Complex Enclave, Chennai, Tamil Nadu - 600004',
-        nationality,
-        sportName: selectedSport.name,
-        sportRole: primaryRole,
-        sportAnswers,
-        competitionLevel,
-        phoneCode,
-        phone: phone.replace(/\D/g, '') || '9876543210',
-        email: email.trim(),
-        roleDetails: {
-          ...sportAnswers,
-          role: primaryRole,
-          sportName: selectedSport.name,
-          sportIcon: selectedSport.icon,
-        },
-        aadhaarVerified: true,
-        aadhaarMasked: 'XXXX-XXXX-9012',
-        verified: true,
-        trust: 98,
-        onboardingComplete: true,
-      })
-    }, 800)
-  }
-
-  // Official Final Completion
-  function handleOfficialFinalComplete(e) {
-    e.preventDefault()
-    completeSignup({
-      role: selectedBusinessRoleId,
-      roleCategory: 'official',
-      nickname: representativeName.trim() || businessName.trim(),
-      fullName: representativeName.trim(),
-      city: businessCity.trim() || 'Chennai',
-      phoneCode,
-      phone: phone.replace(/\D/g, '') || '9876543210',
-      email: email.trim(),
-      roleDetails: {
-        businessName: businessName.trim(),
-        roleTitle: activeBusinessRole.name,
-        specialField: businessCustomField,
-      },
-      verified: true,
-      trust: 96,
-      onboardingComplete: true,
-    })
-    navigate('/app', { replace: true })
+    const googleEmail = 'athlete.sports@gmail.com'
+    const handleName = username.trim() || (accountType === 'player' ? 'Athlete_Google' : businessName || 'Partner_Google')
+    executeSignup('9876543210', googleEmail, handleName)
   }
 
   return (
@@ -500,1036 +281,647 @@ export default function Register() {
 
       {/* Main Card */}
       <div className="sh-white-card">
-        {/* If Incomplete Registration Notice */}
-        {resumeNotice && (
-          <div className="sh-white-callout sh-white-callout--warning" style={{ marginBottom: 16 }}>
-            <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 1 }} />
-            <span>{resumeNotice}</span>
-          </div>
-        )}
+        {/* Top Segmented Tab: Sign In vs Register */}
+        <div className="sh-white-tab-bar">
+          <button
+            type="button"
+            className={`sh-white-tab ${activeTab === 'login' ? 'is-active' : ''}`}
+            onClick={() => {
+              setActiveTab('login')
+              setError('')
+            }}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            className={`sh-white-tab ${activeTab === 'register' ? 'is-active' : ''}`}
+            onClick={() => {
+              setActiveTab('register')
+              setError('')
+            }}
+          >
+            Register
+          </button>
+        </div>
 
-        {/* ============================================================== */}
-        {/* CASE A: ONBOARDING WIZARD WITH STEPS (After verification)       */}
-        {/* ============================================================== */}
-        {isOnboarding ? (
-          <div>
-            {/* Stepper Progress Bar */}
-            <div className="sh-white-stepper">
-              <div
-                className={`sh-white-step-node ${onboardingStep >= 1 ? 'is-active' : ''} ${
-                  onboardingStep > 1 ? 'is-completed' : ''
-                }`}
-              >
-                <div className="sh-white-step-circle">{onboardingStep > 1 ? '✓' : '1'}</div>
-                <span className="sh-white-step-label">Role</span>
-              </div>
-              <div
-                className={`sh-white-step-node ${onboardingStep >= 2 ? 'is-active' : ''} ${
-                  onboardingStep > 2 ? 'is-completed' : ''
-                }`}
-              >
-                <div className="sh-white-step-circle">{onboardingStep > 2 ? '✓' : '2'}</div>
-                <span className="sh-white-step-label">{accountType === 'player' ? 'Sport' : 'Business'}</span>
-              </div>
-              <div
-                className={`sh-white-step-node ${onboardingStep >= 3 ? 'is-active' : ''} ${
-                  aadhaarSubStep === 'verified' ? 'is-completed' : ''
-                }`}
-              >
-                <div className="sh-white-step-circle">{aadhaarSubStep === 'verified' ? '✓' : '3'}</div>
-                <span className="sh-white-step-label">Verify</span>
-              </div>
-            </div>
-
-            {/* STEP 1: CHOOSE ROLE (Directly Player vs Official) */}
-            {onboardingStep === 1 && (
-              <div className="sh-white-form">
-                <div style={{ textAlign: 'center', marginBottom: 6 }}>
-                  <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>Step 1: Select Your Role</h3>
-                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-                    Choose whether you are registering as a Player or an Official
-                  </p>
-                </div>
-
-                {/* Direct: Player vs Official */}
-                <div className="sh-white-account-type-grid" style={{ margin: '14px 0' }}>
-                  <div
-                    className={`sh-white-account-type-card ${accountType === 'player' ? 'is-active' : ''}`}
+        <form onSubmit={handleFormSubmit} className="sh-white-form">
+          {/* ============================================================== */}
+          {/* REGISTER MODE: SINGLE PAGE FLOW (ROLE -> STATS -> AUTH TABS)  */}
+          {/* ============================================================== */}
+          {activeTab === 'register' && (
+            <>
+              {/* PHASE 1: TWO SIMPLE TABS FOR PLAYER VS BUSINESS */}
+              <div style={{ marginBottom: 2 }}>
+                <label className="sh-white-label" style={{ marginBottom: 6 }}>
+                  <span>Select Registration Type</span>
+                  <span className="sh-white-hint">Player or Business</span>
+                </label>
+                <div className="sh-white-role-tabs">
+                  <button
+                    type="button"
+                    className={`sh-white-role-tab ${accountType === 'player' ? 'is-active' : ''}`}
                     onClick={() => setAccountType('player')}
                   >
-                    <div className="sh-white-account-type-title">
-                      <User size={18} color={accountType === 'player' ? '#e10613' : '#64748b'} />
-                      <span style={{ fontSize: 16 }}>Player</span>
-                    </div>
-                    <span className="sh-white-account-type-desc">
-                      Career tracking, player matchmaking, tournament registrations & live scoring.
-                    </span>
-                  </div>
-
-                  <div
-                    className={`sh-white-account-type-card ${accountType === 'official' ? 'is-active' : ''}`}
-                    onClick={() => setAccountType('official')}
+                    <User size={16} color={accountType === 'player' ? '#e10613' : '#64748b'} />
+                    <span>Player</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`sh-white-role-tab ${accountType === 'business' ? 'is-active' : ''}`}
+                    onClick={() => setAccountType('business')}
                   >
-                    <div className="sh-white-account-type-title">
-                      <Building size={18} color={accountType === 'official' ? '#e10613' : '#64748b'} />
-                      <span style={{ fontSize: 16 }}>Official</span>
-                    </div>
-                    <span className="sh-white-account-type-desc">
-                      Stadiums, Academies, Manufacturers, Coaches, Streamers & Sponsors.
-                    </span>
-                  </div>
+                    <Building size={16} color={accountType === 'business' ? '#e10613' : '#64748b'} />
+                    <span>Business</span>
+                  </button>
                 </div>
-
-                <button type="button" className="sh-white-btn-primary" onClick={handleProceedToStep2}>
-                  Proceed to Step 2 →
-                </button>
               </div>
-            )}
 
-            {/* STEP 2: SPORT / BUSINESS DETAILS */}
-            {onboardingStep === 2 && accountType === 'player' && (
-              <div className="sh-white-form">
-                <div style={{ textAlign: 'center', marginBottom: 6 }}>
-                  <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>Step 2: Sport & Your Role</h3>
-                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-                    Select your sport and customize your playstyle & role
-                  </p>
-                </div>
-
-                {/* 1. Minimized Sport Selection Card (When Collapsed) */}
-                {!isSportPickerExpanded && (
-                  <div className="sh-white-minimized-sport-card">
-                    <div className="sh-white-minimized-left">
-                      <span className="sh-white-minimized-icon">{selectedSport.icon}</span>
-                      <div className="sh-white-minimized-info">
-                        <div className="sh-white-minimized-title">
-                          <span>{selectedSport.name}</span>
-                          <span className="sh-white-check-circle" title="Sport Selected">
-                            <Check size={11} strokeWidth={3} />
-                          </span>
-                        </div>
-                        <div className="sh-white-minimized-sub">
-                          {selectedSport.category || 'Indian Priority'} {selectedSport.tag ? `• ${selectedSport.tag}` : ''}
-                        </div>
-                      </div>
+              {/* PHASE 2A: IF PLAYER SELECTED -> OPEN PLAYER STATS */}
+              {accountType === 'player' && (
+                <div className="sh-white-stats-box">
+                  <div className="sh-white-stats-header">
+                    <div className="sh-white-stats-title">
+                      <span className="sh-white-questions-dot" />
+                      <span>Player Playstyle & Career Stats</span>
                     </div>
-                    <button
-                      type="button"
-                      className="sh-white-change-sport-btn"
-                      onClick={() => setIsSportPickerExpanded(true)}
-                    >
-                      Change Sport ▾
-                    </button>
-                  </div>
-                )}
-
-                {/* 2. Expanded Sports Catalog Grid (When user clicks Change Sport) */}
-                {isSportPickerExpanded && (
-                  <div className="sh-white-expanded-sport-picker">
-                    <div className="sh-white-expanded-header">
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>
-                        Browse 45+ Sports Catalog
-                      </span>
-                      <button
-                        type="button"
-                        className="sh-white-collapse-btn"
-                        onClick={() => setIsSportPickerExpanded(false)}
-                      >
-                        Done / Minimize ▴
-                      </button>
-                    </div>
-
-                    {/* Search Input */}
-                    <div className="sh-white-search-box">
-                      <Search size={15} className="sh-white-search-icon" />
-                      <input
-                        type="text"
-                        className="sh-white-input"
-                        placeholder="Search any sport (Cricket, Kabaddi, Tennis, Football...)"
-                        value={sportSearch}
-                        onChange={(e) => setSportSearch(e.target.value)}
-                        autoFocus
-                      />
-                    </div>
-
-                    {/* Filter Pills */}
-                    <div className="sh-white-pill-row">
-                      <button
-                        type="button"
-                        className={`sh-white-pill-btn ${sportFilter === 'all' ? 'is-active' : ''}`}
-                        onClick={() => setSportFilter('all')}
-                      >
-                        All Sports ({ALL_SPORTS.length})
-                      </button>
-                      <button
-                        type="button"
-                        className={`sh-white-pill-btn ${sportFilter === 'indian' ? 'is-active' : ''}`}
-                        onClick={() => setSportFilter('indian')}
-                      >
-                        🇮🇳 Indian Priority ({INDIAN_PRIORITY_SPORTS.length})
-                      </button>
-                      <button
-                        type="button"
-                        className={`sh-white-pill-btn ${sportFilter === 'international' ? 'is-active' : ''}`}
-                        onClick={() => setSportFilter('international')}
-                      >
-                        🌍 International ({INTERNATIONAL_SPORTS.length})
-                      </button>
-                    </div>
-
-                    {/* Sports Grid */}
-                    <div className="sh-white-sports-grid">
-                      {filteredSports.map((sport) => {
-                        const isSel = selectedSport.id === sport.id
-                        return (
-                          <div
-                            key={sport.id}
-                            className={`sh-white-sport-item ${isSel ? 'is-selected' : ''}`}
-                            onClick={() => handleSelectSport(sport)}
-                          >
-                            <span className="sh-white-sport-icon">{sport.icon}</span>
-                            <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                              {sport.name}
-                            </span>
-                            {isSel && <Check size={14} color="#e10613" />}
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* 3. Sport-Specific Dynamic Questions Section */}
-                <div className="sh-white-sport-questions-section">
-                  <div className="sh-white-questions-header">
-                    <div className="sh-white-questions-title">
-                      <span className="sh-white-questions-dot"></span>
-                      <span>{selectedSport.name} · Your Play & Role</span>
-                    </div>
-                    <span className="sh-white-questions-hint">Customized for your {selectedSport.name} career</span>
+                    <span className="sh-white-hint">Cricket OS</span>
                   </div>
 
-                  <div className="sh-white-questions-list">
-                    {currentSportQuestions.map((q) => {
-                      const currentVal = sportAnswers[q.id] !== undefined ? sportAnswers[q.id] : q.default
-                      const usePills = q.options.length <= 4
-
-                      return (
-                        <div key={q.id} className="sh-white-group">
-                          <label className="sh-white-label">
-                            <span>{q.label}</span>
-                            <span className="sh-white-hint">{currentVal}</span>
-                          </label>
-
-                          {usePills ? (
-                            <div className="sh-white-option-pills">
-                              {q.options.map((opt) => {
-                                const isOptActive = currentVal === opt
-                                return (
-                                  <button
-                                    key={opt}
-                                    type="button"
-                                    className={`sh-white-option-pill ${isOptActive ? 'is-active' : ''}`}
-                                    onClick={() => {
-                                      setSportAnswers((prev) => ({
-                                        ...prev,
-                                        [q.id]: opt,
-                                      }))
-                                    }}
-                                  >
-                                    {isOptActive && <Check size={12} />}
-                                    {opt}
-                                  </button>
-                                )
-                              })}
-                            </div>
-                          ) : (
-                            <select
-                              className="sh-white-select"
-                              value={currentVal}
-                              onChange={(e) => {
-                                const val = e.target.value
-                                setSportAnswers((prev) => ({
-                                  ...prev,
-                                  [q.id]: val,
-                                }))
-                              }}
-                            >
-                              {q.options.map((opt) => (
-                                <option key={opt} value={opt}>
-                                  {opt}
-                                </option>
-                              ))}
-                            </select>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                {/* 4. Nationality & Level */}
-                <div className="sh-white-row-split">
-                  <div className="sh-white-group" style={{ flex: 1.2 }}>
-                    <label className="sh-white-label">Nationality</label>
+                  {/* Cricket Playing Role */}
+                  <div className="sh-white-group">
+                    <label className="sh-white-label">
+                      <span>Cricket Playing Role</span>
+                      <span className="sh-white-hint">{playerRole}</span>
+                    </label>
                     <select
                       className="sh-white-select"
-                      value={nationality}
-                      onChange={(e) => setNationality(e.target.value)}
+                      value={playerRole}
+                      onChange={(e) => setPlayerRole(e.target.value)}
                     >
-                      {NATIONALITIES.map((n) => (
-                        <option key={n.code} value={n.name}>
-                          {n.flag} {n.name}
+                      <option value="All-rounder">All-rounder</option>
+                      <option value="Batsman">Batsman</option>
+                      <option value="Bowler">Bowler</option>
+                      <option value="Wicketkeeper">Wicketkeeper</option>
+                    </select>
+                  </div>
+
+                  {/* Batting Stance */}
+                  <div className="sh-white-group">
+                    <label className="sh-white-label">
+                      <span>Batting Stance</span>
+                      <span className="sh-white-hint">{battingStance}</span>
+                    </label>
+                    <div className="sh-white-option-pills">
+                      {['Right Hand Bat', 'Left Hand Bat'].map((stance) => (
+                        <button
+                          key={stance}
+                          type="button"
+                          className={`sh-white-option-pill ${battingStance === stance ? 'is-active' : ''}`}
+                          onClick={() => setBattingStance(stance)}
+                        >
+                          {battingStance === stance && <Check size={12} strokeWidth={3} />}
+                          <span>{stance}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Bowling Action */}
+                  <div className="sh-white-group">
+                    <label className="sh-white-label">
+                      <span>Bowling Action</span>
+                      <span className="sh-white-hint">{bowlingAction}</span>
+                    </label>
+                    <select
+                      className="sh-white-select"
+                      value={bowlingAction}
+                      onChange={(e) => setBowlingAction(e.target.value)}
+                    >
+                      <option value="Right-arm Fast">Right-arm Fast (Express Seam)</option>
+                      <option value="Left-arm Fast">Left-arm Fast (Swing)</option>
+                      <option value="Right-arm Offspin">Right-arm Offspin</option>
+                      <option value="Left-arm Orthodox">Left-arm Orthodox Spin</option>
+                      <option value="Legbreak Googly">Legbreak / Googly</option>
+                      <option value="None">None (Pure Batsman / Wicketkeeper)</option>
+                    </select>
+                  </div>
+
+                  {/* Competition Level */}
+                  <div className="sh-white-group">
+                    <label className="sh-white-label">
+                      <span>Competition Level</span>
+                      <span className="sh-white-hint">{competitionLevel}</span>
+                    </label>
+                    <div className="sh-white-option-pills">
+                      {['District / State', 'National Level', 'International Level'].map((level) => (
+                        <button
+                          key={level}
+                          type="button"
+                          className={`sh-white-option-pill ${competitionLevel === level ? 'is-active' : ''}`}
+                          onClick={() => setCompetitionLevel(level)}
+                        >
+                          {competitionLevel === level && <Check size={12} strokeWidth={3} />}
+                          <span>{level}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PHASE 2B: IF BUSINESS SELECTED -> DROPDOWN FOR BUSINESS TYPE THEN STATS ACCORDING TO TYPE */}
+              {accountType === 'business' && (
+                <div className="sh-white-stats-box">
+                  <div className="sh-white-stats-header">
+                    <div className="sh-white-stats-title">
+                      <span className="sh-white-questions-dot" />
+                      <span>Business Type & Profile Stats</span>
+                    </div>
+                    <span className="sh-white-hint">{activeBusinessRole.name}</span>
+                  </div>
+
+                  {/* Dropdown to select Business Type */}
+                  <div className="sh-white-group">
+                    <label className="sh-white-label">
+                      <span>Select Business Type</span>
+                      <span className="sh-white-hint">Required</span>
+                    </label>
+                    <select
+                      className="sh-white-select"
+                      value={selectedBusinessRoleId}
+                      onChange={(e) => handleBusinessTypeChange(e.target.value)}
+                      style={{ fontWeight: 700, borderColor: '#e10613' }}
+                    >
+                      {OFFICIAL_BUSINESS_ROLES.map((role) => (
+                        <option key={role.id} value={role.id}>
+                          {role.icon} {role.label}
                         </option>
                       ))}
                     </select>
                   </div>
 
-                  <div className="sh-white-group" style={{ flex: 1.3 }}>
-                    <label className="sh-white-label">Competition Level</label>
-                    <div className="sh-white-level-switch">
-                      <button
-                        type="button"
-                        className={`sh-white-level-btn ${competitionLevel === 'National Level' ? 'is-active' : ''}`}
-                        onClick={() => setCompetitionLevel('National Level')}
-                      >
-                        National
-                      </button>
-                      <button
-                        type="button"
-                        className={`sh-white-level-btn ${competitionLevel === 'International Level' ? 'is-active' : ''}`}
-                        onClick={() => setCompetitionLevel('International Level')}
-                      >
-                        International
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                  {/* Dynamic Stats according to chosen business type */}
+                  {selectedBusinessRoleId === 'ground' && (
+                    <>
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">Stadium / Ground Venue Name</label>
+                        <input
+                          type="text"
+                          className="sh-white-input"
+                          placeholder="e.g. Marina International Cricket Stadium"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="sh-white-row-split">
+                        <div className="sh-white-group" style={{ flex: 1 }}>
+                          <label className="sh-white-label">Pitch Classification</label>
+                          <select
+                            className="sh-white-select"
+                            value={businessCustomField}
+                            onChange={(e) => setBusinessCustomField(e.target.value)}
+                          >
+                            <option value="Natural Red Soil Turf">Natural Red Soil Turf</option>
+                            <option value="Astro Turf Ground">Astro Turf Ground</option>
+                            <option value="Hybrid Grass Turf">Hybrid Grass Turf</option>
+                            <option value="Concrete Practice Nets">Concrete Practice Nets</option>
+                          </select>
+                        </div>
+                        <div className="sh-white-group" style={{ flex: 1 }}>
+                          <label className="sh-white-label">Floodlight Setup</label>
+                          <select
+                            className="sh-white-select"
+                            value={businessSubField}
+                            onChange={(e) => setBusinessSubField(e.target.value)}
+                          >
+                            <option value="Floodlit Day/Night (800+ Lux)">Day/Night 800+ Lux</option>
+                            <option value="Day-Only Standard">Day-Only Standard</option>
+                            <option value="Indoor Nets Only">Indoor Nets Only</option>
+                          </select>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button
-                    type="button"
-                    className="sh-white-btn-secondary"
-                    style={{ flex: 1 }}
-                    onClick={() => setOnboardingStep(1)}
-                  >
-                    ← Back
-                  </button>
-                  <button
-                    type="button"
-                    className="sh-white-btn-primary"
-                    style={{ flex: 2 }}
-                    onClick={handleProceedToStep3}
-                  >
-                    Proceed →
-                  </button>
-                </div>
-              </div>
-            )}
+                  {selectedBusinessRoleId === 'academy' && (
+                    <>
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">Academy / School Name</label>
+                        <input
+                          type="text"
+                          className="sh-white-input"
+                          placeholder="e.g. Marina Titans Sports Academy"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="sh-white-row-split">
+                        <div className="sh-white-group" style={{ flex: 1 }}>
+                          <label className="sh-white-label">Active Training Batches</label>
+                          <select
+                            className="sh-white-select"
+                            value={businessCustomField}
+                            onChange={(e) => setBusinessCustomField(e.target.value)}
+                          >
+                            <option value="U14, U19 & Pro Elite Batches">U14, U19 & Pro Batches</option>
+                            <option value="Grassroots & School Only">Grassroots & School Only</option>
+                            <option value="Elite High Performance">Elite High Performance</option>
+                          </select>
+                        </div>
+                        <div className="sh-white-group" style={{ flex: 1 }}>
+                          <label className="sh-white-label">Facilities</label>
+                          <select
+                            className="sh-white-select"
+                            value={businessSubField}
+                            onChange={(e) => setBusinessSubField(e.target.value)}
+                          >
+                            <option value="4 Pitches + 6 Astro Nets">4 Pitches + 6 Astro Nets</option>
+                            <option value="Indoor Turf Nets & Machine">Indoor Nets & Machine</option>
+                            <option value="Open Ground Turf">Open Ground Turf</option>
+                          </select>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
-            {/* STEP 2: OFFICIAL DETAILS */}
-            {onboardingStep === 2 && accountType === 'official' && (
-              <form onSubmit={handleOfficialFinalComplete} className="sh-white-form">
-                <div style={{ textAlign: 'center', marginBottom: 6 }}>
-                  <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>Step 2: Business Portal Details</h3>
-                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-                    Select your official business category & venue details
-                  </p>
-                </div>
+                  {selectedBusinessRoleId === 'seller' && (
+                    <>
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">Storefront / Brand Name</label>
+                        <input
+                          type="text"
+                          className="sh-white-input"
+                          placeholder="e.g. Titans Pro Willow & Sports Gear"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">Product Specialization</label>
+                        <select
+                          className="sh-white-select"
+                          value={businessCustomField}
+                          onChange={(e) => setBusinessCustomField(e.target.value)}
+                        >
+                          <option value="English Willow Bats & Kits">English Willow Bats & Kits</option>
+                          <option value="Turf Spike Shoes & Apparel">Turf Spike Shoes & Apparel</option>
+                          <option value="Helmets, Pads & Protective Gear">Helmets, Pads & Protective</option>
+                          <option value="Cricket Leather Balls & Accessories">Leather Balls & Accessories</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
 
-                {/* Dropdown with the exact 6 businesses */}
-                <div className="sh-white-group">
-                  <label className="sh-white-label">Official / Business Category</label>
-                  <select
-                    className="sh-white-select"
-                    value={selectedBusinessRoleId}
-                    onChange={(e) => setSelectedBusinessRoleId(e.target.value)}
-                  >
-                    {OFFICIAL_BUSINESS_ROLES.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                  {selectedBusinessRoleId === 'coach' && (
+                    <>
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">Coach Full Name & Title</label>
+                        <input
+                          type="text"
+                          className="sh-white-input"
+                          placeholder="e.g. Coach Dev Anand"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="sh-white-row-split">
+                        <div className="sh-white-group" style={{ flex: 1 }}>
+                          <label className="sh-white-label">Primary Specialization</label>
+                          <select
+                            className="sh-white-select"
+                            value={businessCustomField}
+                            onChange={(e) => setBusinessCustomField(e.target.value)}
+                          >
+                            <option value="Batting Technique & Biomechanics">Batting Technique</option>
+                            <option value="Fast Bowling & Seam Release">Fast Bowling & Seam</option>
+                            <option value="Spin Bowling & Tactical IQ">Spin Bowling & IQ</option>
+                            <option value="Fielding & Physical Fitness">Fielding & Fitness</option>
+                          </select>
+                        </div>
+                        <div className="sh-white-group" style={{ flex: 1 }}>
+                          <label className="sh-white-label">License Certification</label>
+                          <select
+                            className="sh-white-select"
+                            value={businessSubField}
+                            onChange={(e) => setBusinessSubField(e.target.value)}
+                          >
+                            <option value="BCCI Level 2 Certified">BCCI Level 2 Certified</option>
+                            <option value="BCCI Level 1 Certified">BCCI Level 1 Certified</option>
+                            <option value="NIS National Diploma">NIS National Diploma</option>
+                            <option value="State Board Certified">State Board Certified</option>
+                          </select>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
-                {/* Role Briefing Box */}
-                <div className="sh-white-biz-brief-box">
-                  <div className="sh-white-biz-brief-title">
-                    <span>{activeBusinessRole.icon}</span>
-                    <span>{activeBusinessRole.name}</span>
-                  </div>
-                  <span className="sh-white-biz-brief-desc">{activeBusinessRole.subtitle}</span>
-                </div>
+                  {selectedBusinessRoleId === 'streamer' && (
+                    <>
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">Broadcast Channel / Studio Name</label>
+                        <input
+                          type="text"
+                          className="sh-white-input"
+                          placeholder="e.g. ScoringCast Live Studio"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">Stream Camera Setup</label>
+                        <select
+                          className="sh-white-select"
+                          value={businessCustomField}
+                          onChange={(e) => setBusinessCustomField(e.target.value)}
+                        >
+                          <option value="1080p 60fps Multi-Cam Rig">1080p 60fps Multi-Cam Rig</option>
+                          <option value="4K Optical Drone & Boundary Feed">4K Drone & Boundary Feed</option>
+                          <option value="Mobile Live Broadcast Studio">Mobile Live Studio</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
 
-                <div className="sh-white-group">
-                  <label className="sh-white-label">Entity / Business / Stadium Name</label>
-                  <input
-                    type="text"
-                    className="sh-white-input"
-                    required
-                    value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                  />
-                </div>
+                  {selectedBusinessRoleId === 'sponsor' && (
+                    <>
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">Brand / Corporate Entity Name</label>
+                        <input
+                          type="text"
+                          className="sh-white-input"
+                          placeholder="e.g. Zenith Energy & Hydration"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">Sponsorship Category</label>
+                        <select
+                          className="sh-white-select"
+                          value={businessCustomField}
+                          onChange={(e) => setBusinessCustomField(e.target.value)}
+                        >
+                          <option value="Tournament Title Sponsor">Tournament Title Sponsor</option>
+                          <option value="Perimeter LED & Boundary Boards">Perimeter LED & Boundary</option>
+                          <option value="Digital Live Stream Ad Partner">Digital Stream Ad Partner</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
 
-                <div className="sh-white-row-split">
-                  <div className="sh-white-group" style={{ flex: 1.2 }}>
-                    <label className="sh-white-label">Representative Name</label>
+                  {/* City for all business types */}
+                  <div className="sh-white-group">
+                    <label className="sh-white-label">Headquarters / City Location</label>
                     <input
                       type="text"
                       className="sh-white-input"
-                      required
-                      value={representativeName}
-                      onChange={(e) => setRepresentativeName(e.target.value)}
-                    />
-                  </div>
-                  <div className="sh-white-group" style={{ flex: 1 }}>
-                    <label className="sh-white-label">City / Location</label>
-                    <input
-                      type="text"
-                      className="sh-white-input"
-                      required
+                      placeholder="e.g. Chennai"
                       value={businessCity}
                       onChange={(e) => setBusinessCity(e.target.value)}
+                      required
                     />
                   </div>
                 </div>
+              )}
+            </>
+          )}
 
-                <div className="sh-white-group">
-                  <label className="sh-white-label">
-                    {selectedBusinessRoleId === 'ground' && 'Pitch / Turf Surface & Night Lights'}
-                    {selectedBusinessRoleId === 'academy' && 'Student Capacity & Nets Infrastructure'}
-                    {selectedBusinessRoleId === 'seller' && 'GSTIN & Sports Equipment Category'}
-                    {selectedBusinessRoleId === 'coach' && 'Coaching Specialization & License Tier'}
-                    {selectedBusinessRoleId === 'streamer' && 'Streaming Hardware & Broadcast Setup'}
-                    {selectedBusinessRoleId === 'sponsor' && 'Industry & Ad Campaign Budget Tier'}
-                  </label>
-                  <input
-                    type="text"
-                    className="sh-white-input"
-                    value={businessCustomField}
-                    onChange={(e) => setBusinessCustomField(e.target.value)}
-                  />
-                </div>
+          {/* ============================================================== */}
+          {/* PHASE 3: AUTH METHOD (EMAIL, GOOGLE AUTH, MOBILE OTP SMALL TABS) */}
+          {/* ============================================================== */}
+          <div style={{ marginTop: activeTab === 'register' ? 6 : 0 }}>
+            <label className="sh-white-label">
+              <span>{activeTab === 'register' ? 'Verification & Contact Method' : 'Sign In Method'}</span>
+              <span className="sh-white-hint">Choose one</span>
+            </label>
 
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button
-                    type="button"
-                    className="sh-white-btn-secondary"
-                    style={{ flex: 1 }}
-                    onClick={() => setOnboardingStep(1)}
-                  >
-                    ← Back
-                  </button>
-                  <button type="submit" className="sh-white-btn-primary" style={{ flex: 2 }}>
-                    Complete Setup & Enter Dashboard →
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {/* STEP 3: AADHAAR IDENTITY VERIFICATION (For Player) */}
-            {onboardingStep === 3 && accountType === 'player' && (
-              <div className="sh-white-form">
-                {aadhaarSubStep === 'input' && (
-                  <form onSubmit={handleSendAadhaarOtp} className="sh-white-form">
-                    <div style={{ textAlign: 'center', marginBottom: 8 }}>
-                      <div
-                        style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: 12,
-                          background: '#f0fdf4',
-                          display: 'grid',
-                          placeItems: 'center',
-                          margin: '0 auto 10px',
-                        }}
-                      >
-                        <ShieldCheck size={26} color="#16a34a" />
-                      </div>
-                      <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>Aadhaar Identity Verification</h3>
-                      <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-                        Government UIDAI Compliance · Eliminates age fraud & tournament impersonation
-                      </p>
-                    </div>
-
-                    <div className="sh-white-callout sh-white-callout--warning">
-                      <Lock size={16} style={{ flexShrink: 0, marginTop: 1 }} />
-                      <span style={{ fontSize: 11 }}>
-                        Legal Name, Age, and Address will be extracted directly from your Aadhaar card into your profile.
-                        Your chosen username (<strong>{username}</strong>) remains your public handle.
-                      </span>
-                    </div>
-
-                    <div className="sh-white-group">
-                      <label className="sh-white-label">12-Digit Aadhaar UID Number</label>
-                      <input
-                        type="text"
-                        maxLength={14}
-                        className="sh-white-input"
-                        placeholder="XXXX XXXX XXXX"
-                        value={aadhaarNumber}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/\D/g, '').slice(0, 12)
-                          const formatted = raw.replace(/(\d{4})(?=\d)/g, '$1 ')
-                          setAadhaarNumber(formatted)
-                        }}
-                        autoFocus
-                      />
-                      <button
-                        type="button"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#16a34a',
-                          fontSize: 12,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                          marginTop: 4,
-                        }}
-                        onClick={() => setAadhaarNumber('5489 2104 9012')}
-                      >
-                        ⚡ Autofill Demo Aadhaar: 5489 2104 9012
-                      </button>
-                    </div>
-
-                    {/* Aadhaar Consent Checkbox */}
-                    <label className="sh-white-aadhaar-consent-label">
-                      <input
-                        type="checkbox"
-                        checked={aadhaarConsent}
-                        onChange={(e) => {
-                          setAadhaarConsent(e.target.checked)
-                          if (e.target.checked) setError('')
-                        }}
-                      />
-                      <span>
-                        I voluntarily give consent to Scoring Heroes to verify my Aadhaar UID via UIDAI OTP for age verification, identity confirmation, and fair-play tournament eligibility.
-                      </span>
-                    </label>
-
-                    {error && <p className="sh-white-error">{error}</p>}
-
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <button
-                        type="button"
-                        className="sh-white-btn-secondary"
-                        style={{ flex: 1 }}
-                        onClick={() => setOnboardingStep(2)}
-                      >
-                        ← Back
-                      </button>
-                      <button
-                        type="submit"
-                        className="sh-white-btn-primary"
-                        style={{ flex: 2 }}
-                        disabled={isVerifyingAadhaar}
-                      >
-                        {isVerifyingAadhaar ? 'Connecting UIDAI...' : 'Send Aadhaar OTP →'}
-                      </button>
-                    </div>
-                  </form>
-                )}
-
-                {aadhaarSubStep === 'otp' && (
-                  <form onSubmit={handleConfirmAadhaarOtp} className="sh-white-form">
-                    <div style={{ textAlign: 'center', marginBottom: 8 }}>
-                      <div
-                        style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: 12,
-                          background: '#f0fdf4',
-                          display: 'grid',
-                          placeItems: 'center',
-                          margin: '0 auto 10px',
-                        }}
-                      >
-                        <KeyRound size={26} color="#16a34a" />
-                      </div>
-                      <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>Enter 6-Digit Aadhaar OTP</h3>
-                      <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-                        OTP dispatched to UIDAI registered mobile number
-                      </p>
-                    </div>
-
-                    <div className="sh-white-group">
-                      <input
-                        type="text"
-                        maxLength={6}
-                        className="sh-white-input"
-                        placeholder="• • • • • •"
-                        value={aadhaarOtp}
-                        onChange={(e) => setAadhaarOtp(e.target.value.replace(/\D/g, ''))}
-                        style={{ textAlign: 'center', fontSize: 22, letterSpacing: 6, fontWeight: 'bold' }}
-                        autoFocus
-                      />
-                      <button
-                        type="button"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#16a34a',
-                          fontSize: 12,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          marginTop: 4,
-                        }}
-                        onClick={() => setAadhaarOtp('123456')}
-                      >
-                        ⚡ Autofill Demo Aadhaar OTP: 123456
-                      </button>
-                    </div>
-
-                    {error && <p className="sh-white-error">{error}</p>}
-
-                    <button type="submit" className="sh-white-btn-primary" disabled={isVerifyingAadhaar}>
-                      {isVerifyingAadhaar ? 'Validating UIDAI Gateway...' : 'Confirm & Extract Aadhaar Data ✓'}
-                    </button>
-                  </form>
-                )}
-
-                {aadhaarSubStep === 'verified' && (
-                  <div className="sh-white-form" style={{ textAlign: 'center' }}>
-                    <div
-                      style={{
-                        width: 52,
-                        height: 52,
-                        borderRadius: 50,
-                        background: '#dcfce7',
-                        display: 'grid',
-                        placeItems: 'center',
-                        margin: '0 auto 10px',
-                      }}
-                    >
-                      <ShieldCheck size={32} color="#16a34a" />
-                    </div>
-
-                    <h3 style={{ margin: 0, fontSize: 19, color: '#0f172a' }}>Aadhaar Identity Verified!</h3>
-                    <p style={{ margin: '4px 0 12px', fontSize: 12, color: '#16a34a', fontWeight: 600 }}>
-                      ✓ Official Verified Athlete Checkmark Issued
-                    </p>
-
-                    {/* Aadhaar Extracted Details Preview Card */}
-                    <div className="sh-white-aadhaar-preview">
-                      <div className="sh-white-preview-row">
-                        <span className="sh-white-preview-label">Public Username (Chosen):</span>
-                        <span className="sh-white-preview-val">{username}</span>
-                      </div>
-                      <div className="sh-white-preview-row">
-                        <span className="sh-white-preview-label">Legal Name (From Aadhaar):</span>
-                        <span className="sh-white-preview-val">
-                          {username ? `${username.replace(/_/g, ' ')} (UID Verified)` : 'Verified Athlete (UID Verified)'}
-                        </span>
-                      </div>
-                      <div className="sh-white-preview-row">
-                        <span className="sh-white-preview-label">Verified Age (From Aadhaar):</span>
-                        <span className="sh-white-preview-val">20 Years (DOB: 14/08/2005)</span>
-                      </div>
-                      <div className="sh-white-preview-row">
-                        <span className="sh-white-preview-label">Verified Address (From Aadhaar):</span>
-                        <span className="sh-white-preview-val" style={{ textAlign: 'right', maxWidth: '60%' }}>
-                          Mylapore, Chennai, Tamil Nadu - 600004
-                        </span>
-                      </div>
-                      <div className="sh-white-preview-row">
-                        <span className="sh-white-preview-label">Aadhaar Token:</span>
-                        <span className="sh-white-preview-val" style={{ color: '#16a34a' }}>
-                          XXXX-XXXX-9012 (Encrypted)
-                        </span>
-                      </div>
-                      <div className="sh-white-preview-row">
-                        <span className="sh-white-preview-label">Registered Sport:</span>
-                        <span className="sh-white-preview-val">
-                          {selectedSport.icon} {selectedSport.name} ({competitionLevel})
-                        </span>
-                      </div>
-                    </div>
-
-                    <p style={{ margin: '8px 0', fontSize: 11, color: '#64748b' }}>
-                      Your age and address are verified and locked to your profile to guarantee 100% fair play.
-                    </p>
-
-                    <button
-                      type="button"
-                      className="sh-white-btn-primary"
-                      onClick={() => navigate('/app', { replace: true })}
-                    >
-                      Enter Player Dashboard →
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ) : (
-          /* ============================================================== */
-          /* CASE B: INITIAL ENTRY SCREEN (SIGN IN OR REGISTER)             */
-          /* ============================================================== */
-          <div>
-            {/* Top 2 Tabs ONLY: Sign In vs Register */}
-            <div className="sh-white-tab-bar">
+            {/* 3 Simple Small Tabs */}
+            <div className="sh-white-auth-tabs">
               <button
                 type="button"
-                className={`sh-white-tab ${activeTab === 'login' ? 'is-active' : ''}`}
+                className={`sh-white-auth-tab ${authMethod === 'mobile' ? 'is-active' : ''}`}
                 onClick={() => {
-                  setActiveTab('login')
+                  setAuthMethod('mobile')
                   setError('')
                 }}
               >
-                Sign In
+                <Zap size={14} color={authMethod === 'mobile' ? '#e10613' : '#64748b'} />
+                <span>Mobile OTP</span>
               </button>
+
               <button
                 type="button"
-                className={`sh-white-tab ${activeTab === 'register' ? 'is-active' : ''}`}
+                className={`sh-white-auth-tab ${authMethod === 'email' ? 'is-active' : ''}`}
                 onClick={() => {
-                  setActiveTab('register')
+                  setAuthMethod('email')
                   setError('')
                 }}
               >
-                Register
+                <Mail size={14} color={authMethod === 'email' ? '#2563eb' : '#64748b'} />
+                <span>Email</span>
+              </button>
+
+              <button
+                type="button"
+                className={`sh-white-auth-tab ${authMethod === 'google' ? 'is-active' : ''}`}
+                onClick={() => {
+                  setAuthMethod('google')
+                  setError('')
+                }}
+              >
+                <Globe size={14} color={authMethod === 'google' ? '#ea4335' : '#64748b'} />
+                <span>Google</span>
               </button>
             </div>
 
-            {/* TAB 1: SIGN IN (LOGIN) */}
-            {activeTab === 'login' && (
-              <form className="sh-white-form" onSubmit={handleLoginSubmit}>
-                {/* DIRECT MOBILE NUMBER FIELD AT THE TOP (NO AUTO DETECTION NOTE) */}
-                {authMethod === 'mobile' ? (
+            {/* TAB 1: MOBILE OTP INPUTS */}
+            {authMethod === 'mobile' && (
+              <>
+                <div className="sh-white-group">
+                  <label className="sh-white-label">
+                    <span>Mobile Number</span>
+                    <span className="sh-white-hint">
+                      {phone.length}/{maxPhoneDigits} digits
+                    </span>
+                  </label>
+                  <div className="sh-white-phone-wrap">
+                    <CountryCodePicker
+                      value={phoneCode}
+                      onChange={handlePhoneCodeChange}
+                      dropdownClassName="sh-white-picker-dropdown"
+                    />
+                    <input
+                      type="tel"
+                      className="sh-white-input sh-white-phone-input"
+                      placeholder={phonePlaceholder}
+                      value={phone}
+                      onChange={(e) => handlePhoneChange(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {activeTab === 'register' && (
                   <div className="sh-white-group">
                     <label className="sh-white-label">
-                      <span>Registered Mobile Number</span>
-                      <span className="sh-white-hint">{phone.length}/{maxPhoneDigits} digits</span>
+                      <span>Your Name</span>
+                      <span className="sh-white-hint">Public handle</span>
                     </label>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <CountryCodePicker value={phoneCode} onChange={handlePhoneCodeChange} />
-                      <input
-                        type="tel"
-                        className="sh-white-input"
-                        placeholder={phonePlaceholder}
-                        value={phone}
-                        maxLength={maxPhoneDigits}
-                        onChange={(e) => handlePhoneChange(e.target.value)}
-                        autoFocus
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      className="sh-white-input"
+                      placeholder="Enter your full name or handle"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                    />
                   </div>
-                ) : (
-                  /* EMAIL + PASSWORD FIELDS */
-                  <>
-                    <div className="sh-white-group">
-                      <label className="sh-white-label">Official Email Address</label>
-                      <input
-                        type="email"
-                        className="sh-white-input"
-                        placeholder="athlete@sports.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        autoFocus
-                      />
-                    </div>
-
-                    <div className="sh-white-group">
-                      <label className="sh-white-label">Password</label>
-                      <div className="sh-white-password-wrap">
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          className="sh-white-input"
-                          placeholder="••••••••"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <button
-                          type="button"
-                          className="sh-white-eye-btn"
-                          onClick={() => setShowPassword(!showPassword)}
-                          aria-label={showPassword ? 'Hide password' : 'Show password'}
-                        >
-                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                        </button>
-                      </div>
-                    </div>
-                  </>
                 )}
-
-                {error && <p className="sh-white-error">{error}</p>}
-
-                <button type="submit" className="sh-white-btn-primary">
-                  {authMethod === 'mobile' ? 'Continue with Mobile OTP →' : 'Sign In with Email →'}
-                </button>
-
-                <div className="sh-white-divider">
-                  <span>OR CONTINUE WITH</span>
-                </div>
-
-                {/* BOTTOM PROPER SECTION CARDS FOR EMAIL & GMAIL */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {authMethod === 'mobile' ? (
-                    <div className="sh-white-social-card" onClick={() => setAuthMethod('email')}>
-                      <div className="sh-white-social-icon" style={{ color: '#2563eb', background: '#eff6ff' }}>
-                        <Mail size={18} />
-                      </div>
-                      <div className="sh-white-social-text">
-                        <span className="sh-white-social-title">Continue with Email & Password</span>
-                        <span className="sh-white-social-sub">Sign in using your registered email</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="sh-white-social-card" onClick={() => setAuthMethod('mobile')}>
-                      <div className="sh-white-social-icon" style={{ color: '#e10613', background: '#fff5f5' }}>
-                        <Zap size={18} />
-                      </div>
-                      <div className="sh-white-social-text">
-                        <span className="sh-white-social-title">Continue with Mobile Number</span>
-                        <span className="sh-white-social-sub">Sign in using OTP verification</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* GOOGLE / GMAIL SECTION CARD */}
-                  <div className="sh-white-social-card" onClick={handleGoogleAuth}>
-                    <div className="sh-white-social-icon" style={{ background: '#ffffff', border: '1px solid #e2e8f0' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24">
-                        <path
-                          fill="#4285F4"
-                          d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                        />
-                        <path
-                          fill="#34A853"
-                          d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                        />
-                        <path
-                          fill="#FBBC05"
-                          d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                        />
-                        <path
-                          fill="#EA4335"
-                          d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="sh-white-social-text">
-                      <span className="sh-white-social-title">Continue with Google / Gmail</span>
-                      <span className="sh-white-social-sub">Instant 1-Tap Google authentication</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="sh-white-divider">
-                  <span>OR GUEST MODE</span>
-                </div>
-
-                <button type="button" className="sh-white-btn-secondary" onClick={handleGuestAccess}>
-                  <Zap size={14} color="#e10613" />
-                  <span>Instant 1-Tap Guest Access as Player</span>
-                </button>
-              </form>
+              </>
             )}
 
-            {/* TAB 2: REGISTER (LEAD CAPTURE & INITIAL VERIFICATION) */}
-            {activeTab === 'register' && (
-              <form className="sh-white-form" onSubmit={handleRegisterInitialSubmit}>
-                {authMethod === 'mobile' ? (
-                  /* REGISTER VIA MOBILE */
-                  <>
-                    <div className="sh-white-group">
-                      <label className="sh-white-label">
-                        <span>Mobile Number</span>
-                        <span className="sh-white-hint">{phone.length}/{maxPhoneDigits} digits</span>
-                      </label>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <CountryCodePicker value={phoneCode} onChange={handlePhoneCodeChange} />
-                        <input
-                          type="tel"
-                          className="sh-white-input"
-                          placeholder={phonePlaceholder}
-                          value={phone}
-                          maxLength={maxPhoneDigits}
-                          onChange={(e) => handlePhoneChange(e.target.value)}
-                          autoFocus
-                        />
-                      </div>
-                    </div>
-
-                    <div className="sh-white-group">
-                      <label className="sh-white-label">
-                        <span>Your Name</span>
-                        <span className="sh-white-hint">Public handle</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="sh-white-input"
-                        placeholder="Enter your name"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                        minLength={2}
-                        maxLength={30}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  /* REGISTER VIA EMAIL WITH PASSWORD FIELDS & EYE ICONS */
-                  <>
-                    <div className="sh-white-group">
-                      <label className="sh-white-label">Official Email Address</label>
-                      <input
-                        type="email"
-                        className="sh-white-input"
-                        placeholder="athlete@sports.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        autoFocus
-                      />
-                    </div>
-
-                    <div className="sh-white-row-split">
-                      <div className="sh-white-group" style={{ flex: 1 }}>
-                        <label className="sh-white-label">Create Password</label>
-                        <div className="sh-white-password-wrap">
-                          <input
-                            type={showPassword ? 'text' : 'password'}
-                            className="sh-white-input"
-                            placeholder="Min 6 chars"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                          />
-                          <button
-                            type="button"
-                            className="sh-white-eye-btn"
-                            onClick={() => setShowPassword(!showPassword)}
-                            aria-label={showPassword ? 'Hide password' : 'Show password'}
-                          >
-                            {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="sh-white-group" style={{ flex: 1 }}>
-                        <label className="sh-white-label">Confirm Password</label>
-                        <div className="sh-white-password-wrap">
-                          <input
-                            type={showConfirmPassword ? 'text' : 'password'}
-                            className="sh-white-input"
-                            placeholder="Re-enter password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                          />
-                          <button
-                            type="button"
-                            className="sh-white-eye-btn"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                          >
-                            {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="sh-white-group">
-                      <label className="sh-white-label">Your Name</label>
-                      <input
-                        type="text"
-                        className="sh-white-input"
-                        placeholder="Enter your name"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                        minLength={2}
-                        maxLength={30}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {/* Terms Checkbox */}
-                <label className="sh-white-checkbox-label">
+            {/* TAB 2: EMAIL & PASSWORD INPUTS */}
+            {authMethod === 'email' && (
+              <>
+                <div className="sh-white-group">
+                  <label className="sh-white-label">Official Email Address</label>
                   <input
-                    type="checkbox"
-                    checked={agreeTerms}
-                    onChange={(e) => setAgreeTerms(e.target.checked)}
+                    type="email"
+                    className="sh-white-input"
+                    placeholder="athlete@sports.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
-                  <span>
-                    I agree to the platform terms & privacy policy. Data is securely protected.
-                  </span>
-                </label>
-
-                {error && <p className="sh-white-error">{error}</p>}
-
-                <button type="submit" className="sh-white-btn-primary">
-                  {authMethod === 'mobile' ? 'Verify via Mobile OTP →' : 'Verify Email & Proceed to Onboarding →'}
-                </button>
-
-                <div className="sh-white-divider">
-                  <span>OR REGISTER USING</span>
                 </div>
 
-                {/* SECTION CARDS: SWITCH TO EMAIL / MOBILE / GMAIL */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {authMethod === 'mobile' ? (
-                    <div className="sh-white-social-card" onClick={() => setAuthMethod('email')}>
-                      <div className="sh-white-social-icon" style={{ color: '#2563eb', background: '#eff6ff' }}>
-                        <Mail size={18} />
-                      </div>
-                      <div className="sh-white-social-text">
-                        <span className="sh-white-social-title">Register with Email & Password</span>
-                        <span className="sh-white-social-sub">Create account with email and password</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="sh-white-social-card" onClick={() => setAuthMethod('mobile')}>
-                      <div className="sh-white-social-icon" style={{ color: '#e10613', background: '#fff5f5' }}>
-                        <Zap size={18} />
-                      </div>
-                      <div className="sh-white-social-text">
-                        <span className="sh-white-social-title">Register with Mobile Number</span>
-                        <span className="sh-white-social-sub">Fast registration with SMS OTP</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* GOOGLE / GMAIL SECTION CARD */}
-                  <div className="sh-white-social-card" onClick={handleGoogleAuth}>
-                    <div className="sh-white-social-icon" style={{ background: '#ffffff', border: '1px solid #e2e8f0' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24">
-                        <path
-                          fill="#4285F4"
-                          d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                        />
-                        <path
-                          fill="#34A853"
-                          d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                        />
-                        <path
-                          fill="#FBBC05"
-                          d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                        />
-                        <path
-                          fill="#EA4335"
-                          d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="sh-white-social-text">
-                      <span className="sh-white-social-title">Sign Up with Google / Gmail</span>
-                      <span className="sh-white-social-sub">1-Tap registration with Google</span>
-                    </div>
+                <div className="sh-white-group">
+                  <label className="sh-white-label">Account Password</label>
+                  <div className="sh-white-password-wrap">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      className="sh-white-input"
+                      placeholder="Min 6 characters"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="sh-white-eye-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
                   </div>
                 </div>
-              </form>
+
+                {activeTab === 'register' && (
+                  <div className="sh-white-group">
+                    <label className="sh-white-label">
+                      <span>Your Name</span>
+                      <span className="sh-white-hint">Public handle</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="sh-white-input"
+                      placeholder="Enter your full name or handle"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* TAB 3: GOOGLE AUTH 1-TAP */}
+            {authMethod === 'google' && (
+              <div style={{ padding: '8px 0 4px' }}>
+                {activeTab === 'register' && (
+                  <div className="sh-white-group" style={{ marginBottom: 12 }}>
+                    <label className="sh-white-label">
+                      <span>Preferred Nickname</span>
+                      <span className="sh-white-hint">Optional</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="sh-white-input"
+                      placeholder="e.g. Athlete_Pro"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="sh-white-google-btn"
+                  onClick={handleGoogleAuth}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path
+                      fill="#4285F4"
+                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+                    />
+                  </svg>
+                  <span>
+                    {activeTab === 'register' ? 'Sign Up with Google / Gmail' : 'Sign In with Google / Gmail'}
+                  </span>
+                </button>
+              </div>
             )}
           </div>
-        )}
+
+          {/* Terms Checkbox */}
+          {activeTab === 'register' && (
+            <label className="sh-white-checkbox-label">
+              <input
+                type="checkbox"
+                checked={agreeTerms}
+                onChange={(e) => setAgreeTerms(e.target.checked)}
+              />
+              <span>I agree to the platform terms & privacy policy. Data is securely protected.</span>
+            </label>
+          )}
+
+          {error && <p className="sh-white-error">{error}</p>}
+
+          {/* SUBMIT BUTTON (FOR MOBILE OTP & EMAIL) */}
+          {authMethod !== 'google' && (
+            <button type="submit" className="sh-white-btn-primary">
+              {activeTab === 'register'
+                ? authMethod === 'mobile'
+                  ? 'Verify via Mobile OTP & Register →'
+                  : 'Complete Registration with Email →'
+                : 'Sign In to Scoring Heroes →'}
+            </button>
+          )}
+        </form>
       </div>
 
       {/* ============================================================== */}
-      {/* CONTACT OTP VERIFICATION DIALOG (MOBILE OR EMAIL)               */}
+      {/* MOBILE OTP VERIFICATION DIALOG                                  */}
       {/* ============================================================== */}
       {showOtpDialog && (
         <div
@@ -1538,95 +930,89 @@ export default function Register() {
             inset: 0,
             background: 'rgba(15, 23, 42, 0.65)',
             backdropFilter: 'blur(4px)',
-            zIndex: 9999,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: 16,
+            zIndex: 9999,
           }}
+          onClick={() => setShowOtpDialog(false)}
         >
           <div
             className="sh-white-card"
-            style={{
-              maxWidth: 420,
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
-            }}
+            style={{ maxWidth: 400, animation: 'shWhiteFadeIn 0.2s ease-out' }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <form onSubmit={handleConfirmContactOtp} className="sh-white-form">
-              <div style={{ textAlign: 'center', marginBottom: 8 }}>
-                <div
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    background: '#eff6ff',
-                    display: 'grid',
-                    placeItems: 'center',
-                    margin: '0 auto 10px',
-                  }}
-                >
-                  <KeyRound size={24} color="#2563eb" />
-                </div>
-                <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>
-                  Verify {authMethod === 'mobile' ? 'Mobile Number' : 'Email Address'}
-                </h3>
-                <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-                  Enter 4-digit code sent to{' '}
-                  <strong>
-                    {authMethod === 'mobile' ? `${phoneCode} ${phone}` : email}
-                  </strong>
-                </p>
+            <div style={{ textAlign: 'center', marginBottom: 16 }}>
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: '50%',
+                  background: '#fef2f2',
+                  color: '#e10613',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 10,
+                }}
+              >
+                <Zap size={22} />
               </div>
+              <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>Enter SMS OTP Code</h3>
+              <p style={{ margin: '4px 0 0', fontSize: 13, color: '#64748b' }}>
+                Sent 4-digit code to <strong>{phoneCode} {phone}</strong>
+              </p>
+            </div>
 
-              <div className="sh-white-callout sh-white-callout--info" style={{ justifyContent: 'center' }}>
-                <span>
-                  Demo test code is: <strong>1234</strong>
-                </span>
-              </div>
-
+            <form onSubmit={handleVerifyOtpSubmit} className="sh-white-form">
               <div className="sh-white-group">
                 <input
                   type="text"
-                  maxLength={4}
                   className="sh-white-input"
-                  placeholder="• • • •"
+                  style={{ textAlign: 'center', letterSpacing: 8, fontSize: 24, fontWeight: 800 }}
+                  placeholder="••••"
+                  maxLength={4}
                   value={inputOtp}
                   onChange={(e) => setInputOtp(e.target.value.replace(/\D/g, ''))}
-                  style={{ textAlign: 'center', fontSize: 22, letterSpacing: 8, fontWeight: 'bold' }}
                   autoFocus
+                  required
                 />
-                <button
-                  type="button"
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#2563eb',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    marginTop: 4,
-                  }}
-                  onClick={() => setInputOtp('1234')}
-                >
-                  ⚡ Autofill: 1234
-                </button>
+              </div>
+
+              <div
+                style={{
+                  background: '#f0fdf4',
+                  border: '1px solid #bbf7d0',
+                  borderRadius: 8,
+                  padding: '8px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: 12,
+                  color: '#15803d',
+                }}
+              >
+                <Sparkles size={14} />
+                <span>Demo Sandbox OTP: <strong>1234</strong></span>
               </div>
 
               {error && <p className="sh-white-error">{error}</p>}
 
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  type="button"
-                  className="sh-white-btn-secondary"
-                  style={{ flex: 1 }}
-                  onClick={() => setShowOtpDialog(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="sh-white-btn-primary" style={{ flex: 2 }}>
-                  Verify & Start Onboarding →
-                </button>
-              </div>
+              <button type="submit" className="sh-white-btn-primary">
+                Verify & Enter Arena →
+              </button>
+
+              <button
+                type="button"
+                className="sh-white-btn-ghost"
+                onClick={() => {
+                  setShowOtpDialog(false)
+                  setError('')
+                }}
+              >
+                Cancel
+              </button>
             </form>
           </div>
         </div>
