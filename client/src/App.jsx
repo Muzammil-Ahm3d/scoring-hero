@@ -74,6 +74,8 @@ export default function App() {
       <Route path="/preview-splash" element={<FlashScreen autoTransition={false} onFinish={() => {}} />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Register defaultTab="login" />} />
+      <Route path="/signin" element={<Register defaultTab="login" />} />
       <Route path="/otp" element={<VerifyOtp />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/email" element={<EmailSetup />} />

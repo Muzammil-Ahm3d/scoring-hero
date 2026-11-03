@@ -4,8 +4,6 @@ import {
   User,
   Building,
   Check,
-  Eye,
-  EyeOff,
   AlertCircle,
   Mail,
   Zap,
@@ -13,18 +11,18 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { OFFICIAL_BUSINESS_ROLES, getRoleById } from '../data/rolesData'
+import { OFFICIAL_BUSINESS_ROLES } from '../data/rolesData'
 import CountryCodePicker from '../components/CountryCodePicker'
 import { getMaxPhoneDigits, getPhonePlaceholder } from '../data/countries'
 import '../AuthWhiteTheme.css'
 
-export default function Register() {
+export default function Register({ defaultTab }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { draft, completeSignup, loginWithIdentifier } = useAuth()
 
   // 1. Two primary modes: 'register' vs 'login'
-  const initialMode = searchParams.get('mode') === 'login' ? 'login' : 'register'
+  const initialMode = defaultTab || (searchParams.get('mode') === 'login' ? 'login' : 'register')
   const [activeTab, setActiveTab] = useState(initialMode) // 'register' | 'login'
 
   // 2. Role selection: 'player' vs 'business' (Two simple tabs)
@@ -46,21 +44,20 @@ export default function Register() {
   const [businessCity, setBusinessCity] = useState('Chennai')
   const [businessSubField, setBusinessSubField] = useState('Day/Night 800 Lux Floodlights')
 
-  // 6. Three small auth tabs: 'mobile' | 'email' | 'google'
+  // 6. Three small auth tabs: 'mobile' | 'email' | 'google' (Passwordless - OTP based!)
   const [authMethod, setAuthMethod] = useState('mobile') // 'mobile' | 'email' | 'google'
 
-  // Input states
+  // Input states (No password required - 100% OTP!)
   const [phoneCode, setPhoneCode] = useState(draft.phoneCode || '+91')
   const [phone, setPhone] = useState(draft.phone || '')
   const [email, setEmail] = useState(draft.email || '')
   const [username, setUsername] = useState(draft.nickname || '')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
   const [agreeTerms, setAgreeTerms] = useState(true)
   const [error, setError] = useState('')
 
-  // Mobile OTP dialog state
+  // Universal OTP dialog state (for Mobile OTP and Email OTP)
   const [showOtpDialog, setShowOtpDialog] = useState(false)
+  const [otpTargetType, setOtpTargetType] = useState('mobile') // 'mobile' | 'email'
   const [inputOtp, setInputOtp] = useState('')
 
   // Country code national digit limits
@@ -137,7 +134,7 @@ export default function Register() {
     if (accountType === 'player') {
       return {
         role: playerRole,
-        battingStyle,
+        battingStyle: battingStance,
         bowlingStyle: bowlingAction,
         competitionLevel,
         sport: sportName,
@@ -153,73 +150,58 @@ export default function Register() {
     }
   }
 
-  // Complete Registration or Sign In
+  // Form submit handler for both Register and Sign In (OTP-based)
   function handleFormSubmit(e) {
     if (e) e.preventDefault()
     setError('')
 
     const cleanPhone = phone.replace(/\D/g, '')
     const cleanEmail = email.trim()
-    const handleName = username.trim() || (accountType === 'player' ? 'Athlete_Pro' : businessName || 'Official_Partner')
 
-    // --- SIGN IN MODE ---
-    if (activeTab === 'login') {
-      const identifier = authMethod === 'mobile' ? cleanPhone : cleanEmail
-      if (!identifier) {
-        setError(authMethod === 'mobile' ? 'Please enter your mobile number.' : 'Please enter your email.')
-        return
-      }
-      if (authMethod === 'mobile' && cleanPhone.length !== maxPhoneDigits) {
-        setError(`Please enter a valid ${maxPhoneDigits}-digit mobile number for ${phoneCode}.`)
-        return
-      }
-      if (authMethod === 'email' && !password.trim()) {
-        setError('Please enter your account password.')
-        return
-      }
-
-      loginWithIdentifier(identifier)
-      navigate('/app', { replace: true })
-      return
-    }
-
-    // --- REGISTER MODE ---
-    if (!agreeTerms) {
-      setError('Please agree to the platform terms and privacy policy to continue.')
-      return
-    }
-
+    // 1. MOBILE OTP VALIDATION
     if (authMethod === 'mobile') {
       if (!cleanPhone || cleanPhone.length !== maxPhoneDigits) {
         setError(`Please enter a valid ${maxPhoneDigits}-digit mobile number for ${phoneCode}.`)
         return
       }
-      if (!username.trim()) {
+      if (activeTab === 'register' && !username.trim()) {
         setError('Please enter your name or handle.')
         return
       }
-      // Open clean Mobile OTP dialog
+      if (activeTab === 'register' && !agreeTerms) {
+        setError('Please agree to the platform terms and privacy policy to continue.')
+        return
+      }
+      // Trigger Mobile OTP dialog
+      setOtpTargetType('mobile')
       setShowOtpDialog(true)
       return
     }
 
+    // 2. EMAIL OTP VALIDATION (No password - OTP only!)
     if (authMethod === 'email') {
       if (!cleanEmail || !cleanEmail.includes('@')) {
-        setError('Please enter a valid email address.')
+        setError('Please enter a valid official email address.')
         return
       }
-      if (!password || password.length < 6) {
-        setError('Password must be at least 6 characters.')
-        return
-      }
-      if (!username.trim()) {
+      if (activeTab === 'register' && !username.trim()) {
         setError('Please enter your name or handle.')
         return
       }
+      if (activeTab === 'register' && !agreeTerms) {
+        setError('Please agree to the platform terms and privacy policy to continue.')
+        return
+      }
+      // Trigger Email OTP dialog
+      setOtpTargetType('email')
+      setShowOtpDialog(true)
+      return
     }
 
-    // Direct registration with Email or Google
-    executeSignup(cleanPhone, cleanEmail, handleName)
+    // 3. GOOGLE AUTH (Direct)
+    if (authMethod === 'google') {
+      handleGoogleAuth()
+    }
   }
 
   // Finalize signup and navigate to app
@@ -246,24 +228,42 @@ export default function Register() {
     navigate('/app', { replace: true })
   }
 
-  // Handle Mobile OTP verification
+  // Handle OTP verification for either Mobile or Email
   function handleVerifyOtpSubmit(e) {
     if (e) e.preventDefault()
     if (inputOtp !== '1234' && inputOtp !== '0000') {
-      setError('Invalid OTP code. Please enter demo OTP: 1234')
+      setError('Invalid OTP code. Please enter demo sandbox OTP: 1234')
       return
     }
 
     setShowOtpDialog(false)
     setInputOtp('')
+
     const cleanPhone = phone.replace(/\D/g, '')
+    const cleanEmail = email.trim()
+
+    // IF IN SIGN IN MODE
+    if (activeTab === 'login') {
+      const identifier = otpTargetType === 'mobile' ? cleanPhone : cleanEmail
+      loginWithIdentifier(identifier)
+      navigate('/app', { replace: true })
+      return
+    }
+
+    // IF IN REGISTER MODE
     const handleName = username.trim() || (accountType === 'player' ? 'Athlete_Pro' : businessName || 'Official_Partner')
-    executeSignup(cleanPhone, email.trim(), handleName)
+    executeSignup(cleanPhone, cleanEmail, handleName)
   }
 
-  // 1-Tap Google Registration
+  // 1-Tap Google Registration / Login
   function handleGoogleAuth() {
     const googleEmail = 'athlete.sports@gmail.com'
+    if (activeTab === 'login') {
+      loginWithIdentifier(googleEmail)
+      navigate('/app', { replace: true })
+      return
+    }
+
     const handleName = username.trim() || (accountType === 'player' ? 'Athlete_Google' : businessName || 'Partner_Google')
     executeSignup('9876543210', googleEmail, handleName)
   }
@@ -694,12 +694,13 @@ export default function Register() {
           )}
 
           {/* ============================================================== */}
-          {/* PHASE 3: AUTH METHOD (EMAIL, GOOGLE AUTH, MOBILE OTP SMALL TABS) */}
+          {/* PHASE 3: AUTH METHOD (EMAIL OTP, MOBILE OTP, GOOGLE SMALL TABS) */}
+          {/* Password removed completely - 100% passwordless OTP & Google!   */}
           {/* ============================================================== */}
           <div style={{ marginTop: activeTab === 'register' ? 6 : 0 }}>
             <label className="sh-white-label">
               <span>{activeTab === 'register' ? 'Verification & Contact Method' : 'Sign In Method'}</span>
-              <span className="sh-white-hint">Choose one</span>
+              <span className="sh-white-hint">Passwordless OTP</span>
             </label>
 
             {/* 3 Simple Small Tabs */}
@@ -725,7 +726,7 @@ export default function Register() {
                 }}
               >
                 <Mail size={14} color={authMethod === 'email' ? '#2563eb' : '#64748b'} />
-                <span>Email</span>
+                <span>Email OTP</span>
               </button>
 
               <button
@@ -741,7 +742,7 @@ export default function Register() {
               </button>
             </div>
 
-            {/* TAB 1: MOBILE OTP INPUTS */}
+            {/* TAB 1: MOBILE OTP INPUTS (FIXED HORIZONTAL FLEX WRAPPER) */}
             {authMethod === 'mobile' && (
               <>
                 <div className="sh-white-group">
@@ -755,7 +756,6 @@ export default function Register() {
                     <CountryCodePicker
                       value={phoneCode}
                       onChange={handlePhoneCodeChange}
-                      dropdownClassName="sh-white-picker-dropdown"
                     />
                     <input
                       type="tel"
@@ -787,11 +787,14 @@ export default function Register() {
               </>
             )}
 
-            {/* TAB 2: EMAIL & PASSWORD INPUTS */}
+            {/* TAB 2: EMAIL OTP INPUTS (PASSWORD REMOVED COMPLETELY!) */}
             {authMethod === 'email' && (
               <>
                 <div className="sh-white-group">
-                  <label className="sh-white-label">Official Email Address</label>
+                  <label className="sh-white-label">
+                    <span>Official Email Address</span>
+                    <span className="sh-white-hint">Will receive 4-digit OTP</span>
+                  </label>
                   <input
                     type="email"
                     className="sh-white-input"
@@ -800,28 +803,6 @@ export default function Register() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
-                </div>
-
-                <div className="sh-white-group">
-                  <label className="sh-white-label">Account Password</label>
-                  <div className="sh-white-password-wrap">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      className="sh-white-input"
-                      placeholder="Min 6 characters"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <button
-                      type="button"
-                      className="sh-white-eye-btn"
-                      onClick={() => setShowPassword(!showPassword)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    >
-                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
                 </div>
 
                 {activeTab === 'register' && (
@@ -907,21 +888,23 @@ export default function Register() {
 
           {error && <p className="sh-white-error">{error}</p>}
 
-          {/* SUBMIT BUTTON (FOR MOBILE OTP & EMAIL) */}
+          {/* SUBMIT BUTTON (FOR MOBILE OTP & EMAIL OTP) */}
           {authMethod !== 'google' && (
             <button type="submit" className="sh-white-btn-primary">
               {activeTab === 'register'
                 ? authMethod === 'mobile'
                   ? 'Verify via Mobile OTP & Register →'
-                  : 'Complete Registration with Email →'
-                : 'Sign In to Scoring Heroes →'}
+                  : 'Verify via Email OTP & Register →'
+                : authMethod === 'mobile'
+                ? 'Send Mobile OTP & Sign In →'
+                : 'Send Email OTP & Sign In →'}
             </button>
           )}
         </form>
       </div>
 
       {/* ============================================================== */}
-      {/* MOBILE OTP VERIFICATION DIALOG                                  */}
+      {/* UNIVERSAL OTP VERIFICATION DIALOG (MOBILE SMS & EMAIL OTP)     */}
       {/* ============================================================== */}
       {showOtpDialog && (
         <div
@@ -946,22 +929,28 @@ export default function Register() {
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <div
                 style={{
-                  width: 44,
-                  height: 44,
+                  width: 48,
+                  height: 48,
                   borderRadius: '50%',
-                  background: '#fef2f2',
-                  color: '#e10613',
+                  background: otpTargetType === 'mobile' ? '#fef2f2' : '#eff6ff',
+                  color: otpTargetType === 'mobile' ? '#e10613' : '#2563eb',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 10,
                 }}
               >
-                <Zap size={22} />
+                {otpTargetType === 'mobile' ? <Zap size={24} /> : <Mail size={24} />}
               </div>
-              <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>Enter SMS OTP Code</h3>
+              <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>
+                {otpTargetType === 'mobile' ? 'Enter Mobile SMS OTP' : 'Enter Email Verification OTP'}
+              </h3>
               <p style={{ margin: '4px 0 0', fontSize: 13, color: '#64748b' }}>
-                Sent 4-digit code to <strong>{phoneCode} {phone}</strong>
+                {otpTargetType === 'mobile' ? (
+                  <>Sent 4-digit code via SMS to <strong>{phoneCode} {phone}</strong></>
+                ) : (
+                  <>Sent 4-digit verification code to <strong>{email}</strong></>
+                )}
               </p>
             </div>
 
@@ -1000,7 +989,7 @@ export default function Register() {
               {error && <p className="sh-white-error">{error}</p>}
 
               <button type="submit" className="sh-white-btn-primary">
-                Verify & Enter Arena →
+                {activeTab === 'login' ? 'Verify OTP & Sign In →' : 'Verify OTP & Enter Arena →'}
               </button>
 
               <button
