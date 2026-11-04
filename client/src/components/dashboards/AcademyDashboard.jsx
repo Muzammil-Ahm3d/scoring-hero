@@ -90,9 +90,92 @@ export default function AcademyDashboard({ user }) {
         </div>
       </section>
 
-      {/* Quick Action Shortcuts (Allocated Features) */}
+      {/* Direct Operational Access Bar */}
+      <section
+        style={{
+          marginTop: 12,
+          marginBottom: 12,
+          padding: '12px 14px',
+          background: 'rgba(15, 23, 42, 0.65)',
+          borderRadius: 14,
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+        }}
+      >
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          <button
+            type="button"
+            style={{
+              padding: '12px 10px',
+              borderRadius: 10,
+              background: 'rgba(124, 77, 255, 0.12)',
+              border: '1px solid rgba(124, 77, 255, 0.3)',
+              color: '#f8fafc',
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: 'pointer',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 4,
+            }}
+            onClick={() => navigate('/app/academy?tab=students')}
+          >
+            <span style={{ fontSize: 18 }}>👥</span>
+            <span style={{ color: '#7c4dff' }}>Student Batches</span>
+          </button>
+
+          <button
+            type="button"
+            style={{
+              padding: '12px 10px',
+              borderRadius: 10,
+              background: 'rgba(0, 176, 255, 0.12)',
+              border: '1px solid rgba(0, 176, 255, 0.3)',
+              color: '#f8fafc',
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: 'pointer',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 4,
+            }}
+            onClick={() => navigate('/app/academy?tab=attendance')}
+          >
+            <span style={{ fontSize: 18 }}>📋</span>
+            <span style={{ color: '#00b0ff' }}>Attendance & Drills</span>
+          </button>
+
+          <button
+            type="button"
+            style={{
+              padding: '12px 10px',
+              borderRadius: 10,
+              background: 'rgba(0, 230, 118, 0.12)',
+              border: '1px solid rgba(0, 230, 118, 0.3)',
+              color: '#f8fafc',
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: 'pointer',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 4,
+            }}
+            onClick={() => navigate('/app/academy?tab=fees')}
+          >
+            <span style={{ fontSize: 18 }}>💳</span>
+            <span style={{ color: '#00e676' }}>Fee Collection</span>
+          </button>
+        </div>
+      </section>
+
+      {/* Quick Action Shortcuts */}
       <div className="sh-quick-actions-grid">
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/academy')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/academy?tab=students')}>
           <div className="sh-action-icon" style={{ background: 'rgba(124,77,255,0.15)', color: '#7c4dff' }}>
             <Users size={18} />
           </div>

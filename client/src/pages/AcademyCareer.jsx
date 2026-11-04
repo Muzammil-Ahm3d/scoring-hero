@@ -1,858 +1,2358 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   GraduationCap,
-  Award,
-  Calendar,
-  CheckCircle2,
-  TrendingUp,
-  Target,
-  FileText,
-  UserCheck,
-  ChevronRight,
-  ShieldCheck,
-  Flame,
-  Clock,
-  Dumbbell,
   Users,
-  CreditCard,
-  Building,
-  BarChart3,
-  Check,
-  AlertCircle,
+  Calendar,
+  DollarSign,
+  CheckCircle2,
+  Phone,
+  Plus,
+  Send,
+  AlertTriangle,
+  Clock,
+  Printer,
   Share2,
+  Search,
+  Check,
+  CreditCard,
+  ShieldCheck,
+  TrendingUp,
+  Award,
+  Flame,
+  Layers,
+  FileText,
 } from 'lucide-react'
 import Screen from '../components/Screen'
-import { useAuth } from '../context/AuthContext'
 
 export default function AcademyCareer() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  // Top Mode: 'operations' (The 10 Feature 12 Management Systems) vs 'pathway' (Student Career Ladder)
-  const [mainView, setMainView] = useState('operations') // 'operations' | 'pathway'
+  const tabParam = searchParams.get('tab')
+  const [activeTab, setActiveTab] = useState(
+    tabParam === 'attendance' ? 'attendance' : tabParam === 'fees' ? 'fees' : 'students'
+  )
 
-  // Current Operations System: 1 to 10
-  const [activeSystem, setActiveSystem] = useState(1)
-  const [saveToast, setSaveToast] = useState('')
+  const [toastMsg, setToastMsg] = useState('')
 
-  // System 1: Student Registration Form State
-  const [studentForm, setStudentForm] = useState({
-    name: 'Arjun Verma',
-    ageGroup: 'U-16',
-    role: 'All-Rounder',
-    batch: 'Morning A',
-  })
+  useEffect(() => {
+    const t = searchParams.get('tab')
+    if (t === 'students' || t === 'attendance' || t === 'fees') {
+      setActiveTab(t)
+    }
+  }, [searchParams])
 
-  // System 2: Student Attendance State
-  const [studentAttendance, setStudentAttendance] = useState([
-    { id: 1, name: 'Arjun Verma', present: true },
-    { id: 2, name: 'Rahul Sharma', present: true },
-    { id: 3, name: 'Ashish KP', present: true },
-    { id: 4, name: 'Karan Singh', present: false },
-    { id: 5, name: 'Mohit Rao', present: true },
-    { id: 6, name: 'Divya Patel', present: true },
-    { id: 7, name: 'Sai Teja', present: true },
-  ])
-
-  // System 3: Coach Attendance State
-  const [coachAttendance, setCoachAttendance] = useState([
-    { id: 1, name: 'Arjun Verma', role: 'Head Coach', present: true },
-    { id: 2, name: 'Rahul Sharma', role: 'Bowling Coach', present: true },
-    { id: 3, name: 'Ashish KP', role: 'Batting Coach', present: true },
-    { id: 4, name: 'Karan Singh', role: 'Fielding Coach', present: false },
-    { id: 5, name: 'Mohit Rao', role: 'Fitness Trainer', present: true },
-  ])
-
-  // System 6 & 7: Schedule Slots State
-  const [trainingSlots, setTrainingSlots] = useState([
-    { id: 1, time: '06:00', title: 'Fitness', ground: 'Pitch 1', booked: true },
-    { id: 2, time: '07:00', title: 'Batting Nets', ground: 'Nets A & B', booked: true },
-    { id: 3, time: '08:00', title: 'Bowling Skills', ground: 'Main Ground', booked: true },
-    { id: 4, time: '16:30', title: 'Match Practice', ground: 'Center Turf', booked: true },
-  ])
-
-  // System 8: Accounts State
-  const [accounts, setAccounts] = useState({
-    monthlyCollection: 246500,
-    paidStudents: 184,
-    pendingFees: 38000,
-    transportFees: 22500,
-    receiptsIssued: 176,
-  })
-
-  // System 9: Staff Form State
-  const [staffForm, setStaffForm] = useState({
-    name: 'Arjun Verma',
-    role: 'Head Coach',
-    batch: 'Morning A',
-    access: 'Admin & Scorer',
-  })
-
-  // Helper to trigger save toast
-  const triggerSave = (msg) => {
-    setSaveToast(msg || 'Academy record saved & synchronized!')
-    setTimeout(() => setSaveToast(''), 3000)
+  const handleTabChange = (tab) => {
+    setActiveTab(tab)
+    setSearchParams({ tab })
   }
 
-  // Count present students
-  const presentCount = studentAttendance.filter((s) => s.present).length
-  const totalStudents = studentAttendance.length + 45 // 48/52 matching reference
+  const triggerToast = (msg) => {
+    setToastMsg(msg)
+    setTimeout(() => setToastMsg(''), 3000)
+  }
 
-  // Count present coaches
-  const presentCoachCount = coachAttendance.filter((c) => c.present).length
+  // =========================================================================
+  // 1. STUDENT ROSTER & BATCHES STATE
+  // =========================================================================
+  const [selectedBatchFilter, setSelectedBatchFilter] = useState('all') // 'all' | 'u14' | 'u16' | 'u19' | 'weekend'
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // System Names for Ribbon and Headers (Clean Product Names without blueprint 'FEATURE' tags)
-  const systemsMeta = [
-    { id: 1, title: 'Student / Player Registration', short: 'Player Registration' },
-    { id: 2, title: 'Student Attendance Tracking', short: 'Student Attendance' },
-    { id: 3, title: 'Coach Attendance & Activity', short: 'Coach Attendance' },
-    { id: 4, title: 'Performance Tracking', short: 'Performance' },
-    { id: 5, title: 'Behaviour & Discipline Monitoring', short: 'Discipline' },
-    { id: 6, title: 'Training Program Management', short: 'Training Plan' },
-    { id: 7, title: 'Ground Slot Allocation', short: 'Ground Slots' },
-    { id: 8, title: 'Accounts & Fee Management', short: 'Accounts & Fees' },
-    { id: 9, title: 'Staff Management', short: 'Staff Management' },
-    { id: 10, title: 'Reports & Analytics', short: 'Reports & Analytics' },
-  ]
+  const [students, setStudents] = useState([
+    {
+      id: 1,
+      name: 'Rohit Sharma',
+      age: 17,
+      ageGroup: 'u19',
+      batch: 'U-19 Pro High Performance',
+      role: 'Top-Order Batsman',
+      guardianName: 'Ramakant Sharma',
+      guardianPhone: '+91 98401 11223',
+      attendanceRate: '96.4%',
+      attendanceToday: 'present', // 'present' | 'late' | 'half' | 'absent' | 'leave'
+      feeStatus: 'Paid',
+      feeAmount: 3000,
+      dueDate: '05 Nov 2026',
+      receiptNo: 'REC-9912',
+      yoyoScore: 19.8,
+      battingAvg: '48.5',
+      coachNote: 'Strong front-foot technique. Focus on back-foot punch off fast bowlers.',
+      isVerified: true,
+    },
+    {
+      id: 2,
+      name: 'Kavya Raman',
+      age: 15,
+      ageGroup: 'u16',
+      batch: 'U-16 Evening Elite',
+      role: 'Right-Arm Fast Bowler',
+      guardianName: 'Ramanathan K.',
+      guardianPhone: '+91 98402 22334',
+      attendanceRate: '94.2%',
+      attendanceToday: 'present',
+      feeStatus: 'Paid',
+      feeAmount: 3000,
+      dueDate: '05 Nov 2026',
+      receiptNo: 'REC-9913',
+      yoyoScore: 18.6,
+      battingAvg: '124 km/h Pace',
+      coachNote: 'Wrist position upright. Consistent good length hit 8 out of 10 balls today.',
+      isVerified: true,
+    },
+    {
+      id: 3,
+      name: 'Aditya Sen',
+      age: 16,
+      ageGroup: 'u16',
+      batch: 'U-16 Evening Elite',
+      role: 'Wicketkeeper Batsman',
+      guardianName: 'Sneha Sen',
+      guardianPhone: '+91 98403 33445',
+      attendanceRate: '88.5%',
+      attendanceToday: 'present',
+      feeStatus: 'Overdue',
+      feeAmount: 3000,
+      dueDate: '01 Nov 2026',
+      receiptNo: '',
+      yoyoScore: 17.8,
+      battingAvg: '36.2',
+      coachNote: 'Glove work clean against leg-spin. Footwork agile behind the stumps.',
+      isVerified: true,
+    },
+    {
+      id: 4,
+      name: 'Arjun Das',
+      age: 13,
+      ageGroup: 'u14',
+      batch: 'U-14 Morning Foundation',
+      role: 'Leg-Spin Bowler',
+      guardianName: 'Pradeep Das',
+      guardianPhone: '+91 98404 44556',
+      attendanceRate: '91.0%',
+      attendanceToday: 'present',
+      feeStatus: 'Overdue',
+      feeAmount: 2500,
+      dueDate: '01 Nov 2026',
+      receiptNo: '',
+      yoyoScore: 16.5,
+      battingAvg: '3.8 Econ',
+      coachNote: 'Googly disguised well. Working on flatter trajectory for T20 overs.',
+      isVerified: true,
+    },
+    {
+      id: 5,
+      name: 'Divya Patel',
+      age: 16,
+      ageGroup: 'u16',
+      batch: 'U-16 Evening Elite',
+      role: 'Left-Hand All-Rounder',
+      guardianName: 'Hiren Patel',
+      guardianPhone: '+91 98405 55667',
+      attendanceRate: '98.0%',
+      attendanceToday: 'present',
+      feeStatus: 'Paid',
+      feeAmount: 3000,
+      dueDate: '05 Nov 2026',
+      receiptNo: 'REC-9914',
+      yoyoScore: 19.2,
+      battingAvg: '42.0',
+      coachNote: 'Exceptional athletic fielding in the covers. Match-winning composure.',
+      isVerified: true,
+    },
+    {
+      id: 6,
+      name: 'Sai Teja',
+      age: 18,
+      ageGroup: 'u19',
+      batch: 'U-19 Pro High Performance',
+      role: 'Fast Bowling All-Rounder',
+      guardianName: 'Venkatesh T.',
+      guardianPhone: '+91 98406 66778',
+      attendanceRate: '95.5%',
+      attendanceToday: 'present',
+      feeStatus: 'Paid',
+      feeAmount: 3000,
+      dueDate: '05 Nov 2026',
+      receiptNo: 'REC-9915',
+      yoyoScore: 20.1,
+      battingAvg: '128 km/h Pace',
+      coachNote: 'Hitting the deck hard. Great yorker execution in the death overs.',
+      isVerified: true,
+    },
+    {
+      id: 7,
+      name: 'Karan Singh',
+      age: 12,
+      ageGroup: 'weekend',
+      batch: 'Weekend Grassroots Clinic',
+      role: 'Right-Hand Batsman',
+      guardianName: 'Gurmeet Singh',
+      guardianPhone: '+91 98407 77889',
+      attendanceRate: '82.0%',
+      attendanceToday: 'absent',
+      feeStatus: 'Paid',
+      feeAmount: 2500,
+      dueDate: '05 Nov 2026',
+      receiptNo: 'REC-9916',
+      yoyoScore: 15.4,
+      battingAvg: '28.0',
+      coachNote: 'Developing straight-bat defensive shots. Excused today for school exams.',
+      isVerified: true,
+    },
+  ])
 
-  const curSystem = systemsMeta.find((s) => s.id === activeSystem) || systemsMeta[0]
+  // Filter students based on batch & search query
+  const filteredStudents = students.filter((s) => {
+    const matchesBatch = selectedBatchFilter === 'all' || s.ageGroup === selectedBatchFilter
+    const matchesSearch =
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.guardianName.toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesBatch && matchesSearch
+  })
+
+  // =========================================================================
+  // 2. COACHES & DRILLS STATE
+  // =========================================================================
+  const [coaches, setCoaches] = useState([
+    {
+      id: 1,
+      name: 'Arjun Verma',
+      role: 'Head Coach & Director',
+      badge: 'BCCI Level 3',
+      phone: '+91 98400 11001',
+      shift: '05:30 AM - 11:30 AM',
+      present: true,
+    },
+    {
+      id: 2,
+      name: 'Rahul Sharma',
+      role: 'Pace Bowling Specialist',
+      badge: 'State Certified',
+      phone: '+91 98400 22002',
+      shift: '06:00 AM - 10:00 AM',
+      present: true,
+    },
+    {
+      id: 3,
+      name: 'Ashish KP',
+      role: 'Batting Coach & Biomechanics',
+      badge: 'NIS Certified',
+      phone: '+91 98400 33003',
+      shift: '03:30 PM - 07:30 PM',
+      present: true,
+    },
+    {
+      id: 4,
+      name: 'Mohit Rao',
+      role: 'Strength & Conditioning Trainer',
+      badge: 'CSCS Level 2',
+      phone: '+91 98400 44004',
+      shift: '05:30 AM - 09:30 AM',
+      present: true,
+    },
+  ])
+
+  const [drills, setDrills] = useState([
+    {
+      id: 'd1',
+      time: '06:00 AM - 07:00 AM',
+      title: 'Yo-Yo Conditioning & Agility Ladders',
+      venue: 'Main Ground Outfield',
+      coach: 'Mohit Rao (S&C Trainer)',
+      batch: 'U-19 & U-16 Squads',
+      focus: 'Endurance, stamina & acceleration',
+    },
+    {
+      id: 'd2',
+      time: '07:00 AM - 08:15 AM',
+      title: 'Target Bowling & Seam Position Net Session',
+      venue: 'Turf Nets A & B',
+      coach: 'Rahul Sharma (Bowling Coach)',
+      batch: 'Pace & Spin Bowlers',
+      focus: 'Hitting top of off-stump on good length',
+    },
+    {
+      id: 'd3',
+      time: '08:15 AM - 09:00 AM',
+      title: 'Short-Ball Pull & Hook Practice against Bowling Machine',
+      venue: 'Turf Net C (Automated Machine)',
+      coach: 'Ashish KP (Batting Coach)',
+      batch: 'Top-Order Batsmen',
+      focus: 'Swiveling weight transfer & keeping ball down',
+    },
+    {
+      id: 'd4',
+      time: '04:30 PM - 06:30 PM',
+      title: '20-Over Center Turf Match Simulation',
+      venue: 'Center Turf Wicket (Red Soil)',
+      coach: 'Arjun Verma (Head Coach)',
+      batch: 'Elite Match Squad',
+      focus: 'Powerplay strike rotation & death bowling',
+    },
+  ])
+
+  // Attendance actions
+  const toggleStudentAttendance = (studentId, status) => {
+    setStudents((prev) =>
+      prev.map((s) => (s.id === studentId ? { ...s, attendanceToday: status } : s))
+    )
+    triggerToast('Student attendance updated!')
+  }
+
+  const markAllStudentsPresent = () => {
+    setStudents((prev) => prev.map((s) => ({ ...s, attendanceToday: 'present' })))
+    triggerToast('All students marked PRESENT for today!')
+  }
+
+  const toggleCoachAttendance = (coachId) => {
+    setCoaches((prev) =>
+      prev.map((c) => (c.id === coachId ? { ...c, present: !c.present } : c))
+    )
+    triggerToast('Coach on-duty status updated!')
+  }
+
+  // =========================================================================
+  // 3. TUITION FEES & ACCOUNTS STATE
+  // =========================================================================
+  const totalExpectedFees = students.reduce((acc, s) => acc + s.feeAmount, 0)
+  const totalCollectedFees = students
+    .filter((s) => s.feeStatus === 'Paid')
+    .reduce((acc, s) => acc + s.feeAmount, 0)
+  const totalOverdueFees = students
+    .filter((s) => s.feeStatus === 'Overdue')
+    .reduce((acc, s) => acc + s.feeAmount, 0)
+  const collectionRate = totalExpectedFees > 0 ? ((totalCollectedFees / totalExpectedFees) * 100).toFixed(1) : 0
+
+  // 1-Tap fee reminder
+  const sendFeeReminder = (student) => {
+    const text = encodeURIComponent(
+      `Hello ${student.guardianName}, this is a gentle fee reminder from Scoring Heroes Elite Cricket Academy for ${student.name}. Monthly tuition of ₹${student.feeAmount.toLocaleString()} is due. Please pay via UPI or at the academy counter. Thank you!`
+    )
+    const url = `https://wa.me/${student.guardianPhone.replace(/[^0-9]/g, '')}?text=${text}`
+    window.open(url, '_blank')
+    triggerToast(`Payment reminder opened for ${student.name}'s guardian!`)
+  }
+
+  // =========================================================================
+  // 4. MODALS STATE
+  // =========================================================================
+  const [showAdmitModal, setShowAdmitModal] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(null)
+  const [showReceiptModal, setShowReceiptModal] = useState(null)
+  const [showRecordFeeModal, setShowRecordFeeModal] = useState(null)
+  const [showAddDrillModal, setShowAddDrillModal] = useState(false)
+  const [showStatementModal, setShowStatementModal] = useState(false)
+
+  // Admission Form
+  const [admitForm, setAdmitForm] = useState({
+    name: '',
+    age: '',
+    ageGroup: 'u16',
+    batch: 'U-16 Evening Elite',
+    role: 'All-Rounder',
+    guardianName: '',
+    guardianPhone: '',
+    monthlyFee: 3000,
+    admissionFee: 5000,
+  })
+
+  // Record Fee Form
+  const [feePaymentForm, setFeePaymentForm] = useState({
+    studentId: '',
+    amount: 3000,
+    paymentMode: 'UPI QR Scan',
+    date: '04 Nov 2026',
+  })
+
+  // Add Drill Form
+  const [drillForm, setDrillForm] = useState({
+    time: '06:00 AM - 07:30 AM',
+    title: '',
+    venue: 'Turf Nets A & B',
+    coach: 'Arjun Verma (Head Coach)',
+    batch: 'U-16 & U-19 Squads',
+    focus: '',
+  })
+
+  // Handle Admission Submit
+  const handleAdmitStudent = (e) => {
+    e.preventDefault()
+    if (!admitForm.name || !admitForm.guardianPhone) {
+      alert('Please fill student name and guardian phone number!')
+      return
+    }
+
+    const newStudent = {
+      id: Date.now(),
+      name: admitForm.name,
+      age: Number(admitForm.age) || 15,
+      ageGroup: admitForm.ageGroup,
+      batch: admitForm.batch,
+      role: admitForm.role,
+      guardianName: admitForm.guardianName || 'Guardian',
+      guardianPhone: admitForm.guardianPhone,
+      attendanceRate: '100.0%',
+      attendanceToday: 'present',
+      feeStatus: 'Paid',
+      feeAmount: Number(admitForm.monthlyFee) || 3000,
+      dueDate: '05 Dec 2026',
+      receiptNo: `REC-${Math.floor(1000 + Math.random() * 9000)}`,
+      yoyoScore: 17.0,
+      battingAvg: 'New Joining',
+      coachNote: 'Newly enrolled student. Initial assessment scheduled.',
+      isVerified: true,
+    }
+
+    setStudents((prev) => [newStudent, ...prev])
+    setShowAdmitModal(false)
+    setAdmitForm({
+      name: '',
+      age: '',
+      ageGroup: 'u16',
+      batch: 'U-16 Evening Elite',
+      role: 'All-Rounder',
+      guardianName: '',
+      guardianPhone: '',
+      monthlyFee: 3000,
+      admissionFee: 5000,
+    })
+    triggerToast(`Student ${newStudent.name} admitted successfully!`)
+  }
+
+  // Handle Record Payment Submit
+  const handleRecordPayment = (e) => {
+    e.preventDefault()
+    const student = students.find((s) => s.id === Number(feePaymentForm.studentId))
+    if (!student) return
+
+    const newReceiptNo = `REC-${Math.floor(1000 + Math.random() * 9000)}`
+
+    setStudents((prev) =>
+      prev.map((s) =>
+        s.id === student.id
+          ? {
+              ...s,
+              feeStatus: 'Paid',
+              receiptNo: newReceiptNo,
+            }
+          : s
+      )
+    )
+
+    setShowRecordFeeModal(null)
+    setShowReceiptModal({
+      ...student,
+      receiptNo: newReceiptNo,
+      paidAmount: Number(feePaymentForm.amount),
+      paidMode: feePaymentForm.paymentMode,
+      paidDate: feePaymentForm.date,
+    })
+    triggerToast(`Payment of ₹${feePaymentForm.amount.toLocaleString()} recorded for ${student.name}!`)
+  }
+
+  // Handle Add Drill Submit
+  const handleAddDrill = (e) => {
+    e.preventDefault()
+    if (!drillForm.title) {
+      alert('Please enter drill title!')
+      return
+    }
+
+    const newDrill = {
+      id: `d-${Date.now()}`,
+      time: drillForm.time,
+      title: drillForm.title,
+      venue: drillForm.venue,
+      coach: drillForm.coach,
+      batch: drillForm.batch,
+      focus: drillForm.focus || 'Technical execution & fitness',
+    }
+
+    setDrills((prev) => [...prev, newDrill])
+    setShowAddDrillModal(false)
+    setDrillForm({
+      time: '06:00 AM - 07:30 AM',
+      title: '',
+      venue: 'Turf Nets A & B',
+      coach: 'Arjun Verma (Head Coach)',
+      batch: 'U-16 & U-19 Squads',
+      focus: '',
+    })
+    triggerToast(`New training drill added to daily schedule!`)
+  }
 
   return (
     <Screen
       back
-      title="Academy Management"
-      subtitle="Operations & Player Development"
+      title="Sports Academy Operations"
+      subtitle="Student Batches, Daily Attendance & Tuition Fees"
     >
-      <div className="academy-ops-container">
-        {/* Main Mode Toggle: Operations (10 Systems) vs Player Pathway */}
-        <div className="sh-seg" style={{ marginBottom: 4 }}>
-          <button
-            type="button"
-            className={`sh-seg-btn ${mainView === 'operations' ? 'is-active' : ''}`}
-            onClick={() => setMainView('operations')}
+      <div style={{ paddingBottom: 80 }}>
+        {/* Toast Alert */}
+        {toastMsg && (
+          <div
+            style={{
+              padding: '10px 14px',
+              borderRadius: 10,
+              background: 'rgba(0, 230, 118, 0.15)',
+              border: '1px solid #00e676',
+              color: '#00e676',
+              fontSize: 13,
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              marginBottom: 12,
+            }}
           >
-            ⚡ Academy Operations (10 Systems)
-          </button>
-          <button
-            type="button"
-            className={`sh-seg-btn ${mainView === 'pathway' ? 'is-active' : ''}`}
-            onClick={() => setMainView('pathway')}
-          >
-            🏏 Player Pathway & Drills
-          </button>
-        </div>
-
-        {saveToast && (
-          <div className="match-tools-toast" style={{ margin: '0 0 6px' }}>
-            <CheckCircle2 size={16} color="#00e676" />
-            <span>{saveToast}</span>
+            <CheckCircle2 size={18} />
+            <span>{toastMsg}</span>
           </div>
         )}
 
-        {/* =========================================================
-            OPERATIONS VIEW: 10 BLUEPRINT SCREENS
-            ========================================================= */}
-        {mainView === 'operations' && (
-          <>
-            {/* 10-System Selector Ribbon */}
-            <div className="academy-ops-ribbon">
-              {systemsMeta.map((sys) => (
+        {/* =========================================================================
+            PRIMARY 3-PORTAL NAVIGATION TABS (Strictly Clean & Direct)
+        ========================================================================= */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 6,
+            background: 'rgba(15, 23, 42, 0.8)',
+            padding: 4,
+            borderRadius: 12,
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            marginBottom: 14,
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => handleTabChange('students')}
+            style={{
+              padding: '10px 8px',
+              borderRadius: 9,
+              border: 'none',
+              background: activeTab === 'students' ? 'linear-gradient(135deg, #7c4dff, #536dfe)' : 'transparent',
+              color: activeTab === 'students' ? '#ffffff' : '#94a3b8',
+              fontSize: 12,
+              fontWeight: 900,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 5,
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <Users size={15} />
+            <span>Student Batches</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabChange('attendance')}
+            style={{
+              padding: '10px 8px',
+              borderRadius: 9,
+              border: 'none',
+              background: activeTab === 'attendance' ? 'linear-gradient(135deg, #00b0ff, #0081cb)' : 'transparent',
+              color: activeTab === 'attendance' ? '#020617' : '#94a3b8',
+              fontSize: 12,
+              fontWeight: 900,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 5,
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <Calendar size={15} />
+            <span>Attendance & Drills</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabChange('fees')}
+            style={{
+              padding: '10px 8px',
+              borderRadius: 9,
+              border: 'none',
+              background: activeTab === 'fees' ? 'linear-gradient(135deg, #00e676, #00a854)' : 'transparent',
+              color: activeTab === 'fees' ? '#020617' : '#94a3b8',
+              fontSize: 12,
+              fontWeight: 900,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 5,
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <DollarSign size={15} />
+            <span>Fee Collection</span>
+          </button>
+        </div>
+
+        {/* =========================================================================
+            TAB 1: STUDENT BATCHES & ROSTER
+        ========================================================================= */}
+        {activeTab === 'students' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* Header with Search and New Admission Button */}
+            <div
+              style={{
+                background: 'rgba(15, 23, 42, 0.75)',
+                padding: '14px',
+                borderRadius: 14,
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+                <div>
+                  <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>
+                    Trainee Management
+                  </span>
+                  <h3 style={{ fontSize: 16, fontWeight: 900, color: '#f8fafc', margin: '2px 0 0' }}>
+                    Enrolled Students ({students.length})
+                  </h3>
+                </div>
+
                 <button
-                  key={sys.id}
                   type="button"
-                  className={`ops-ribbon-btn ${activeSystem === sys.id ? 'is-active' : ''}`}
-                  onClick={() => setActiveSystem(sys.id)}
+                  onClick={() => setShowAdmitModal(true)}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #7c4dff, #00b0ff)',
+                    color: '#ffffff',
+                    fontWeight: 900,
+                    fontSize: 12,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
                 >
-                  <span className="ops-num-badge">{sys.id}</span>
-                  <span>{sys.short}</span>
+                  <Plus size={16} /> + Admit New Student
                 </button>
-              ))}
+              </div>
+
+              {/* Search Bar */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '8px 12px',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  borderRadius: 10,
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  marginBottom: 10,
+                }}
+              >
+                <Search size={16} color="#94a3b8" />
+                <input
+                  type="text"
+                  placeholder="Search student by name, role or guardian..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#f8fafc',
+                    fontSize: 13,
+                    width: '100%',
+                    outline: 'none',
+                  }}
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 12 }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* Batch Filter Pills */}
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 6,
+                  overflowX: 'auto',
+                  scrollbarWidth: 'none',
+                  paddingBottom: 2,
+                }}
+              >
+                {[
+                  { key: 'all', label: `All Batches (${students.length})` },
+                  { key: 'u14', label: 'U-14 Foundation' },
+                  { key: 'u16', label: 'U-16 Elite' },
+                  { key: 'u19', label: 'U-19 Pro' },
+                  { key: 'weekend', label: 'Weekend Grassroots' },
+                ].map((b) => {
+                  const isSel = selectedBatchFilter === b.key
+                  return (
+                    <button
+                      key={b.key}
+                      type="button"
+                      onClick={() => setSelectedBatchFilter(b.key)}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: 8,
+                        fontSize: 11,
+                        fontWeight: 800,
+                        whiteSpace: 'nowrap',
+                        border: isSel ? '1px solid #7c4dff' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isSel ? 'rgba(124, 77, 255, 0.2)' : 'rgba(255, 255, 255, 0.03)',
+                        color: isSel ? '#b388ff' : '#94a3b8',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {b.label}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
-            {/* Authentic Mobile Screen Frame */}
-            <div className="academy-phone-screen">
-              {/* Top Bar inside Screen */}
-              <div className="phone-top-bar">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {/* Students List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {filteredStudents.length === 0 ? (
+                <div style={{ padding: 30, textAlign: 'center', background: 'rgba(15, 23, 42, 0.6)', borderRadius: 14 }}>
+                  <p style={{ color: 'var(--muted)', margin: 0 }}>No students found matching your filter.</p>
+                </div>
+              ) : (
+                filteredStudents.map((st) => (
                   <div
+                    key={st.id}
                     style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: 10,
-                      background: 'linear-gradient(135deg, #ff3b50, #b0211a)',
-                      display: 'grid',
-                      placeItems: 'center',
-                      color: '#fff',
-                      fontWeight: 900,
-                      fontSize: 13,
+                      padding: '14px',
+                      borderRadius: 14,
+                      background: 'rgba(15, 23, 42, 0.8)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 10,
                     }}
                   >
-                    {activeSystem}
-                  </div>
-                  <div>
-                    <h2 className="phone-system-title">{curSystem.title}</h2>
-                    <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>
-                      Scoring Heroes Academy Operations
-                    </span>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  <button
-                    className="icon-btn"
-                    style={{ width: 32, height: 32 }}
-                    disabled={activeSystem === 1}
-                    onClick={() => setActiveSystem((s) => Math.max(1, s - 1))}
-                    title="Previous system"
-                  >
-                    ‹
-                  </button>
-                  <button
-                    className="icon-btn"
-                    style={{ width: 32, height: 32 }}
-                    disabled={activeSystem === 10}
-                    onClick={() => setActiveSystem((s) => Math.min(10, s + 1))}
-                    title="Next system"
-                  >
-                    ›
-                  </button>
-                </div>
-              </div>
-
-              {/* SCREEN 1: Student / Player Registration System */}
-              {activeSystem === 1 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Student / Player Registration</h3>
-
-                  <div className="ops-input-group">
-                    <span className="ops-label">Player Name</span>
-                    <input
-                      className="ops-input"
-                      value={studentForm.name}
-                      onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })}
-                      placeholder="Arjun Verma"
-                    />
-                  </div>
-
-                  <div className="ops-input-group">
-                    <span className="ops-label">Age Group</span>
-                    <select
-                      className="ops-input"
-                      value={studentForm.ageGroup}
-                      onChange={(e) => setStudentForm({ ...studentForm, ageGroup: e.target.value })}
-                    >
-                      <option value="U-12">U-12</option>
-                      <option value="U-14">U-14</option>
-                      <option value="U-16">U-16</option>
-                      <option value="U-19">U-19</option>
-                      <option value="Senior">Senior</option>
-                    </select>
-                  </div>
-
-                  <div className="ops-input-group">
-                    <span className="ops-label">Role</span>
-                    <select
-                      className="ops-input"
-                      value={studentForm.role}
-                      onChange={(e) => setStudentForm({ ...studentForm, role: e.target.value })}
-                    >
-                      <option value="All-Rounder">All-Rounder</option>
-                      <option value="Batsman">Batsman</option>
-                      <option value="Fast Bowler">Fast Bowler</option>
-                      <option value="Spin Bowler">Spin Bowler</option>
-                      <option value="Wicketkeeper">Wicketkeeper</option>
-                    </select>
-                  </div>
-
-                  <div className="ops-input-group">
-                    <span className="ops-label">Batch</span>
-                    <select
-                      className="ops-input"
-                      value={studentForm.batch}
-                      onChange={(e) => setStudentForm({ ...studentForm, batch: e.target.value })}
-                    >
-                      <option value="Morning A">Morning A</option>
-                      <option value="Morning B">Morning B</option>
-                      <option value="Evening Elite">Evening Elite</option>
-                      <option value="Weekend Pro">Weekend Pro</option>
-                    </select>
-                  </div>
-
-                  <div className="ops-verified-shield-row">
-                    <ShieldCheck size={20} color="#00e676" />
-                    <span>Aadhaar Identity & Academy Roster Verified</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave(`Registration record saved for ${studentForm.name} (${studentForm.ageGroup})!`)}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
-              )}
-
-              {/* SCREEN 2: Student Attendance Tracking System */}
-              {activeSystem === 2 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Student Attendance</h3>
-
-                  <div className="ops-gold-banner">
-                    <span>TODAY • 48 / 52 PRESENT</span>
-                  </div>
-
-                  <div className="ops-item-list">
-                    {studentAttendance.map((st) => (
-                      <div key={st.id} className="ops-item-row">
-                        <span className="ops-item-name">{st.name}</span>
-                        <button
-                          type="button"
-                          className={`ops-pill-btn ${st.present ? 'is-present' : 'is-absent'}`}
-                          onClick={() => {
-                            setStudentAttendance((list) =>
-                              list.map((item) => (item.id === st.id ? { ...item, present: !item.present } : item))
-                            )
+                    {/* Top Student Header */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                        <div
+                          style={{
+                            width: 42,
+                            height: 42,
+                            borderRadius: 10,
+                            background: 'rgba(124, 77, 255, 0.15)',
+                            border: '1px solid rgba(124, 77, 255, 0.35)',
+                            display: 'grid',
+                            placeItems: 'center',
+                            color: '#b388ff',
+                            fontWeight: 900,
+                            fontSize: 16,
                           }}
                         >
-                          {st.present ? 'PRESENT' : 'ABSENT'}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave('Student attendance roster successfully committed to state log!')}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
-              )}
-
-              {/* SCREEN 3: Coach Attendance & Activity System */}
-              {activeSystem === 3 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Coach Attendance & Activity</h3>
-
-                  <div className="ops-gold-banner">
-                    <span>TODAY • 48 / 52 PRESENT (COACHES & STAFF)</span>
-                  </div>
-
-                  <div className="ops-item-list">
-                    {coachAttendance.map((coach) => (
-                      <div key={coach.id} className="ops-item-row">
-                        <div>
-                          <div className="ops-item-name">{coach.name}</div>
-                          <div className="ops-item-sub">{coach.role}</div>
+                          {st.name.charAt(0)}
                         </div>
-                        <button
-                          type="button"
-                          className={`ops-pill-btn ${coach.present ? 'is-present' : 'is-absent'}`}
-                          onClick={() => {
-                            setCoachAttendance((list) =>
-                              list.map((item) => (item.id === coach.id ? { ...item, present: !item.present } : item))
-                            )
-                          }}
-                        >
-                          {coach.present ? 'PRESENT' : 'ABSENT'}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
 
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave('Coach attendance and shift log synced!')}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
-              )}
-
-              {/* SCREEN 4: Performance Tracking System */}
-              {activeSystem === 4 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Performance</h3>
-
-                  <div className="ops-gold-banner">
-                    <span>ACADEMY PERFORMANCE</span>
-                  </div>
-
-                  <div className="ops-perf-stat-row">
-                    <div className="ops-perf-stat-card">
-                      <div className="ops-perf-stat-num">52</div>
-                      <div className="ops-perf-stat-lbl">PLAYERS</div>
-                    </div>
-                    <div className="ops-perf-stat-card">
-                      <div className="ops-perf-stat-num" style={{ color: '#00e676' }}>86%</div>
-                      <div className="ops-perf-stat-lbl">ATTENDANCE</div>
-                    </div>
-                    <div className="ops-perf-stat-card">
-                      <div className="ops-perf-stat-num" style={{ color: '#3de0ff' }}>14</div>
-                      <div className="ops-perf-stat-lbl">MATCHES</div>
-                    </div>
-                  </div>
-
-                  {/* Performance Curve SVG */}
-                  <div className="ops-chart-box">
-                    <svg viewBox="0 0 240 70" width="100%" height="70">
-                      <defs>
-                        <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#3de0ff" stopOpacity="0.4" />
-                          <stop offset="100%" stopColor="#3de0ff" stopOpacity="0.0" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M 10 55 Q 60 45, 100 35 T 180 20 T 230 10 L 230 65 L 10 65 Z"
-                        fill="url(#curveGrad)"
-                      />
-                      <path
-                        d="M 10 55 Q 60 45, 100 35 T 180 20 T 230 10"
-                        fill="none"
-                        stroke="#3de0ff"
-                        strokeWidth="2.5"
-                      />
-                      <circle cx="10" cy="55" r="3.5" fill="#3de0ff" />
-                      <circle cx="100" cy="35" r="3.5" fill="#3de0ff" />
-                      <circle cx="180" cy="20" r="3.5" fill="#3de0ff" />
-                      <circle cx="230" cy="10" r="4.5" fill="#00e676" />
-                    </svg>
-                    <span style={{ fontSize: 11, fontWeight: 800, color: '#ffc83d', letterSpacing: 0.8 }}>
-                      MONTHLY REPORT READY
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave('Monthly performance metrics exported & saved!')}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
-              )}
-
-              {/* SCREEN 5: Behaviour & Discipline Monitoring System */}
-              {activeSystem === 5 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Behaviour & Discipline Monitoring</h3>
-
-                  <div className="ops-input-group">
-                    <span className="ops-label">Player Name</span>
-                    <input className="ops-input" readOnly value="Arjun Verma" />
-                  </div>
-
-                  <div className="ops-row-split">
-                    <div className="ops-input-group" style={{ flex: 1 }}>
-                      <span className="ops-label">Age Group</span>
-                      <input className="ops-input" readOnly value="U-16" />
-                    </div>
-                    <div className="ops-input-group" style={{ flex: 1 }}>
-                      <span className="ops-label">Batch</span>
-                      <input className="ops-input" readOnly value="Morning A" />
-                    </div>
-                  </div>
-
-                  <div className="ops-item-list">
-                    <div className="ops-item-row">
-                      <span className="ops-item-name">Punctuality & Timeliness</span>
-                      <span style={{ color: '#00e676', fontWeight: 800 }}>95% (Good)</span>
-                    </div>
-                    <div className="ops-item-row">
-                      <span className="ops-item-name">Teamwork & Comradery</span>
-                      <span style={{ color: '#3de0ff', fontWeight: 800 }}>92% (High)</span>
-                    </div>
-                    <div className="ops-item-row">
-                      <span className="ops-item-name">Fairplay & Code of Conduct</span>
-                      <span style={{ color: '#ffc83d', fontWeight: 800 }}>Zero Sanctions</span>
-                    </div>
-                  </div>
-
-                  <div className="ops-verified-shield-row">
-                    <ShieldCheck size={20} color="#00e676" />
-                    <span>Discipline Benchmark Level A — Clean Track Record</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave('Discipline record updated with zero sanctions!')}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
-              )}
-
-              {/* SCREEN 6: Training Program Management System */}
-              {activeSystem === 6 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Training Program</h3>
-
-                  <div className="ops-gold-banner">
-                    <span>TRAINING PLAN</span>
-                  </div>
-
-                  <div className="ops-item-list">
-                    {trainingSlots.map((slot) => (
-                      <div key={slot.id} className="ops-item-row">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                          <strong style={{ fontFamily: 'monospace', color: '#ffc83d', fontSize: 13 }}>
-                            {slot.time}
-                          </strong>
-                          <span className="ops-item-name">{slot.title}</span>
-                        </div>
-                        <button
-                          type="button"
-                          className="ops-pill-btn is-booked"
-                          onClick={() => {
-                            setTrainingSlots((slots) =>
-                              slots.map((s) => (s.id === slot.id ? { ...s, booked: !s.booked } : s))
-                            )
-                          }}
-                        >
-                          {slot.booked ? 'BOOKED' : 'OPEN'}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave('Training plan syllabus synchronized across academy batches!')}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
-              )}
-
-              {/* SCREEN 7: Ground Slot Allocation System */}
-              {activeSystem === 7 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Ground Slot Allocation</h3>
-
-                  <div className="ops-gold-banner">
-                    <span>TRAINING PLAN</span>
-                  </div>
-
-                  <div className="ops-item-list">
-                    {trainingSlots.map((slot) => (
-                      <div key={slot.id} className="ops-item-row">
                         <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <strong style={{ fontFamily: 'monospace', color: '#ffc83d', fontSize: 13 }}>
-                              {slot.time}
-                            </strong>
-                            <span className="ops-item-name">{slot.title}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <strong style={{ fontSize: 15, color: '#f8fafc' }}>{st.name}</strong>
+                            {st.isVerified && (
+                              <span
+                                style={{
+                                  fontSize: 9,
+                                  fontWeight: 800,
+                                  color: '#00e676',
+                                  background: 'rgba(0, 230, 118, 0.15)',
+                                  padding: '2px 5px',
+                                  borderRadius: 4,
+                                }}
+                              >
+                                ✓ KYC
+                              </span>
+                            )}
                           </div>
-                          <span className="ops-item-sub">Allocated: {slot.ground}</span>
+                          <span style={{ fontSize: 12, color: '#38bdf8', fontWeight: 700 }}>
+                            {st.role} • {st.age} yrs
+                          </span>
+                          <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                            Batch: <strong style={{ color: '#f8fafc' }}>{st.batch}</strong>
+                          </div>
                         </div>
-                        <span className="ops-pill-btn is-booked">BOOKED</span>
                       </div>
-                    ))}
-                  </div>
 
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave('Ground and pitch slot allocations reserved & confirmed!')}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
-              )}
+                      <div style={{ textAlign: 'right' }}>
+                        <span
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 900,
+                            padding: '3px 8px',
+                            borderRadius: 6,
+                            textTransform: 'uppercase',
+                            background: st.feeStatus === 'Paid' ? 'rgba(0, 230, 118, 0.15)' : 'rgba(255, 59, 80, 0.15)',
+                            color: st.feeStatus === 'Paid' ? '#00e676' : '#ff3b50',
+                            border: st.feeStatus === 'Paid' ? '1px solid #00e676' : '1px solid #ff3b50',
+                          }}
+                        >
+                          {st.feeStatus === 'Paid' ? 'FEES PAID' : `DUE ₹${st.feeAmount}`}
+                        </span>
+                        <small style={{ fontSize: 10, color: '#94a3b8', display: 'block', marginTop: 4 }}>
+                          Attendance: <strong style={{ color: '#00e676' }}>{st.attendanceRate}</strong>
+                        </small>
+                      </div>
+                    </div>
 
-              {/* SCREEN 8: Accounts & Fee Management System */}
-              {activeSystem === 8 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Accounts & Fee</h3>
+                    {/* Guardian & Coach Note Strip */}
+                    <div
+                      style={{
+                        padding: '8px 10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.02)',
+                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        fontSize: 11,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: 4,
+                      }}
+                    >
+                      <span style={{ color: 'var(--muted)' }}>
+                        Guardian: <strong style={{ color: '#f8fafc' }}>{st.guardianName}</strong> ({st.guardianPhone})
+                      </span>
+                      <span style={{ color: '#ffc83d' }}>
+                        Yo-Yo Fitness: <strong>{st.yoyoScore}</strong>
+                      </span>
+                    </div>
 
-                  <div style={{ textAlign: 'center' }}>
-                    <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', letterSpacing: 0.8 }}>
-                      MONTHLY COLLECTION
-                    </span>
-                    <div className="ops-big-currency">
-                      ₹ {accounts.monthlyCollection.toLocaleString('en-IN')}
+                    {/* Action Buttons Row */}
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 2 }}>
+                      <a
+                        href={`tel:${st.guardianPhone}`}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: 8,
+                          background: 'rgba(0, 176, 255, 0.12)',
+                          border: '1px solid rgba(0, 176, 255, 0.25)',
+                          color: '#00b0ff',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          textDecoration: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 5,
+                        }}
+                      >
+                        <Phone size={13} /> Call Guardian
+                      </a>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowReportModal(st)}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: 8,
+                          background: 'rgba(124, 77, 255, 0.15)',
+                          border: '1px solid rgba(124, 77, 255, 0.35)',
+                          color: '#b388ff',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 5,
+                        }}
+                      >
+                        <Award size={13} /> Performance Report
+                      </button>
+
+                      {st.feeStatus === 'Overdue' && (
+                        <button
+                          type="button"
+                          onClick={() => sendFeeReminder(st)}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: 8,
+                            background: 'rgba(0, 230, 118, 0.15)',
+                            border: '1px solid #00e676',
+                            color: '#00e676',
+                            fontSize: 11,
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 5,
+                          }}
+                        >
+                          <Send size={13} /> Remind Fee
+                        </button>
+                      )}
                     </div>
                   </div>
-
-                  <div className="ops-financial-grid">
-                    <div className="ops-fin-row">
-                      <span className="ops-fin-label">Paid students</span>
-                      <span className="ops-fin-val">{accounts.paidStudents}</span>
-                    </div>
-                    <div className="ops-fin-row">
-                      <span className="ops-fin-label">Pending fees</span>
-                      <span className="ops-fin-val is-red">₹ {accounts.pendingFees.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div className="ops-fin-row">
-                      <span className="ops-fin-label">Transport fees</span>
-                      <span className="ops-fin-val">₹ {accounts.transportFees.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div className="ops-fin-row">
-                      <span className="ops-fin-label">Receipts issued</span>
-                      <span className="ops-fin-val">{accounts.receiptsIssued}</span>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave('Accounts ledger & monthly fees updated successfully!')}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
-              )}
-
-              {/* SCREEN 9: Staff Management System */}
-              {activeSystem === 9 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Staff</h3>
-
-                  <div className="ops-input-group">
-                    <span className="ops-label">Staff Name</span>
-                    <input
-                      className="ops-input"
-                      value={staffForm.name}
-                      onChange={(e) => setStaffForm({ ...staffForm, name: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="ops-input-group">
-                    <span className="ops-label">Role</span>
-                    <input
-                      className="ops-input"
-                      value={staffForm.role}
-                      onChange={(e) => setStaffForm({ ...staffForm, role: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="ops-row-split">
-                    <div className="ops-input-group" style={{ flex: 1 }}>
-                      <span className="ops-label">Assigned Batch</span>
-                      <input
-                        className="ops-input"
-                        value={staffForm.batch}
-                        onChange={(e) => setStaffForm({ ...staffForm, batch: e.target.value })}
-                      />
-                    </div>
-                    <div className="ops-input-group" style={{ flex: 1 }}>
-                      <span className="ops-label">Permissions</span>
-                      <input
-                        className="ops-input"
-                        value={staffForm.access}
-                        onChange={(e) => setStaffForm({ ...staffForm, access: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="ops-verified-shield-row">
-                    <ShieldCheck size={20} color="#00e676" />
-                    <span>State Cricket Board Certified Staff Member</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave(`Staff profile for ${staffForm.name} saved!`)}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
-              )}
-
-              {/* SCREEN 10: Reports & Analytics System */}
-              {activeSystem === 10 && (
-                <div className="ops-inner-card">
-                  <h3 className="ops-inner-card-title">Reports & Analytics</h3>
-
-                  <div className="ops-gold-banner">
-                    <span>ACADEMY PERFORMANCE</span>
-                  </div>
-
-                  <div className="ops-perf-stat-row">
-                    <div className="ops-perf-stat-card">
-                      <div className="ops-perf-stat-num">52</div>
-                      <div className="ops-perf-stat-lbl">PLAYERS</div>
-                    </div>
-                    <div className="ops-perf-stat-card">
-                      <div className="ops-perf-stat-num" style={{ color: '#00e676' }}>86%</div>
-                      <div className="ops-perf-stat-lbl">ATTENDANCE</div>
-                    </div>
-                    <div className="ops-perf-stat-card">
-                      <div className="ops-perf-stat-num" style={{ color: '#3de0ff' }}>14</div>
-                      <div className="ops-perf-stat-lbl">MATCHES</div>
-                    </div>
-                  </div>
-
-                  <div className="ops-chart-box">
-                    <svg viewBox="0 0 240 70" width="100%" height="70">
-                      <defs>
-                        <linearGradient id="curveGrad10" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#3de0ff" stopOpacity="0.4" />
-                          <stop offset="100%" stopColor="#3de0ff" stopOpacity="0.0" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M 10 55 Q 60 45, 100 35 T 180 20 T 230 10 L 230 65 L 10 65 Z"
-                        fill="url(#curveGrad10)"
-                      />
-                      <path
-                        d="M 10 55 Q 60 45, 100 35 T 180 20 T 230 10"
-                        fill="none"
-                        stroke="#3de0ff"
-                        strokeWidth="2.5"
-                      />
-                      <circle cx="10" cy="55" r="3.5" fill="#3de0ff" />
-                      <circle cx="100" cy="35" r="3.5" fill="#3de0ff" />
-                      <circle cx="180" cy="20" r="3.5" fill="#3de0ff" />
-                      <circle cx="230" cy="10" r="4.5" fill="#00e676" />
-                    </svg>
-                    <span style={{ fontSize: 11, fontWeight: 800, color: '#ffc83d', letterSpacing: 0.8 }}>
-                      MONTHLY REPORT READY
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="ops-save-record-btn"
-                    onClick={() => triggerSave('Full academy analytics PDF generated and downloaded!')}
-                  >
-                    SAVE ACADEMY RECORD
-                  </button>
-                </div>
+                ))
               )}
             </div>
-
-            {/* 10 Operations Systems Overview Grid */}
-            <div style={{ marginTop: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <span style={{ fontSize: 13, fontWeight: 800, color: '#ffc83d', letterSpacing: 0.8 }}>
-                  ACADEMY OPERATIONS DIRECTORY
-                </span>
-                <span className="pill" style={{ fontSize: 9 }}>10 SYSTEMS</span>
-              </div>
-
-              <div className="ops-overview-10-grid">
-                {systemsMeta.map((sys) => (
-                  <button
-                    key={sys.id}
-                    type="button"
-                    className="ops-overview-tile"
-                    style={activeSystem === sys.id ? { borderColor: '#ff3b50', background: '#12266a' } : {}}
-                    onClick={() => {
-                      setActiveSystem(sys.id)
-                      window.scrollTo({ top: 120, behavior: 'smooth' })
-                    }}
-                  >
-                    <div className={`ops-overview-num-pill ${sys.id % 2 === 0 ? 'is-blue' : ''}`}>
-                      {sys.id}
-                    </div>
-                    <span className="ops-overview-text">{sys.title}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
+          </div>
         )}
 
-        {/* =========================================================
-            PATHWAY & DRILLS VIEW
-            ========================================================= */}
-        {mainView === 'pathway' && (
-          <div className="academy-overview-view">
-            <div className="academy-hero-card">
-              <div className="academy-hero-top">
-                <div className="academy-logo-badge">
-                  <GraduationCap size={24} color="#3de0ff" />
-                </div>
+        {/* =========================================================================
+            TAB 2: DAILY ATTENDANCE & TRAINING DRILLS
+        ========================================================================= */}
+        {activeTab === 'attendance' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* Daily Attendance Header Card */}
+            <div
+              style={{
+                background: 'rgba(15, 23, 42, 0.75)',
+                padding: '14px',
+                borderRadius: 14,
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <div>
-                  <h3 style={{ margin: '0 0 2px', fontSize: 16 }}>Scoring Heroes High Performance Center</h3>
-                  <span className="muted-text">Affiliated State Academy • Batch 2026-A</span>
+                  <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>
+                    Daily Roll Call Tracker
+                  </span>
+                  <h3 style={{ fontSize: 16, fontWeight: 900, color: '#f8fafc', margin: '2px 0 0' }}>
+                    Today: Wednesday, 4 Nov 2026
+                  </h3>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={markAllStudentsPresent}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: 'rgba(0, 230, 118, 0.15)',
+                    border: '1px solid #00e676',
+                    color: '#00e676',
+                    fontWeight: 900,
+                    fontSize: 11,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Check size={14} /> Mark All Present
+                </button>
               </div>
 
-              <div className="academy-stats-row">
-                <div className="academy-stat-box">
-                  <span className="stat-label">Attendance</span>
-                  <strong className="stat-val" style={{ color: '#00e676' }}>96.4%</strong>
-                  <span className="stat-sub">48 / 50 sessions</span>
+              {/* Attendance Statistics Strip */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 8 }}>
+                <div style={{ padding: '10px', background: 'rgba(0, 230, 118, 0.08)', borderRadius: 10, border: '1px solid rgba(0, 230, 118, 0.25)', textAlign: 'center' }}>
+                  <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>PRESENT</span>
+                  <strong style={{ fontSize: 18, color: '#00e676', display: 'block', marginTop: 2 }}>
+                    {students.filter((s) => s.attendanceToday === 'present').length} / {students.length}
+                  </strong>
                 </div>
-                <div className="academy-stat-box">
-                  <span className="stat-label">Fitness Score</span>
-                  <strong className="stat-val" style={{ color: '#3de0ff' }}>Yo-Yo 19.8</strong>
-                  <span className="stat-sub">Top 5% bracket</span>
+
+                <div style={{ padding: '10px', background: 'rgba(255, 200, 61, 0.08)', borderRadius: 10, border: '1px solid rgba(255, 200, 61, 0.25)', textAlign: 'center' }}>
+                  <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>LATE / HALF</span>
+                  <strong style={{ fontSize: 18, color: '#ffc83d', display: 'block', marginTop: 2 }}>
+                    {students.filter((s) => s.attendanceToday === 'late' || s.attendanceToday === 'half').length}
+                  </strong>
                 </div>
-                <div className="academy-stat-box">
-                  <span className="stat-label">Discipline & Trust</span>
-                  <strong className="stat-val" style={{ color: '#ffb300' }}>98 / 100</strong>
-                  <span className="stat-sub">Zero sanctions</span>
+
+                <div style={{ padding: '10px', background: 'rgba(255, 59, 80, 0.08)', borderRadius: 10, border: '1px solid rgba(255, 59, 80, 0.25)', textAlign: 'center' }}>
+                  <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>ABSENT</span>
+                  <strong style={{ fontSize: 18, color: '#ff3b50', display: 'block', marginTop: 2 }}>
+                    {students.filter((s) => s.attendanceToday === 'absent' || s.attendanceToday === 'leave').length}
+                  </strong>
                 </div>
               </div>
             </div>
 
-            <div className="panel">
-              <h4 style={{ margin: '0 0 12px', fontSize: 14 }}>Career Pathway Progression</h4>
-              <div className="pathway-ladder">
-                {[
-                  { title: 'Grassroots U12', status: 'completed', academy: 'City Youth Cricket' },
-                  { title: 'Sub-Junior U14', status: 'completed', academy: 'Coastal Sports Foundation' },
-                  { title: 'Junior U16 Division 1', status: 'completed', academy: 'Tamil Nadu Cricket Academy' },
-                  { title: 'Elite U19 Academy', status: 'current', academy: 'Scoring Heroes National Center' },
-                  { title: 'Senior State / Franchise Pro', status: 'upcoming', academy: 'Super 11 Pro League' },
-                ].map((st, idx) => (
-                  <div key={idx} className={`pathway-step pathway-step--${st.status}`}>
-                    <div className="pathway-marker">
-                      {st.status === 'completed' && <CheckCircle2 size={16} color="#00e676" />}
-                      {st.status === 'current' && <Flame size={16} color="#ff3b50" />}
-                      {st.status === 'upcoming' && <Clock size={16} color="var(--muted)" />}
+            {/* Student Roll Call List */}
+            <div
+              style={{
+                background: 'rgba(15, 23, 42, 0.75)',
+                padding: '14px',
+                borderRadius: 14,
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
+              <h4 style={{ fontSize: 13, fontWeight: 900, color: '#f8fafc', textTransform: 'uppercase', margin: '0 0 10px' }}>
+                Student Attendance Roll Call
+              </h4>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {students.map((st) => (
+                  <div
+                    key={st.id}
+                    style={{
+                      padding: '10px 12px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: 8,
+                    }}
+                  >
+                    <div>
+                      <strong style={{ fontSize: 13, color: '#f8fafc' }}>{st.name}</strong>
+                      <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>
+                        {st.batch} • {st.role}
+                      </span>
                     </div>
-                    <div className="pathway-content">
-                      <div className="pathway-title-row">
-                        <strong>{st.title}</strong>
-                        <span className={`status-pill status-pill--${st.status}`}>
-                          {st.status.toUpperCase()}
-                        </span>
-                      </div>
-                      <p className="pathway-sub">{st.academy}</p>
+
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      {[
+                        { key: 'present', label: 'Present', color: '#00e676' },
+                        { key: 'late', label: 'Late', color: '#ffc83d' },
+                        { key: 'half', label: 'Half Day', color: '#38bdf8' },
+                        { key: 'absent', label: 'Absent', color: '#ff3b50' },
+                      ].map((btn) => {
+                        const active = st.attendanceToday === btn.key
+                        return (
+                          <button
+                            key={btn.key}
+                            type="button"
+                            onClick={() => toggleStudentAttendance(st.id, btn.key)}
+                            style={{
+                              padding: '5px 9px',
+                              borderRadius: 6,
+                              border: active ? `1.5px solid ${btn.color}` : '1px solid rgba(255, 255, 255, 0.08)',
+                              background: active ? `${btn.color}25` : 'transparent',
+                              color: active ? btn.color : '#94a3b8',
+                              fontSize: 11,
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {btn.label}
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="panel" style={{ marginTop: 12 }}>
+            {/* Coach On-Duty Status */}
+            <div
+              style={{
+                background: 'rgba(15, 23, 42, 0.75)',
+                padding: '14px',
+                borderRadius: 14,
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
+              <h4 style={{ fontSize: 13, fontWeight: 900, color: '#f8fafc', textTransform: 'uppercase', margin: '0 0 10px' }}>
+                Coach Roster On-Duty Today ({coaches.length})
+              </h4>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+                {coaches.map((c) => (
+                  <div
+                    key={c.id}
+                    style={{
+                      padding: '10px 12px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 4,
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <strong style={{ fontSize: 13, color: '#f8fafc' }}>{c.name}</strong>
+                      <button
+                        type="button"
+                        onClick={() => toggleCoachAttendance(c.id)}
+                        style={{
+                          padding: '3px 8px',
+                          borderRadius: 6,
+                          border: 'none',
+                          background: c.present ? 'rgba(0, 230, 118, 0.15)' : 'rgba(255, 59, 80, 0.15)',
+                          color: c.present ? '#00e676' : '#ff3b50',
+                          fontSize: 10,
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {c.present ? 'ON DUTY' : 'OFF DUTY'}
+                      </button>
+                    </div>
+                    <span style={{ fontSize: 11, color: '#38bdf8' }}>{c.role}</span>
+                    <small style={{ fontSize: 10, color: 'var(--muted)' }}>🕒 {c.shift}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Daily Training Drills Syllabus */}
+            <div
+              style={{
+                background: 'rgba(15, 23, 42, 0.75)',
+                padding: '14px',
+                borderRadius: 14,
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 900, color: '#f8fafc', textTransform: 'uppercase', margin: 0 }}>
+                  Today's Training Drills Schedule
+                </h4>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAddDrillModal(true)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 8,
+                    background: 'rgba(0, 176, 255, 0.15)',
+                    border: '1px solid #00b0ff',
+                    color: '#00b0ff',
+                    fontWeight: 800,
+                    fontSize: 11,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <Plus size={14} /> + Add Drill
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {drills.map((d) => (
+                  <div
+                    key={d.id}
+                    style={{
+                      padding: '12px 14px',
+                      borderRadius: 12,
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 4,
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 800,
+                          color: '#ffc83d',
+                          background: 'rgba(255, 200, 61, 0.12)',
+                          padding: '2px 8px',
+                          borderRadius: 6,
+                        }}
+                      >
+                        🕒 {d.time}
+                      </span>
+                      <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 700 }}>
+                        📍 {d.venue}
+                      </span>
+                    </div>
+
+                    <strong style={{ fontSize: 14, color: '#f8fafc', marginTop: 2 }}>{d.title}</strong>
+                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                      Coach: <strong style={{ color: '#f8fafc' }}>{d.coach}</strong> • Batch: <span>{d.batch}</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: '#00e676', marginTop: 2 }}>
+                      🎯 Focus: {d.focus}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            TAB 3: TUITION FEES & ACCOUNTS
+        ========================================================================= */}
+        {activeTab === 'fees' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* Fee Health Summary Card */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(0, 230, 118, 0.06))',
+                padding: '16px',
+                borderRadius: 14,
+                border: '1px solid rgba(0, 230, 118, 0.3)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div>
+                  <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>
+                    Academy Fee Ledger
+                  </span>
+                  <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: '2px 0 0' }}>
+                    November 2026 Tuition Collection
+                  </h3>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowStatementModal(true)}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: 10,
+                    background: 'rgba(0, 176, 255, 0.15)',
+                    border: '1px solid #00b0ff',
+                    color: '#00b0ff',
+                    fontWeight: 800,
+                    fontSize: 11,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <FileText size={14} /> Audit Sheet
+                </button>
+              </div>
+
+              {/* 3 Metric Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 12 }}>
+                <div style={{ padding: '12px 10px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+                  <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>EXPECTED</span>
+                  <strong style={{ fontSize: 16, color: '#f8fafc', display: 'block', marginTop: 2 }}>
+                    ₹{totalExpectedFees.toLocaleString()}
+                  </strong>
+                  <small style={{ fontSize: 9, color: '#64748b' }}>{students.length} Students</small>
+                </div>
+
+                <div style={{ padding: '12px 10px', background: 'rgba(0, 230, 118, 0.1)', borderRadius: 10, border: '1px solid rgba(0, 230, 118, 0.3)', textAlign: 'center' }}>
+                  <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>COLLECTED</span>
+                  <strong style={{ fontSize: 16, color: '#00e676', display: 'block', marginTop: 2 }}>
+                    ₹{totalCollectedFees.toLocaleString()}
+                  </strong>
+                  <small style={{ fontSize: 9, color: '#00e676', fontWeight: 800 }}>{collectionRate}% Efficiency</small>
+                </div>
+
+                <div style={{ padding: '12px 10px', background: 'rgba(255, 59, 80, 0.1)', borderRadius: 10, border: '1px solid rgba(255, 59, 80, 0.3)', textAlign: 'center' }}>
+                  <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>OVERDUE DUES</span>
+                  <strong style={{ fontSize: 16, color: '#ff3b50', display: 'block', marginTop: 2 }}>
+                    ₹{totalOverdueFees.toLocaleString()}
+                  </strong>
+                  <small style={{ fontSize: 9, color: '#ff3b50', fontWeight: 800 }}>
+                    {students.filter((s) => s.feeStatus === 'Overdue').length} Pending
+                  </small>
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ width: `${collectionRate}%`, height: '100%', background: 'linear-gradient(90deg, #7c4dff, #00e676)', borderRadius: 3 }} />
+              </div>
+            </div>
+
+            {/* Overdue Alert Banner if any overdue */}
+            {totalOverdueFees > 0 && (
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255, 59, 80, 0.12), rgba(255, 200, 61, 0.08))',
+                  padding: '12px 14px',
+                  borderRadius: 12,
+                  border: '1px solid rgba(255, 59, 80, 0.35)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 8,
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <AlertTriangle size={16} color="#ff3b50" />
+                    <strong style={{ fontSize: 13, color: '#f8fafc' }}>
+                      2 Students with Overdue Tuition Fees (₹{totalOverdueFees.toLocaleString()})
+                    </strong>
+                  </div>
+                  <small style={{ color: '#94a3b8', fontSize: 11 }}>
+                    Send automated WhatsApp payment link with QR code to parents.
+                  </small>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const overdue = students.filter((s) => s.feeStatus === 'Overdue')
+                    overdue.forEach((st) => sendFeeReminder(st))
+                  }}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    background: '#00e676',
+                    border: 'none',
+                    color: '#020617',
+                    fontWeight: 900,
+                    fontSize: 11,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Send size={13} /> 1-Tap Remind All
+                </button>
+              </div>
+            )}
+
+            {/* Itemized Student Fee Ledger Table */}
+            <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <h4 style={{ margin: 0, fontSize: 14 }}>High Performance Drills</h4>
-                <span className="pill">Weekly Benchmarks</span>
+                <span style={{ fontSize: 13, fontWeight: 900, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Student Fee Ledger ({students.length})
+                </span>
+                <span style={{ fontSize: 11, color: 'var(--muted)' }}>November Billing Cycle</span>
               </div>
-              <div className="drills-list">
-                {[
-                  { name: 'Death Over Yorkers & Slower Balls', metric: '88% accuracy', coach: 'Coach Meera', progress: 90 },
-                  { name: 'Wrist Roll & Bat Acceleration', metric: '138 km/h swing speed', coach: 'Coach Raman', progress: 82 },
-                  { name: 'Match Pressure Simulation (36 off 18)', metric: '4/5 chases completed', coach: 'Head Coach Vijay', progress: 95 },
-                ].map((drill, idx) => (
-                  <div key={idx} className="drill-card" style={{ marginBottom: 10 }}>
-                    <div className="drill-card-top">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Dumbbell size={16} color="var(--cyan)" />
-                        <strong>{drill.name}</strong>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {students.map((st) => {
+                  const isPaid = st.feeStatus === 'Paid'
+                  return (
+                    <div
+                      key={st.id}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 12,
+                        background: 'rgba(15, 23, 42, 0.8)',
+                        border: isPaid ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(255, 59, 80, 0.35)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: 10,
+                      }}
+                    >
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <strong style={{ fontSize: 14, color: '#f8fafc' }}>{st.name}</strong>
+                          <span
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 800,
+                              padding: '2px 6px',
+                              borderRadius: 4,
+                              background: isPaid ? 'rgba(0, 230, 118, 0.15)' : 'rgba(255, 59, 80, 0.15)',
+                              color: isPaid ? '#00e676' : '#ff3b50',
+                            }}
+                          >
+                            {st.feeStatus}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                          {st.batch} • Guardian: <span>{st.guardianName}</span> ({st.guardianPhone})
+                        </div>
+                        {isPaid && (
+                          <small style={{ fontSize: 10, color: '#38bdf8', marginTop: 2, display: 'block' }}>
+                            Receipt: {st.receiptNo} • Due: {st.dueDate}
+                          </small>
+                        )}
                       </div>
-                      <span className="drill-pct">{drill.progress}%</span>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ textAlign: 'right' }}>
+                          <strong style={{ fontSize: 15, color: isPaid ? '#00e676' : '#ff3b50', display: 'block' }}>
+                            ₹{st.feeAmount.toLocaleString()}
+                          </strong>
+                          <small style={{ fontSize: 10, color: 'var(--muted)' }}>Monthly Fee</small>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          {isPaid ? (
+                            <button
+                              type="button"
+                              onClick={() => setShowReceiptModal(st)}
+                              style={{
+                                padding: '6px 10px',
+                                borderRadius: 8,
+                                background: 'rgba(0, 176, 255, 0.12)',
+                                border: '1px solid rgba(0, 176, 255, 0.3)',
+                                color: '#00b0ff',
+                                fontSize: 11,
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              Receipt
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setFeePaymentForm((prev) => ({
+                                    ...prev,
+                                    studentId: st.id,
+                                    amount: st.feeAmount,
+                                  }))
+                                  setShowRecordFeeModal(st)
+                                }}
+                                style={{
+                                  padding: '6px 12px',
+                                  borderRadius: 8,
+                                  background: 'linear-gradient(135deg, #00e676, #00b0ff)',
+                                  border: 'none',
+                                  color: '#020617',
+                                  fontSize: 11,
+                                  fontWeight: 900,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                Record Pay
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => sendFeeReminder(st)}
+                                style={{
+                                  padding: '6px 10px',
+                                  borderRadius: 8,
+                                  background: 'rgba(0, 230, 118, 0.15)',
+                                  border: '1px solid #00e676',
+                                  color: '#00e676',
+                                  fontSize: 11,
+                                  fontWeight: 800,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <Send size={12} />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="drill-track">
-                      <div className="drill-bar" style={{ width: `${drill.progress}%` }} />
-                    </div>
-                    <div className="drill-footer">
-                      <span>Performance: <strong>{drill.metric}</strong></span>
-                      <span>Overseer: {drill.coach}</span>
-                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            MODAL 1: ADMIT NEW STUDENT
+        ========================================================================= */}
+        {showAdmitModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.85)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16,
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 480,
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                background: '#0b1329',
+                borderRadius: 16,
+                border: '1px solid rgba(124, 77, 255, 0.4)',
+                padding: 20,
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
+                  👥 Admit New Trainee
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowAdmitModal(false)}
+                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleAdmitStudent} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Student Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Senthil Raman"
+                    value={admitForm.name}
+                    onChange={(e) => setAdmitForm({ ...admitForm, name: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: 8,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 13,
+                      marginTop: 4,
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Age</label>
+                    <input
+                      type="number"
+                      required
+                      placeholder="15"
+                      value={admitForm.age}
+                      onChange={(e) => setAdmitForm({ ...admitForm, age: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#f8fafc',
+                        fontSize: 13,
+                        marginTop: 4,
+                      }}
+                    />
                   </div>
-                ))}
+
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Primary Role</label>
+                    <select
+                      value={admitForm.role}
+                      onChange={(e) => setAdmitForm({ ...admitForm, role: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#f8fafc',
+                        fontSize: 13,
+                        marginTop: 4,
+                      }}
+                    >
+                      <option value="Top-Order Batsman">Top-Order Batsman</option>
+                      <option value="Middle-Order Batsman">Middle-Order Batsman</option>
+                      <option value="Right-Arm Fast Bowler">Right-Arm Fast Bowler</option>
+                      <option value="Left-Arm Fast Bowler">Left-Arm Fast Bowler</option>
+                      <option value="Spin Bowler">Spin Bowler</option>
+                      <option value="All-Rounder">All-Rounder</option>
+                      <option value="Wicketkeeper Batsman">Wicketkeeper Batsman</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Assigned Batch</label>
+                    <select
+                      value={admitForm.batch}
+                      onChange={(e) => {
+                        const val = e.target.value
+                        let grp = 'u16'
+                        if (val.includes('U-14')) grp = 'u14'
+                        else if (val.includes('U-19')) grp = 'u19'
+                        else if (val.includes('Weekend')) grp = 'weekend'
+                        setAdmitForm({ ...admitForm, batch: val, ageGroup: grp })
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#f8fafc',
+                        fontSize: 13,
+                        marginTop: 4,
+                      }}
+                    >
+                      <option value="U-14 Morning Foundation">U-14 Morning Foundation</option>
+                      <option value="U-16 Evening Elite">U-16 Evening Elite</option>
+                      <option value="U-19 Pro High Performance">U-19 Pro High Performance</option>
+                      <option value="Weekend Grassroots Clinic">Weekend Grassroots Clinic</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Monthly Tuition (₹)</label>
+                    <input
+                      type="number"
+                      required
+                      value={admitForm.monthlyFee}
+                      onChange={(e) => setAdmitForm({ ...admitForm, monthlyFee: Number(e.target.value) })}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#00e676',
+                        fontWeight: 900,
+                        fontSize: 13,
+                        marginTop: 4,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Guardian Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Ramanathan S."
+                      value={admitForm.guardianName}
+                      onChange={(e) => setAdmitForm({ ...admitForm, guardianName: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#f8fafc',
+                        fontSize: 13,
+                        marginTop: 4,
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Guardian Phone *</label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="9876543210"
+                      value={admitForm.guardianPhone}
+                      onChange={(e) => setAdmitForm({ ...admitForm, guardianPhone: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#f8fafc',
+                        fontSize: 13,
+                        marginTop: 4,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    marginTop: 10,
+                    padding: '12px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #7c4dff, #00b0ff)',
+                    color: '#ffffff',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Complete Admission & Issue Student ID
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            MODAL 2: PERFORMANCE REPORT CARD
+        ========================================================================= */}
+        {showReportModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.85)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16,
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 440,
+                background: '#0b1329',
+                borderRadius: 16,
+                border: '1px solid rgba(124, 77, 255, 0.4)',
+                padding: 20,
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <span
+                  style={{
+                    padding: '3px 8px',
+                    borderRadius: 6,
+                    background: 'rgba(124, 77, 255, 0.15)',
+                    color: '#b388ff',
+                    fontSize: 11,
+                    fontWeight: 800,
+                  }}
+                >
+                  ACADEMY PERFORMANCE REPORT
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowReportModal(null)}
+                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ textAlign: 'center', marginBottom: 14 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#f8fafc', margin: '0 0 2px' }}>
+                  {showReportModal.name}
+                </h3>
+                <span style={{ fontSize: 12, color: '#38bdf8', fontWeight: 700 }}>
+                  {showReportModal.batch} • {showReportModal.role}
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
+                <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, textAlign: 'center' }}>
+                  <span style={{ fontSize: 10, color: 'var(--muted)' }}>ATTENDANCE</span>
+                  <strong style={{ fontSize: 15, color: '#00e676', display: 'block', marginTop: 2 }}>
+                    {showReportModal.attendanceRate}
+                  </strong>
+                </div>
+                <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, textAlign: 'center' }}>
+                  <span style={{ fontSize: 10, color: 'var(--muted)' }}>YO-YO TEST</span>
+                  <strong style={{ fontSize: 15, color: '#ffc83d', display: 'block', marginTop: 2 }}>
+                    {showReportModal.yoyoScore}
+                  </strong>
+                </div>
+                <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, textAlign: 'center' }}>
+                  <span style={{ fontSize: 10, color: 'var(--muted)' }}>METRIC</span>
+                  <strong style={{ fontSize: 14, color: '#38bdf8', display: 'block', marginTop: 2 }}>
+                    {showReportModal.battingAvg}
+                  </strong>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  padding: '12px',
+                  borderRadius: 10,
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  marginBottom: 14,
+                }}
+              >
+                <span style={{ fontSize: 11, color: '#b388ff', fontWeight: 800, textTransform: 'uppercase' }}>
+                  Coach Technical Assessment:
+                </span>
+                <p style={{ fontSize: 12, color: '#f8fafc', margin: '4px 0 0', lineHeight: 1.5 }}>
+                  "{showReportModal.coachNote}"
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  window.print()
+                }}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: 8,
+                  background: '#7c4dff',
+                  border: 'none',
+                  color: '#fff',
+                  fontWeight: 900,
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <Printer size={15} /> Print Report Card
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            MODAL 3: OFFICIAL FEE RECEIPT
+        ========================================================================= */}
+        {showReceiptModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.85)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16,
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 420,
+                background: '#0b1329',
+                borderRadius: 16,
+                border: '1px solid rgba(0, 230, 118, 0.4)',
+                padding: 20,
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span
+                  style={{
+                    padding: '3px 8px',
+                    borderRadius: 6,
+                    background: 'rgba(0, 230, 118, 0.15)',
+                    color: '#00e676',
+                    fontSize: 11,
+                    fontWeight: 800,
+                  }}
+                >
+                  OFFICIAL FEE RECEIPT
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowReceiptModal(null)}
+                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ textAlign: 'center', marginBottom: 14 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: '0 0 2px' }}>
+                  Scoring Heroes Cricket Academy
+                </h3>
+                <small style={{ color: 'var(--muted)', fontSize: 11 }}>
+                  State Cricket Affiliation No: TN-SPO-2023-771
+                </small>
+              </div>
+
+              <div
+                style={{
+                  padding: '12px',
+                  borderRadius: 10,
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  fontSize: 12,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 6,
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Receipt No:</span>
+                  <strong style={{ color: '#00e676' }}>{showReceiptModal.receiptNo}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Student Name:</span>
+                  <strong style={{ color: '#f8fafc' }}>{showReceiptModal.name}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Batch:</span>
+                  <strong style={{ color: '#f8fafc' }}>{showReceiptModal.batch}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Guardian:</span>
+                  <strong style={{ color: '#f8fafc' }}>{showReceiptModal.guardianName}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Month:</span>
+                  <strong style={{ color: '#f8fafc' }}>November 2026</strong>
+                </div>
+                <hr style={{ borderColor: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                  <span style={{ color: '#f8fafc', fontWeight: 800 }}>Amount Paid:</span>
+                  <strong style={{ color: '#00e676' }}>₹{showReceiptModal.feeAmount?.toLocaleString()}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+                  <span style={{ color: 'var(--muted)' }}>Payment Mode:</span>
+                  <span style={{ color: '#38bdf8' }}>UPI QR / Online Verification</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: 8,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontWeight: 800,
+                    fontSize: 12,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Printer size={15} /> Print Receipt
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    sendFeeReminder(showReceiptModal)
+                    setShowReceiptModal(null)
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: 8,
+                    background: '#00e676',
+                    border: 'none',
+                    color: '#020617',
+                    fontWeight: 900,
+                    fontSize: 12,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Share2 size={15} /> Share on WhatsApp
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            MODAL 4: RECORD FEE PAYMENT
+        ========================================================================= */}
+        {showRecordFeeModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.85)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16,
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 420,
+                background: '#0b1329',
+                borderRadius: 16,
+                border: '1px solid rgba(0, 230, 118, 0.4)',
+                padding: 20,
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
+                  💸 Record Tuition Fee Payment
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowRecordFeeModal(null)}
+                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleRecordPayment} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Student</label>
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${showRecordFeeModal.name} (${showRecordFeeModal.batch})`}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: 8,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#f8fafc',
+                      fontSize: 13,
+                      marginTop: 4,
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Amount (₹)</label>
+                    <input
+                      type="number"
+                      required
+                      value={feePaymentForm.amount}
+                      onChange={(e) => setFeePaymentForm({ ...feePaymentForm, amount: Number(e.target.value) })}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid #00e676',
+                        color: '#00e676',
+                        fontWeight: 900,
+                        fontSize: 14,
+                        marginTop: 4,
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Payment Mode</label>
+                    <select
+                      value={feePaymentForm.paymentMode}
+                      onChange={(e) => setFeePaymentForm({ ...feePaymentForm, paymentMode: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#f8fafc',
+                        fontSize: 13,
+                        marginTop: 4,
+                      }}
+                    >
+                      <option value="UPI QR Scan">UPI QR Scan</option>
+                      <option value="Cash at Counter">Cash at Counter</option>
+                      <option value="Bank NEFT">Bank NEFT / IMPS</option>
+                      <option value="Cheque">Bank Cheque</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    marginTop: 10,
+                    padding: '12px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#00e676',
+                    color: '#020617',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Confirm Payment & Issue Receipt
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            MODAL 5: ADD TRAINING DRILL
+        ========================================================================= */}
+        {showAddDrillModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.85)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16,
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 440,
+                background: '#0b1329',
+                borderRadius: 16,
+                border: '1px solid rgba(0, 176, 255, 0.4)',
+                padding: 20,
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
+                  📋 Add Training Drill
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowAddDrillModal(false)}
+                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleAddDrill} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Drill Title *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Boundary Catching & Relays"
+                    value={drillForm.title}
+                    onChange={(e) => setDrillForm({ ...drillForm, title: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: 8,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 13,
+                      marginTop: 4,
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Time Slot</label>
+                    <input
+                      type="text"
+                      value={drillForm.time}
+                      onChange={(e) => setDrillForm({ ...drillForm, time: e.target.value })}
+                      placeholder="06:00 AM - 07:30 AM"
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#f8fafc',
+                        fontSize: 13,
+                        marginTop: 4,
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Location / Pitch</label>
+                    <select
+                      value={drillForm.venue}
+                      onChange={(e) => setDrillForm({ ...drillForm, venue: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#f8fafc',
+                        fontSize: 13,
+                        marginTop: 4,
+                      }}
+                    >
+                      <option value="Turf Nets A & B">Turf Nets A & B</option>
+                      <option value="Turf Net C (Bowling Machine)">Net C (Machine)</option>
+                      <option value="Main Oval Center Turf">Center Turf Wicket</option>
+                      <option value="Main Ground Outfield">Main Outfield</option>
+                      <option value="Gym & Fitness Zone">Gym & Fitness Zone</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Technical Focus</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. High catches, flat throws & direct hits"
+                    value={drillForm.focus}
+                    onChange={(e) => setDrillForm({ ...drillForm, focus: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: 8,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 13,
+                      marginTop: 4,
+                    }}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    marginTop: 10,
+                    padding: '12px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#00b0ff',
+                    color: '#020617',
+                    fontWeight: 900,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Add Drill to Syllabus
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            MODAL 6: ACCOUNTS & AUDIT STATEMENT
+        ========================================================================= */}
+        {showStatementModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.85)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16,
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 460,
+                background: '#0b1329',
+                borderRadius: 16,
+                border: '1px solid rgba(0, 176, 255, 0.4)',
+                padding: 20,
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
+                  📄 Academy Accounts Audit
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowStatementModal(false)}
+                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div
+                style={{
+                  padding: '14px',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  borderRadius: 12,
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  fontSize: 12,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Period:</span>
+                  <strong style={{ color: '#f8fafc' }}>01 Nov 2026 – 30 Nov 2026</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Enrolled Students:</span>
+                  <strong style={{ color: '#f8fafc' }}>{students.length} Trainees</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Total Expected:</span>
+                  <strong style={{ color: '#f8fafc' }}>₹{totalExpectedFees.toLocaleString()}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Fees Collected:</span>
+                  <strong style={{ color: '#00e676' }}>+₹{totalCollectedFees.toLocaleString()}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Pending Dues:</span>
+                  <strong style={{ color: '#ff3b50' }}>₹{totalOverdueFees.toLocaleString()}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Collection Efficiency:</span>
+                  <strong style={{ color: '#00e676' }}>{collectionRate}%</strong>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: 8,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontWeight: 800,
+                    fontSize: 12,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Printer size={15} /> Print Statement
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerToast('Statement downloaded as PDF successfully!')
+                    setShowStatementModal(false)
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: 8,
+                    background: '#00b0ff',
+                    border: 'none',
+                    color: '#020617',
+                    fontWeight: 900,
+                    fontSize: 12,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Download PDF
+                </button>
               </div>
             </div>
           </div>

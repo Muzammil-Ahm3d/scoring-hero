@@ -9,6 +9,7 @@ import {
   Users,
   DollarSign,
   Building,
+  GraduationCap,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
@@ -78,13 +79,49 @@ const GROUND_NAV_ITEMS = [
   },
 ]
 
+// Sports Academy & Coaching Institute Dedicated Navigation
+const ACADEMY_NAV_ITEMS = [
+  {
+    to: '/app',
+    label: 'Home',
+    icon: GraduationCap,
+    end: true,
+  },
+  {
+    to: '/app/academy?tab=students',
+    label: 'Students',
+    icon: Users,
+    aliases: ['/app/academy'],
+  },
+  {
+    to: '/app/academy?tab=attendance',
+    label: 'Attendance',
+    icon: Calendar,
+  },
+  {
+    to: '/app/academy?tab=fees',
+    label: 'Fees',
+    icon: DollarSign,
+  },
+  {
+    to: '/app/marketplace',
+    label: 'Gear Store',
+    icon: ShoppingBag,
+    aliases: ['/app/shop', '/app/store', '/app/market'],
+  },
+]
+
 export default function BottomNav() {
   const { user } = useAuth()
   const location = useLocation()
   const currentPath = location.pathname
 
   const isGroundOwner = user?.role === 'ground'
-  const navItems = isGroundOwner ? GROUND_NAV_ITEMS : PLAYER_NAV_ITEMS
+  const isAcademyDirector = user?.role === 'academy'
+
+  let navItems = PLAYER_NAV_ITEMS
+  if (isGroundOwner) navItems = GROUND_NAV_ITEMS
+  else if (isAcademyDirector) navItems = ACADEMY_NAV_ITEMS
 
   // Hide the bottom navigation bar on camera/capture pages
   if (
@@ -101,8 +138,12 @@ export default function BottomNav() {
     }
     if (itemQuery) {
       if (location.search.includes(itemQuery)) return true
-      // Default to slots when query is empty on /app/grounds
-      if ((!location.search || location.search === '') && itemQuery === 'tab=slots' && currentPath === itemPath) {
+      // Default to primary tab when query is empty on base page
+      if (
+        (!location.search || location.search === '') &&
+        (itemQuery === 'tab=slots' || itemQuery === 'tab=students') &&
+        currentPath === itemPath
+      ) {
         return true
       }
       return false
