@@ -36,6 +36,7 @@ import TournamentTicketing from './pages/TournamentTicketing'
 import SportsMarketplace from './pages/SportsMarketplace'
 import SellerMerchantPortal from './pages/SellerMerchantPortal'
 import CoachPortal from './pages/CoachPortal'
+import StreamerPortal from './pages/StreamerPortal'
 import ProductDetail from './pages/ProductDetail'
 import CartPage from './pages/CartPage'
 import WishlistPage from './pages/WishlistPage'
@@ -123,6 +124,8 @@ export default function App() {
         <Route path="merchant" element={<SellerMerchantPortal />} />
         <Route path="coach" element={<CoachPortal />} />
         <Route path="trainer" element={<CoachPortal />} />
+        <Route path="streamer" element={<StreamerPortal />} />
+        <Route path="broadcast" element={<StreamerPortal />} />
         <Route path="marketplace/product/:productId" element={<ProductDetail />} />
         <Route path="marketplace/cart" element={<CartPage />} />
         <Route path="marketplace/wishlist" element={<WishlistPage />} />

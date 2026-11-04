@@ -1,0 +1,936 @@
+/* ============================================================
+   StreamerPortal.css — Live Streamer & Broadcaster Desk
+   Mobile-First. 1080p TV Overlay Program Monitor. No Modals.
+   ============================================================ */
+
+.streamer-portal-page {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 12px 14px 100px;
+}
+
+.streamer-subpage {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 14px 16px 80px;
+}
+
+.subpage-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+/* Toast feedback */
+.streamer-toast {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  border: 1.5px solid #00e676;
+  border-radius: 30px;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  animation: slide-down 0.25s ease-out;
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Pulse badge for On-Air */
+.pulse-badge {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-ring 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* Hero card */
+.streamer-hero-card {
+  background: linear-gradient(135deg, rgba(225, 6, 19, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(225, 6, 19, 0.25);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.streamer-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.streamer-brand-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(225, 6, 19, 0.15);
+  border: 1.5px solid rgba(225, 6, 19, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.streamer-brand-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #f8fafc;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.streamer-brand-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 4px 0 0;
+}
+
+.master-broadcast-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 30px;
+  border: none;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+
+.master-broadcast-btn.standby {
+  background: linear-gradient(135deg, #00e676, #00b248);
+  color: #0a1628;
+}
+
+.master-broadcast-btn.live {
+  background: #e10613;
+  color: #ffffff;
+  animation: pulse-ring 1.8s infinite;
+}
+
+/* Telemetry Grid */
+.streamer-telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.telemetry-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.telemetry-label {
+  font-size: 9px;
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.telemetry-val {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* Tabs bar */
+.streamer-tabs-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.streamer-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.streamer-tab-btn.active {
+  background: rgba(225, 6, 19, 0.12);
+  border-color: #e10613;
+  color: #f8fafc;
+}
+
+/* Shared Card */
+.sp-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.sp-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0 0 4px;
+}
+
+.sp-card-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0 0 14px;
+  line-height: 1.4;
+}
+
+.sp-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.sp-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #f8fafc;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.sp-input:focus {
+  border-color: #38bdf8;
+}
+
+.copy-input-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.copy-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: #f8fafc;
+  cursor: pointer;
+}
+
+/* Camera Switcher */
+.cam-switcher-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.cam-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cam-card.active {
+  background: rgba(225, 6, 19, 0.08);
+  border-color: #e10613;
+}
+
+.cam-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.cam-tag {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.cam-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e10613;
+  margin-left: auto;
+  box-shadow: 0 0 6px #e10613;
+}
+
+.cam-title {
+  font-size: 12px;
+  color: #f8fafc;
+  display: block;
+}
+
+.cam-meta {
+  font-size: 10px;
+  color: #64748b;
+}
+
+/* Simulcast Destinations */
+.destinations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dest-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+.dest-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 16:9 Program Screen Monitor */
+.program-screen-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #020617;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.program-bg-img {
+  position: absolute;
+  inset: 0;
+  background: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&auto=format&fit=crop&q=60') center/cover no-repeat;
+  filter: brightness(0.75);
+}
+
+.program-cam-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+.program-sponsor-bug {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: 4px;
+  padding: 3px 8px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+}
+
+.program-sponsor-bug span {
+  font-size: 8px;
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.program-sponsor-bug strong {
+  font-size: 10px;
+  color: #f8fafc;
+  font-weight: 900;
+}
+
+.program-wicket-flash {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(225, 6, 19, 0.9);
+  padding: 8px 18px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 20px #e10613;
+  animation: pulse-ring 1s infinite;
+}
+
+.program-milestone-banner {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(180, 83, 9, 0.95));
+  padding: 8px 18px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.program-milestone-banner strong {
+  font-size: 13px;
+  display: block;
+}
+
+.program-milestone-banner small {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+.program-drs-banner {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(56, 189, 248, 0.9);
+  color: #020617;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+/* Lower-Third Bar */
+.program-lower-third {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: grid;
+  grid-template-columns: 1.2fr 2fr 1.5fr;
+  align-items: center;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+.program-lower-third.crimson {
+  background: linear-gradient(90deg, #e10613 0%, #0d1b2a 40%, #0a1128 100%);
+  border: 1px solid rgba(225, 6, 19, 0.6);
+}
+
+.program-lower-third.cyan {
+  background: linear-gradient(90deg, #00e5ff 0%, #092540 40%, #020617 100%);
+  border: 1px solid rgba(0, 229, 255, 0.6);
+}
+
+.program-lower-third.gold {
+  background: linear-gradient(90deg, #f59e0b 0%, #2e1c0c 40%, #170d05 100%);
+  border: 1px solid rgba(245, 158, 11, 0.6);
+}
+
+.lt-team-box {
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.lt-team-title {
+  font-size: 9px;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.lt-team-score {
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.lt-overs {
+  font-size: 9px;
+  color: #38bdf8;
+}
+
+.lt-batsman-box {
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10px;
+  color: #f8fafc;
+}
+
+.lt-batsman-box div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.lt-bowler-box {
+  padding: 4px 8px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  font-size: 9px;
+  color: #cbd5e1;
+}
+
+.lt-bowler-box strong {
+  color: #38bdf8;
+  font-size: 10px;
+}
+
+/* Overlays Toggles */
+.overlay-toggle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.overlay-toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+/* Clip Desk */
+.quick-clip-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.quick-clip-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 10px;
+  border-radius: 10px;
+  border: 1.5px solid;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  transition: transform 0.1s;
+}
+
+.quick-clip-btn:active {
+  transform: scale(0.97);
+}
+
+.quick-clip-btn.six {
+  background: rgba(101, 31, 255, 0.12);
+  border-color: #651fff;
+  color: #c084fc;
+}
+
+.quick-clip-btn.wicket {
+  background: rgba(225, 6, 19, 0.12);
+  border-color: #e10613;
+  color: #f87171;
+}
+
+.quick-clip-btn.catch {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+.quick-clip-btn.general {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.clips-feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.clip-card {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+
+.clip-thumb-box {
+  position: relative;
+  width: 100px;
+  height: 64px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.clip-thumb-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.clip-duration {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  font-size: 9px;
+  color: #fff;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.clip-event-pill {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.clip-event-pill.six { background: #651fff; }
+.clip-event-pill.wicket { background: #e10613; }
+.clip-event-pill.super-catch { background: #f59e0b; }
+.clip-event-pill.boundary { background: #00e676; color: #000; }
+
+.clip-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.clip-title {
+  font-size: 13px;
+  color: #f8fafc;
+  line-height: 1.3;
+}
+
+.clip-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.clip-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.published-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #00e676;
+  font-weight: 700;
+}
+
+/* Revenue & P&L */
+.pnl-formula-banner {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+.pnl-formula-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #38bdf8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pnl-formula-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 4px 0 0;
+  font-family: monospace;
+}
+
+.revenue-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rev-kpi-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.rev-kpi-card.highlight {
+  border-color: rgba(0, 230, 118, 0.3);
+  background: rgba(0, 230, 118, 0.04);
+}
+
+.rev-kpi-label {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: block;
+}
+
+.rev-kpi-val {
+  font-size: 20px;
+  font-weight: 900;
+  margin: 4px 0 2px;
+  display: block;
+}
+
+.rev-kpi-sub {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.withdraw-cta-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(0, 230, 118, 0.08);
+  border: 1px solid rgba(0, 230, 118, 0.25);
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.super-chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.super-chat-card {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+.sc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.sc-amount {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.sc-comment {
+  font-size: 12px;
+  color: #cbd5e1;
+  font-style: italic;
+  margin: 0 0 4px;
+}
+
+.sc-time {
+  font-size: 10px;
+  color: #64748b;
+}
+
+.contracts-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contract-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+/* Sub-page Specifics */
+.hw-guide-step {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hw-step-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(225, 6, 19, 0.15);
+  border: 1px solid #e10613;
+  color: #e10613;
+  font-weight: 800;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.theme-select-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.theme-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.theme-card.active {
+  border-color: #00e676;
+  background: rgba(0, 230, 118, 0.05);
+}
+
+.theme-color-preview {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+}
+
+.montage-clip-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.payout-balance-box {
+  text-align: center;
+  padding: 18px;
+  background: rgba(0, 230, 118, 0.06);
+  border: 1.5px solid rgba(0, 230, 118, 0.3);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.bank-account-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.printable-invoice {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.invoice-table th,
+.invoice-table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.invoice-table th {
+  color: #64748b;
+  text-transform: uppercase;
+  font-size: 11px;
+  text-align: left;
+}
+
+.invoice-total-row td {
+  border-top: 1.5px solid rgba(255, 255, 255, 0.15);
+  font-size: 14px;
+}

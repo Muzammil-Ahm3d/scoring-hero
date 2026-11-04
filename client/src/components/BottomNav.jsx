@@ -12,6 +12,10 @@ import {
   GraduationCap,
   Boxes,
   Truck,
+  Radio,
+  Tv,
+  Layers,
+  Video,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
@@ -176,6 +180,38 @@ const COACH_NAV_ITEMS = [
   },
 ]
 
+// Live Streamer & Broadcaster Dedicated Navigation
+const STREAMER_NAV_ITEMS = [
+  {
+    to: '/app',
+    label: 'Home',
+    icon: Home,
+    end: true,
+  },
+  {
+    to: '/app/streamer?tab=ingest',
+    label: 'Ingest',
+    icon: Radio,
+    aliases: ['/app/streamer', '/app/broadcast'],
+  },
+  {
+    to: '/app/streamer?tab=overlays',
+    label: 'Overlays',
+    icon: Tv,
+  },
+  {
+    to: '/app/streamer?tab=clips',
+    label: 'Clips',
+    icon: PlaySquare,
+    aliases: ['/app/highlights', '/app/reels', '/app/videos'],
+  },
+  {
+    to: '/app/streamer?tab=revenue',
+    label: 'Revenue',
+    icon: DollarSign,
+  },
+]
+
 export default function BottomNav() {
   const { user } = useAuth()
   const location = useLocation()
@@ -185,12 +221,14 @@ export default function BottomNav() {
   const isAcademyDirector = user?.role === 'academy'
   const isSellerMerchant = user?.role === 'seller'
   const isCoachTrainer = user?.role === 'coach'
+  const isLiveStreamer = user?.role === 'streamer'
 
   let navItems = PLAYER_NAV_ITEMS
   if (isGroundOwner) navItems = GROUND_NAV_ITEMS
   else if (isAcademyDirector) navItems = ACADEMY_NAV_ITEMS
   else if (isSellerMerchant) navItems = SELLER_NAV_ITEMS
   else if (isCoachTrainer) navItems = COACH_NAV_ITEMS
+  else if (isLiveStreamer) navItems = STREAMER_NAV_ITEMS
 
   // Hide the bottom navigation bar on camera/capture pages
   if (
@@ -210,7 +248,7 @@ export default function BottomNav() {
       // Default to primary tab when query is empty on base page
       if (
         (!location.search || location.search === '') &&
-        (itemQuery === 'tab=slots' || itemQuery === 'tab=students' || itemQuery === 'tab=inventory' || itemQuery === 'tab=trainees') &&
+        (itemQuery === 'tab=slots' || itemQuery === 'tab=students' || itemQuery === 'tab=inventory' || itemQuery === 'tab=trainees' || itemQuery === 'tab=ingest') &&
         currentPath === itemPath
       ) {
         return true

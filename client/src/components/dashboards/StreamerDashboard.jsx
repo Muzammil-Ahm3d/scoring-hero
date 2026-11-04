@@ -75,42 +75,46 @@ export default function StreamerDashboard({ user }) {
 
       {/* Quick Action Shortcuts */}
       <div className="sh-quick-actions-grid">
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/highlights')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/streamer?tab=ingest')}>
           <div className="sh-action-icon" style={{ background: 'rgba(225,6,19,0.15)', color: '#e10613' }}>
-            <Video size={18} />
-          </div>
-          <span>Live Clips</span>
-        </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/commentary')}>
-          <div className="sh-action-icon" style={{ background: 'rgba(61,224,255,0.15)', color: '#3de0ff' }}>
             <Radio size={18} />
           </div>
-          <span>Audio Desk</span>
+          <span>Stream Ingest</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/scorer')}>
-          <div className="sh-action-icon" style={{ background: 'rgba(255,200,61,0.15)', color: '#ffc83d' }}>
-            <Zap size={18} />
-          </div>
-          <span>Score Sync</span>
-        </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/sponsorship')}>
-          <div className="sh-action-icon" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676' }}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/streamer?tab=overlays')}>
+          <div className="sh-action-icon" style={{ background: 'rgba(61,224,255,0.15)', color: '#3de0ff' }}>
             <Tv size={18} />
           </div>
-          <span>Stream Ads</span>
+          <span>TV Overlays</span>
+        </button>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/streamer?tab=clips')}>
+          <div className="sh-action-icon" style={{ background: 'rgba(255,200,61,0.15)', color: '#ffc83d' }}>
+            <Video size={18} />
+          </div>
+          <span>Clip Desk</span>
+        </button>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/streamer?tab=revenue')}>
+          <div className="sh-action-icon" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676' }}>
+            <Zap size={18} />
+          </div>
+          <span>Stream P&L</span>
         </button>
       </div>
 
       {/* Stream Control Room */}
       <section className="panel" style={{ padding: '14px 16px' }}>
-        <header style={{ marginBottom: 10 }}>
+        <header style={{ marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <Radio size={18} color="#e10613" />
             <h3 style={{ margin: 0, fontSize: 15 }}>Stream Control Room & Ingest Feed</h3>
           </div>
-          <span className="pill" style={{ background: isLive ? 'rgba(0,230,118,0.15)' : 'rgba(225,6,19,0.15)', color: isLive ? '#00e676' : '#e10613' }}>
-            {isLive ? 'ON AIR' : 'STANDBY'}
-          </span>
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm"
+            onClick={() => navigate('/app/streamer')}
+          >
+            Open Broadcast Desk ↗
+          </button>
         </header>
 
         <div style={{ background: 'rgba(255,255,255,0.02)', padding: 12, borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
