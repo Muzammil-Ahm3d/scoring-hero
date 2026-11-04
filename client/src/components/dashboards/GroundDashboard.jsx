@@ -496,75 +496,84 @@ export default function GroundDashboard({ user }) {
         </div>
       </section>
 
-      {/* 2. DIRECT BLUEPRINT 24-SYSTEMS LAUNCHPAD (Answers: "Where are the other features?") */}
+      {/* 2. DIRECT OPERATIONAL ACCESS BAR */}
       <section
         style={{
           marginTop: 12,
           padding: '12px 14px',
-          background: 'linear-gradient(135deg, rgba(0, 176, 255, 0.08), rgba(0, 230, 118, 0.05))',
+          background: 'rgba(15, 23, 42, 0.65)',
           borderRadius: 14,
-          border: '1px solid rgba(0, 176, 255, 0.25)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Sparkles size={16} color="#00b0ff" />
-            <strong style={{ fontSize: 12, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              Master Blueprint Systems Suite (Features 13 & 14)
-            </strong>
-          </div>
-          <span style={{ fontSize: 10, color: '#38bdf8', fontWeight: 700 }}>24 Full Systems</span>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
           <button
             type="button"
             style={{
-              padding: '10px 12px',
+              padding: '12px 10px',
               borderRadius: 10,
-              background: 'rgba(0, 176, 255, 0.15)',
-              border: '1px solid rgba(0, 176, 255, 0.35)',
+              background: 'rgba(0, 176, 255, 0.12)',
+              border: '1px solid rgba(0, 176, 255, 0.3)',
               color: '#f8fafc',
               fontSize: 12,
               fontWeight: 800,
               cursor: 'pointer',
-              textAlign: 'left',
+              textAlign: 'center',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              gap: 4,
             }}
-            onClick={() => navigate('/app/grounds?mode=stadium&sys=1')}
+            onClick={() => navigate('/app/grounds?tab=slots')}
           >
-            <div>
-              <div style={{ color: '#00b0ff' }}>🏟️ Multi-Venue Operations</div>
-              <small style={{ color: '#94a3b8', fontSize: 10 }}>12 Systems (Staff, Payroll, P&L)</small>
-            </div>
-            <ChevronRight size={16} color="#00b0ff" />
+            <span style={{ fontSize: 18 }}>📅</span>
+            <span style={{ color: '#00b0ff' }}>Slots & Bookings</span>
           </button>
 
           <button
             type="button"
             style={{
-              padding: '10px 12px',
+              padding: '12px 10px',
               borderRadius: 10,
-              background: 'rgba(0, 230, 118, 0.15)',
-              border: '1px solid rgba(0, 230, 118, 0.35)',
+              background: 'rgba(255, 200, 61, 0.12)',
+              border: '1px solid rgba(255, 200, 61, 0.3)',
               color: '#f8fafc',
               fontSize: 12,
               fontWeight: 800,
               cursor: 'pointer',
-              textAlign: 'left',
+              textAlign: 'center',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              gap: 4,
             }}
-            onClick={() => navigate('/app/grounds?mode=slots&sys=1')}
+            onClick={() => navigate('/app/grounds?tab=staff')}
           >
-            <div>
-              <div style={{ color: '#00e676' }}>📅 Ground Slot Booking</div>
-              <small style={{ color: '#94a3b8', fontSize: 10 }}>12 Systems (Matrix, Pricing, Funds)</small>
-            </div>
-            <ChevronRight size={16} color="#00e676" />
+            <span style={{ fontSize: 18 }}>👷</span>
+            <span style={{ color: '#ffc83d' }}>Staff & Attendance</span>
+          </button>
+
+          <button
+            type="button"
+            style={{
+              padding: '12px 10px',
+              borderRadius: 10,
+              background: 'rgba(0, 230, 118, 0.12)',
+              border: '1px solid rgba(0, 230, 118, 0.3)',
+              color: '#f8fafc',
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: 'pointer',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 4,
+            }}
+            onClick={() => navigate('/app/grounds?tab=accounts')}
+          >
+            <span style={{ fontSize: 18 }}>💰</span>
+            <span style={{ color: '#00e676' }}>Accounts & P&L</span>
           </button>
         </div>
       </section>
@@ -621,7 +630,7 @@ export default function GroundDashboard({ user }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
             <div>
               <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: '#f8fafc' }}>
-                Time Slot Booking & Match Schedule (Feature 13.2)
+                Time Slot Booking & Match Schedule
               </h2>
               <small style={{ color: 'var(--muted)', fontSize: 11 }}>
                 Real-time pitch allocation, walk-in reservations & match fixture linking
@@ -660,7 +669,7 @@ export default function GroundDashboard({ user }) {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <span style={{ fontSize: 12, fontWeight: 800, color: '#38bdf8', letterSpacing: 0.5 }}>
-                JULY 2026 CALENDAR (FEATURE 13.2)
+                JULY 2026 CALENDAR
               </span>
               <span className="pill" style={{ background: 'rgba(0, 230, 118, 0.15)', color: '#00e676', fontSize: 10 }}>
                 MATCH DAY SELECTED: JULY {selectedDay}
@@ -1216,7 +1225,7 @@ export default function GroundDashboard({ user }) {
           {/* Tournament Leases */}
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 900, margin: '0 0 4px', color: '#f8fafc' }}>
-              Seasonal Tournament Leases & Contracts (Feature 15.3)
+              Seasonal Tournament Leases & Contracts
             </h2>
             <small style={{ color: 'var(--muted)', fontSize: 11 }}>
               Guaranteed stadium booking contracts with federations and tournament bodies
@@ -1503,7 +1512,7 @@ export default function GroundDashboard({ user }) {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <span className="pill" style={{ background: 'rgba(0, 176, 255, 0.15)', color: '#00b0ff', fontSize: 10 }}>
-                STADIUM GATE PASS • FEATURE 15.7
+                STADIUM OFFICIAL GATE PASS
               </span>
               <button
                 type="button"

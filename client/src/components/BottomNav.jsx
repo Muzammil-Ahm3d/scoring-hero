@@ -46,7 +46,7 @@ const PLAYER_NAV_ITEMS = [
   },
 ]
 
-// Ground & Stadium Owner Dedicated Navigation (Feature 13 & 14 from Blueprint)
+// Ground & Stadium Owner Dedicated Navigation
 const GROUND_NAV_ITEMS = [
   {
     to: '/app',
@@ -55,22 +55,20 @@ const GROUND_NAV_ITEMS = [
     end: true,
   },
   {
-    to: '/app/grounds?mode=slots&sys=2',
+    to: '/app/grounds?tab=slots',
     label: 'Slots',
     icon: Calendar,
     aliases: ['/app/grounds', '/app/stadium'],
   },
   {
-    to: '/app/grounds?mode=stadium&sys=2',
+    to: '/app/grounds?tab=staff',
     label: 'Staff Ops',
     icon: Users,
-    aliases: ['/app/grounds?mode=stadium&sys=3', '/app/grounds?mode=stadium&sys=4'],
   },
   {
-    to: '/app/grounds?mode=stadium&sys=7',
+    to: '/app/grounds?tab=accounts',
     label: 'Accounts',
     icon: DollarSign,
-    aliases: ['/app/grounds?mode=stadium&sys=5', '/app/grounds?mode=stadium&sys=6', '/app/grounds?mode=stadium&sys=10'],
   },
   {
     to: '/app/marketplace',
@@ -102,11 +100,15 @@ export default function BottomNav() {
       return currentPath === '/app' || currentPath === '/app/'
     }
     if (itemQuery) {
-      return currentPath === itemPath && location.search.includes(itemQuery)
+      if (location.search.includes(itemQuery)) return true
+      // Default to slots when query is empty on /app/grounds
+      if ((!location.search || location.search === '') && itemQuery === 'tab=slots' && currentPath === itemPath) {
+        return true
+      }
+      return false
     }
-    if (currentPath.startsWith(itemPath)) {
-      return true
-    }
+    if (currentPath === itemPath) return true
+    if (currentPath.startsWith(itemPath + '/')) return true
     if (item.aliases && item.aliases.some((alias) => currentPath.startsWith(alias.split('?')[0]))) {
       return true
     }
