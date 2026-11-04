@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
+  Zap,
+  BookOpen,
+  Copy,
   GraduationCap,
   Users,
   Calendar,
@@ -30,6 +33,46 @@ import {
   X,
 } from 'lucide-react'
 import Screen from '../components/Screen'
+
+// Standard Academy Benchmark Drills
+const STANDARD_ACADEMY_DRILLS = [
+  {
+    id: 'std-1',
+    time: '06:00 AM - 07:00 AM',
+    title: 'Yo-Yo Conditioning & Agility Ladders',
+    venue: 'Main Ground Outfield',
+    coach: 'Mohit Rao (S&C Trainer)',
+    batch: 'U-19 & U-16 Squads',
+    focus: 'Endurance, stamina & speed deceleration',
+  },
+  {
+    id: 'std-2',
+    time: '07:00 AM - 08:15 AM',
+    title: 'Target Bowling & Seam Position Net Session',
+    venue: 'Turf Nets A & B',
+    coach: 'Rahul Sharma (Pace Coach)',
+    batch: 'Pace & Spin Bowlers',
+    focus: 'Hitting top of off-stump on good length',
+  },
+  {
+    id: 'std-3',
+    time: '08:15 AM - 09:00 AM',
+    title: 'Short-Ball Pull & Hook Practice against Bowling Machine',
+    venue: 'Turf Net C (Automated Machine)',
+    coach: 'Ashish KP (Batting Coach)',
+    batch: 'Top-Order Batsmen',
+    focus: 'Swiveling weight transfer & keeping ball down',
+  },
+  {
+    id: 'std-4',
+    time: '04:30 PM - 06:30 PM',
+    title: '20-Over Center Turf Match Simulation',
+    venue: 'Center Turf Wicket (Red Soil)',
+    coach: 'Arjun Verma (Head Coach)',
+    batch: 'Elite Match Squad',
+    focus: 'Powerplay strike rotation & death bowling',
+  },
+];
 
 export default function AcademyCareer() {
   const navigate = useNavigate()
@@ -531,7 +574,7 @@ export default function AcademyCareer() {
     ],
     '03 Nov 2026': [
       {
-        id: 'd-prev-1',
+        id: 'd-03-1',
         time: '06:00 AM - 07:15 AM',
         title: 'Sprint Acceleration & Slip Cordon Reflexes',
         venue: 'Main Ground Outfield',
@@ -540,7 +583,7 @@ export default function AcademyCareer() {
         focus: 'Reaction time & low slip catching',
       },
       {
-        id: 'd-prev-2',
+        id: 'd-03-2',
         time: '07:15 AM - 08:30 AM',
         title: 'Middle-Overs Spin Bowling Attack & Sweeps',
         venue: 'Turf Nets A & B',
@@ -548,8 +591,185 @@ export default function AcademyCareer() {
         batch: 'All Batsmen & Spinners',
         focus: 'Paddle sweep & reverse sweep execution',
       },
+      {
+        id: 'd-03-3',
+        time: '04:30 PM - 06:00 PM',
+        title: 'Death Overs Power Hitting & Range Clearance',
+        venue: 'Center Turf Wicket',
+        coach: 'Ashish KP (Batting Coach)',
+        batch: 'Middle-Order & Finishers',
+        focus: 'Base stability, high backlift & clearing boundary',
+      },
+    ],
+    '02 Nov 2026': [
+      {
+        id: 'd-02-1',
+        time: '06:00 AM - 07:30 AM',
+        title: 'Front-Foot Defense & Straight Driving on Red Soil',
+        venue: 'Turf Nets A & B',
+        coach: 'Ashish KP (Batting Coach)',
+        batch: 'Top-Order Batsmen',
+        focus: 'Presenting full face of the bat & high elbow',
+      },
+      {
+        id: 'd-02-2',
+        time: '07:30 AM - 08:45 AM',
+        title: 'Left-Arm Angle & Late Inswing Release Point Analysis',
+        venue: 'Turf Net C',
+        coach: 'Rahul Sharma (Pace Coach)',
+        batch: 'Fast Bowlers',
+        focus: 'Wrist alignment behind seam & follow-through',
+      },
+      {
+        id: 'd-02-3',
+        time: '04:30 PM - 06:15 PM',
+        title: 'High Boundary Catching under Floodlights with Tennis Racket',
+        venue: 'Main Outfield',
+        coach: 'Mohit Rao (S&C Trainer)',
+        batch: 'All Academy Batches',
+        focus: 'Calling early, judging trajectory & reverse cup',
+      },
+    ],
+    '01 Nov 2026': [
+      {
+        id: 'd-01-1',
+        time: '06:00 AM - 07:15 AM',
+        title: 'Cone Shuttle Runs & Fast Bowling Stamina Drills',
+        venue: 'Main Outfield',
+        coach: 'Mohit Rao (S&C Trainer)',
+        batch: 'Pace Bowling Squad',
+        focus: 'Deceleration balance & core stability',
+      },
+      {
+        id: 'd-01-2',
+        time: '07:15 AM - 08:30 AM',
+        title: 'Target Bowling: Hitting Top of Off-Stump Target Cones',
+        venue: 'Turf Nets A & B',
+        coach: 'Rahul Sharma (Pace Coach)',
+        batch: 'Pace & Spin Bowlers',
+        focus: 'Consistency in 6-meter good length channel',
+      },
+      {
+        id: 'd-01-3',
+        time: '04:30 PM - 06:00 PM',
+        title: 'Running Between Wickets & Direct Hit Target Throws',
+        venue: 'Center Turf Wicket',
+        coach: 'Arjun Verma (Head Coach)',
+        batch: 'All Batches',
+        focus: 'Loud calling communication & sharp 180-degree turns',
+      },
+    ],
+    '31 Oct 2026': [
+      {
+        id: 'd-31-1',
+        time: '06:00 AM - 07:30 AM',
+        title: 'Leg-Spin Grip, Wrong\'un & Top-Spinner Variations',
+        venue: 'Turf Net B',
+        coach: 'Arjun Verma (Head Coach)',
+        batch: 'Spin Bowlers & Wicketkeepers',
+        focus: 'Revolutions on seam & subtle release variations',
+      },
+      {
+        id: 'd-31-2',
+        time: '07:30 AM - 08:45 AM',
+        title: 'Bouncer Ducking & Weaving against Short Pitch Bowling',
+        venue: 'Turf Net C (Bowling Machine)',
+        coach: 'Ashish KP (Batting Coach)',
+        batch: 'Top-Order Batsmen',
+        focus: 'Eyes on ball, soft hands & evasion technique',
+      },
+      {
+        id: 'd-31-3',
+        time: '04:30 PM - 06:30 PM',
+        title: 'Match Pressure Scenario: 36 Runs Needed off 18 Balls',
+        venue: 'Center Turf Wicket',
+        coach: 'Arjun Verma (Head Coach)',
+        batch: 'Elite Match Squad',
+        focus: 'Strike rotation, finding gaps & execution under pressure',
+      },
     ],
   })
+
+  // State to toggle preview of standard drills
+  const [showStandardPreview, setShowStandardPreview] = useState(false)
+
+  // 1-Click: Apply a single individual drill directly to Today (04 Nov 2026)
+  const applySingleDrillToToday = (drill) => {
+    const todayKey = '04 Nov 2026'
+    const newDrill = {
+      ...drill,
+      id: `d-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    }
+    setDrillsByDate((prev) => ({
+      ...prev,
+      [todayKey]: [...(prev[todayKey] || []), newDrill],
+    }))
+    triggerToast(`⚡ Instant Applied "${drill.title}" to Today (${todayKey})!`)
+  }
+
+  // 1-Click: Duplicate drill to current date
+  const duplicateDrillToCurrent = (drill) => {
+    const newDrill = {
+      ...drill,
+      id: `d-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      title: `${drill.title} (Repeated)`,
+    }
+    setDrillsByDate((prev) => ({
+      ...prev,
+      [selectedDrillDate]: [...(prev[selectedDrillDate] || []), newDrill],
+    }))
+    triggerToast(`📋 Duplicated "${drill.title}" for ${selectedDrillDate}!`)
+  }
+
+  // 1-Click: Copy all drills from a specific date to Today (04 Nov 2026)
+  const copyDayDrillsToToday = (fromDate) => {
+    const todayKey = '04 Nov 2026'
+    const sourceDrills = drillsByDate[fromDate] || []
+    if (sourceDrills.length === 0) {
+      triggerToast(`No drills found on ${fromDate} to copy.`)
+      return
+    }
+    const cloned = sourceDrills.map((d, idx) => ({
+      ...d,
+      id: `d-${Date.now()}-${idx}`,
+    }))
+    setDrillsByDate((prev) => ({
+      ...prev,
+      [todayKey]: [...(prev[todayKey] || []), ...cloned],
+    }))
+    triggerToast(`⚡ Copied all ${sourceDrills.length} drills from ${fromDate} to Today (${todayKey})!`)
+  }
+
+  // 1-Click: Copy standard drills to a target date
+  const applyStandardDrillsToDate = (targetDate) => {
+    const cloned = STANDARD_ACADEMY_DRILLS.map((d, idx) => ({
+      ...d,
+      id: `d-${Date.now()}-${idx}`,
+    }))
+    setDrillsByDate((prev) => ({
+      ...prev,
+      [targetDate]: cloned,
+    }))
+    triggerToast(`🔁 Applied standard curriculum (4 drills) to ${targetDate}!`)
+  }
+
+  // 1-Click: Copy drills from chosen date to the currently selected date
+  const copyDrillsFromDateToSelected = (sourceDate) => {
+    const sourceDrills = drillsByDate[sourceDate] || []
+    if (sourceDrills.length === 0) {
+      triggerToast(`No drills found on ${sourceDate}.`)
+      return
+    }
+    const cloned = sourceDrills.map((d, idx) => ({
+      ...d,
+      id: `d-${Date.now()}-${idx}`,
+    }))
+    setDrillsByDate((prev) => ({
+      ...prev,
+      [selectedDrillDate]: [...(prev[selectedDrillDate] || []), ...cloned],
+    }))
+    triggerToast(`📋 Copied ${sourceDrills.length} drills from ${sourceDate} to ${selectedDrillDate}!`)
+  }
 
   // Current displayed drills
   const currentDrills = drillsByDate[selectedDrillDate] || []
@@ -1008,8 +1228,7 @@ export default function AcademyCareer() {
                 cursor: 'pointer',
               }}
             >
-              ← Back to Student Batches
-            </button>
+              ← Back</button>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span
                 style={{
@@ -1362,8 +1581,7 @@ export default function AcademyCareer() {
                 cursor: 'pointer',
               }}
             >
-              ← Back to Coaches & Staff
-            </button>
+              ← Back</button>
             <span
               style={{
                 fontSize: 12,
@@ -1589,8 +1807,7 @@ export default function AcademyCareer() {
                 cursor: 'pointer',
               }}
             >
-              ← Back to Student Batches
-            </button>
+              ← Back</button>
           </div>
 
           <div
@@ -1905,8 +2122,7 @@ export default function AcademyCareer() {
                 cursor: 'pointer',
               }}
             >
-              ← Back to Coaches & Staff
-            </button>
+              ← Back</button>
           </div>
 
           <div
@@ -2158,8 +2374,7 @@ export default function AcademyCareer() {
                 cursor: 'pointer',
               }}
             >
-              ← Back to Training Drills & Attendance
-            </button>
+              ← Back</button>
           </div>
 
           <div
@@ -2379,8 +2594,7 @@ export default function AcademyCareer() {
                 cursor: 'pointer',
               }}
             >
-              ← Back to Academy Accounts
-            </button>
+              ← Back</button>
           </div>
 
           <div
@@ -2561,8 +2775,7 @@ export default function AcademyCareer() {
                 cursor: 'pointer',
               }}
             >
-              ← Back to Academy Accounts
-            </button>
+              ← Back</button>
             <div style={{ display: 'flex', gap: 10 }}>
               <button
                 type="button"
@@ -3136,45 +3349,69 @@ export default function AcademyCareer() {
         ========================================================================= */}
         {activeTab === 'attendance' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {/* 1. Date Selector & 1-Click Repeat Action Bar */}
+            {/* 1. Training Schedule & Date Switcher */}
             <div
               style={{
                 background: 'rgba(15, 23, 42, 0.75)',
                 padding: '14px',
                 borderRadius: 14,
                 border: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                 <div>
                   <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>
                     Training Schedule & History
                   </span>
-                  <h3 style={{ fontSize: 16, fontWeight: 900, color: '#f8fafc', margin: '2px 0 0' }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 900, color: '#f8fafc', margin: '2px 0 0' }}>
                     {selectedDrillDate}
                   </h3>
                 </div>
 
-                {/* THE REQUESTED 1-CLICK REPEAT BUTTON */}
-                <button
-                  type="button"
-                  onClick={handleRepeatDrillsToday}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: 'linear-gradient(135deg, #ffc83d, #ff9100)',
-                    color: '#020617',
-                    fontWeight: 900,
-                    fontSize: 11,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                  }}
-                >
-                  <RotateCcw size={14} /> 🔁 Repeat Standard Drills Today
-                </button>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowStandardPreview(!showStandardPreview)}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: 9,
+                      border: '1px solid rgba(255, 200, 61, 0.35)',
+                      background: showStandardPreview ? 'rgba(255, 200, 61, 0.2)' : 'rgba(255, 200, 61, 0.08)',
+                      color: '#ffc83d',
+                      fontWeight: 800,
+                      fontSize: 11,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    <BookOpen size={14} /> {showStandardPreview ? 'Hide Curriculum' : '📖 View Standard Drills (4)'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => applyStandardDrillsToDate('04 Nov 2026')}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: 9,
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #ffc83d, #ff9100)',
+                      color: '#020617',
+                      fontWeight: 900,
+                      fontSize: 11,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    <RotateCcw size={14} /> ⚡ Apply Standard Drills to Today
+                  </button>
+                </div>
               </div>
 
               {/* Date Switcher Pills */}
@@ -3184,106 +3421,323 @@ export default function AcademyCareer() {
                   gap: 6,
                   overflowX: 'auto',
                   scrollbarWidth: 'none',
+                  paddingBottom: 2,
                 }}
               >
                 {['04 Nov 2026', '03 Nov 2026', '02 Nov 2026', '01 Nov 2026', '31 Oct 2026'].map((dt) => {
                   const isSel = selectedDrillDate === dt
+                  const count = (drillsByDate[dt] || []).length
                   return (
                     <button
                       key={dt}
                       type="button"
                       onClick={() => setSelectedDrillDate(dt)}
                       style={{
-                        padding: '6px 12px',
-                        borderRadius: 8,
-                        fontSize: 11,
+                        padding: '8px 14px',
+                        borderRadius: 10,
+                        fontSize: 12,
                         fontWeight: 800,
                         whiteSpace: 'nowrap',
-                        border: isSel ? '1px solid #00b0ff' : '1px solid rgba(255, 255, 255, 0.08)',
+                        border: isSel ? '1.5px solid #00b0ff' : '1px solid rgba(255, 255, 255, 0.08)',
                         background: isSel ? 'rgba(0, 176, 255, 0.2)' : 'rgba(255, 255, 255, 0.03)',
                         color: isSel ? '#38bdf8' : '#94a3b8',
                         cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
                       }}
                     >
-                      {dt === '04 Nov 2026' ? 'Today (04 Nov)' : dt}
+                      <span>{dt === '04 Nov 2026' ? 'Today (04 Nov)' : dt}</span>
+                      <span
+                        style={{
+                          fontSize: 10,
+                          padding: '1px 6px',
+                          borderRadius: 6,
+                          background: isSel ? '#00b0ff' : 'rgba(255, 255, 255, 0.1)',
+                          color: isSel ? '#020617' : '#cbd5e1',
+                          fontWeight: 900,
+                        }}
+                      >
+                        {count}
+                      </span>
                     </button>
                   )
                 })}
               </div>
             </div>
 
-            {/* 2. Today's Training Drills List */}
+            {/* Standard Curriculum Preview Card (When Toggled) */}
+            {showStandardPreview && (
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255, 200, 61, 0.08), rgba(0, 176, 255, 0.05))',
+                  padding: '16px',
+                  borderRadius: 14,
+                  border: '1.5px solid rgba(255, 200, 61, 0.35)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10,
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: '#ffc83d', color: '#020617', fontWeight: 900 }}>
+                        OFFICIAL BENCHMARK
+                      </span>
+                      <h4 style={{ fontSize: 14, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
+                        Standard Academy Daily Curriculum (4 Core Modules)
+                      </h4>
+                    </div>
+                    <small style={{ color: 'var(--muted)', fontSize: 11, marginTop: 2, display: 'block' }}>
+                      You can copy individual standard drills or apply all 4 to today or any chosen date
+                    </small>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      type="button"
+                      onClick={() => applyStandardDrillsToDate(selectedDrillDate)}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 200, 61, 0.2)',
+                        border: '1px solid rgba(255, 200, 61, 0.4)',
+                        color: '#ffc83d',
+                        fontWeight: 800,
+                        fontSize: 11,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Copy All 4 to {selectedDrillDate}
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 10 }}>
+                  {STANDARD_ACADEMY_DRILLS.map((std) => (
+                    <div
+                      key={std.id}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 10,
+                        background: 'rgba(15, 23, 42, 0.85)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        gap: 6,
+                      }}
+                    >
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: 10, fontWeight: 800, color: '#ffc83d', background: 'rgba(255, 200, 61, 0.15)', padding: '2px 6px', borderRadius: 4 }}>
+                            🕒 {std.time}
+                          </span>
+                          <span style={{ fontSize: 10, color: '#38bdf8', fontWeight: 700 }}>
+                            📍 {std.venue}
+                          </span>
+                        </div>
+                        <strong style={{ fontSize: 13, color: '#f8fafc', display: 'block', marginTop: 4 }}>
+                          {std.title}
+                        </strong>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                          Coach: <span style={{ color: '#f8fafc' }}>{std.coach}</span> • Squad: <span>{std.batch}</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: '#00e676', marginTop: 2 }}>
+                          🎯 {std.focus}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                        <button
+                          type="button"
+                          onClick={() => applySingleDrillToToday(std)}
+                          style={{
+                            flex: 1,
+                            padding: '6px 10px',
+                            borderRadius: 6,
+                            background: 'linear-gradient(135deg, #00e676, #00b0ff)',
+                            border: 'none',
+                            color: '#020617',
+                            fontWeight: 900,
+                            fontSize: 10,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 4,
+                          }}
+                        >
+                          <Zap size={11} /> ⚡ Apply This Drill Today
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 2. Drills Performed on Selected Date List */}
             <div
               style={{
                 background: 'rgba(15, 23, 42, 0.75)',
-                padding: '14px',
+                padding: '16px',
                 borderRadius: 14,
                 border: '1px solid rgba(255, 255, 255, 0.08)',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
                 <div>
-                  <h4 style={{ fontSize: 13, fontWeight: 900, color: '#f8fafc', textTransform: 'uppercase', margin: 0 }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 900, color: '#f8fafc', textTransform: 'uppercase', margin: 0 }}>
                     Drills Performed on {selectedDrillDate} ({currentDrills.length})
                   </h4>
                   <small style={{ color: 'var(--muted)', fontSize: 11 }}>
-                    Session syllabus, pitch locations & lead coaches
+                    Session curriculum, venue locations, coach in charge & focus
                   </small>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowAddDrillPage(true)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: 8,
-                    background: 'rgba(0, 176, 255, 0.15)',
-                    border: '1px solid #00b0ff',
-                    color: '#00b0ff',
-                    fontWeight: 800,
-                    fontSize: 11,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                  }}
-                >
-                  <Plus size={14} /> + Add Drill
-                </button>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {/* If viewing a past date that has drills, offer 1-click copy all to today */}
+                  {selectedDrillDate !== '04 Nov 2026' && currentDrills.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => copyDayDrillsToToday(selectedDrillDate)}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: 8,
+                        background: 'linear-gradient(135deg, #00e676, #00b0ff)',
+                        border: 'none',
+                        color: '#020617',
+                        fontWeight: 900,
+                        fontSize: 11,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 5,
+                        boxShadow: '0 4px 12px rgba(0, 230, 118, 0.25)',
+                      }}
+                    >
+                      <Zap size={13} /> ⚡ Copy All ({currentDrills.length}) to Today (04 Nov)
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setShowAddDrillPage(true)}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: 8,
+                      background: 'rgba(0, 176, 255, 0.15)',
+                      border: '1px solid #00b0ff',
+                      color: '#00b0ff',
+                      fontWeight: 800,
+                      fontSize: 11,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
+                    <Plus size={14} /> + Add Drill
+                  </button>
+                </div>
               </div>
 
               {currentDrills.length === 0 ? (
-                <div style={{ padding: 24, textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: 10 }}>
-                  <p style={{ color: 'var(--muted)', margin: '0 0 10px' }}>No drills scheduled for this date.</p>
-                  <button
-                    type="button"
-                    onClick={handleRepeatDrillsToday}
-                    style={{
-                      padding: '8px 16px',
-                      borderRadius: 8,
-                      background: '#ffc83d',
-                      border: 'none',
-                      color: '#020617',
-                      fontWeight: 900,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    🔁 Copy Standard Drills To This Day
-                  </button>
+                <div style={{ padding: '28px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px dashed rgba(255, 255, 255, 0.15)' }}>
+                  <p style={{ color: 'var(--muted)', fontSize: 13, margin: '0 0 14px' }}>
+                    No drills scheduled for <strong>{selectedDrillDate}</strong>.
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 440, margin: '0 auto' }}>
+                    <button
+                      type="button"
+                      onClick={() => applyStandardDrillsToDate(selectedDrillDate)}
+                      style={{
+                        padding: '10px 16px',
+                        borderRadius: 9,
+                        background: 'linear-gradient(135deg, #ffc83d, #ff9100)',
+                        border: 'none',
+                        color: '#020617',
+                        fontWeight: 900,
+                        fontSize: 12,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                      }}
+                    >
+                      🔁 Copy Standard Curriculum (4 Drills) To This Day
+                    </button>
+
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => copyDrillsFromDateToSelected('04 Nov 2026')}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: 8,
+                          background: 'rgba(0, 176, 255, 0.15)',
+                          border: '1px solid rgba(0, 176, 255, 0.3)',
+                          color: '#38bdf8',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        📋 Copy from Today (04 Nov)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => copyDrillsFromDateToSelected('03 Nov 2026')}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: 8,
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          color: '#f8fafc',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        📋 Copy from 03 Nov
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => copyDrillsFromDateToSelected('02 Nov 2026')}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: 8,
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          color: '#f8fafc',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        📋 Copy from 02 Nov
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {currentDrills.map((d) => (
                     <div
                       key={d.id}
                       style={{
-                        padding: '12px 14px',
+                        padding: '14px 16px',
                         borderRadius: 12,
                         background: 'rgba(255, 255, 255, 0.02)',
                         border: '1px solid rgba(255, 255, 255, 0.06)',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: 4,
+                        gap: 6,
+                        transition: 'all 0.15s ease',
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -3293,7 +3747,7 @@ export default function AcademyCareer() {
                             fontWeight: 800,
                             color: '#ffc83d',
                             background: 'rgba(255, 200, 61, 0.12)',
-                            padding: '2px 8px',
+                            padding: '3px 8px',
                             borderRadius: 6,
                           }}
                         >
@@ -3304,12 +3758,62 @@ export default function AcademyCareer() {
                         </span>
                       </div>
 
-                      <strong style={{ fontSize: 14, color: '#f8fafc', marginTop: 2 }}>{d.title}</strong>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>
-                        Coach in Charge: <strong style={{ color: '#f8fafc' }}>{d.coach}</strong> • Batch: <span>{d.batch}</span>
+                      <strong style={{ fontSize: 15, color: '#f8fafc', marginTop: 2 }}>{d.title}</strong>
+                      <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                        Coach in Charge: <strong style={{ color: '#f8fafc' }}>{d.coach}</strong> • Target Squad: <span style={{ color: '#ffc83d' }}>{d.batch}</span>
                       </div>
-                      <div style={{ fontSize: 11, color: '#00e676', marginTop: 2 }}>
-                        🎯 Technical Focus: {d.focus}
+                      <div style={{ fontSize: 12, color: '#00e676' }}>
+                        🎯 Technical Focus: <span>{d.focus}</span>
+                      </div>
+
+                      {/* COPY ACTIONS FOR THIS INDIVIDUAL DRILL */}
+                      <div style={{ display: 'flex', gap: 8, marginTop: 4, alignItems: 'center', flexWrap: 'wrap' }}>
+                        {selectedDrillDate !== '04 Nov 2026' ? (
+                          <button
+                            type="button"
+                            onClick={() => applySingleDrillToToday(d)}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: 8,
+                              background: 'linear-gradient(135deg, #00e676, #00b0ff)',
+                              border: 'none',
+                              color: '#020617',
+                              fontWeight: 900,
+                              fontSize: 11,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 5,
+                              boxShadow: '0 4px 12px rgba(0, 230, 118, 0.25)',
+                            }}
+                          >
+                            <Zap size={13} /> ⚡ Instant Apply This Drill to Today (04 Nov)
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: 11, color: '#00e676', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            ✓ Active in Today's Schedule
+                          </span>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => duplicateDrillToCurrent(d)}
+                          style={{
+                            padding: '6px 10px',
+                            borderRadius: 8,
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            color: '#94a3b8',
+                            fontSize: 11,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                          }}
+                        >
+                          <Copy size={12} /> Duplicate Drill
+                        </button>
                       </div>
                     </div>
                   ))}
