@@ -19,11 +19,42 @@ import {
 import Screen from '../components/Screen'
 import { liveMatch } from '../data/demo'
 
+const INITIAL_LINES = [
+  {
+    over: '10.3',
+    text: 'FOUR! Brilliant timing through extra cover! Rohit leans into the drive with surgical elegance!',
+    context: 'Rahul is 4 runs away from his fifty. The field moves back.',
+    emotion: 'Excited • Pitch Modulated',
+    event: 'BOUNDARY',
+  },
+  {
+    over: '10.2',
+    text: 'Good length on off stump, defended with soft hands into the gap on the on-side for a quick single.',
+    context: 'Score ticks to 102/3. CRR at 10.05.',
+    emotion: 'Calm Analysis',
+    event: 'SINGLE',
+  },
+  {
+    over: '10.1',
+    text: 'UP IN THE AIR... AND CARRIED OVER THE ROPES! Smashed clean into the second tier! What monstrous power!',
+    context: 'Warriors XI captain calls a team huddle.',
+    emotion: 'Peak Hype (Stadium Pro)',
+    event: 'SIX',
+  },
+  {
+    over: '9.6',
+    text: 'Appeal for LBW! Turned down by the umpire! Impact looked outside the line of off-stump.',
+    context: 'Bowler considers DRS review. Clock running.',
+    emotion: 'Tense',
+    event: 'DOT',
+  },
+]
+
 export default function AICommentary() {
   const navigate = useNavigate()
 
-  // Feature 9.1 Multi-Language Commentary
-  const [selectedLanguage, setSelectedLanguage] = useState('en') // 'en' | 'hi' | 'ta' | 'te'
+  // Feature 9.1 Multi-Language Commentary (Strictly English Only)
+  const [selectedLanguage, setSelectedLanguage] = useState('en-global') // 'en-global' | 'en-radio' | 'en-dugout'
   // Feature 9.3 Emotion-Based Voice Modulation System
   const [voiceEmotion, setVoiceEmotion] = useState('excited') // 'calm' | 'excited' | 'classic'
   // Playback / Engine status
@@ -40,47 +71,84 @@ export default function AICommentary() {
   // Live commentary stream
   const [feedIndex, setFeedIndex] = useState(0)
 
-  const commentaryLines = [
-    {
-      over: '10.3',
-      text: 'FOUR! Brilliant timing through extra cover! Rohit leans into the drive with surgical elegance!',
-      context: 'Rahul is 4 runs away from his fifty. The field moves back.',
-      emotion: 'Excited • Pitch Modulated',
-      event: 'BOUNDARY',
-    },
-    {
-      over: '10.2',
-      text: 'Good length on off stump, defended with soft hands into the gap on the on-side for a quick single.',
-      context: 'Score ticks to 102/3. CRR at 10.05.',
-      emotion: 'Calm Analysis',
-      event: 'SINGLE',
-    },
-    {
-      over: '10.1',
-      text: 'UP IN THE AIR... AND CARRIED OVER THE ROPES! Smashed clean into the second tier! What monstrous power!',
-      context: 'Warriors XI captain calls a team huddle.',
-      emotion: 'Peak Hype (Stadium Pro)',
-      event: 'SIX',
-    },
-    {
-      over: '9.6',
-      text: 'Appeal for LBW! Turned down by the umpire! Impact looked outside the line of off-stump.',
-      context: 'Bowler considers DRS review. Clock running.',
-      emotion: 'Tense',
-      event: 'DOT',
-    },
-  ]
+  const [commentaryLines, setCommentaryLines] = useState(() => {
+    try {
+      const saved = localStorage.getItem('scoringheros_live_commentary')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const liveArr = parsed.map((p) => ({
+            over: p.over || '10.4',
+            text: p.text,
+            context: `Shot: ${p.shot || 'Drive'}. Real-time score sync.`,
+            emotion: p.event === 'SIX' ? 'Peak Hype (Stadium Pro)' : p.event === 'BOUNDARY' ? 'Excited • Pitch Modulated' : 'Calm Analysis',
+            event: p.event || 'BOUNDARY',
+          }))
+          return [...liveArr, ...INITIAL_LINES]
+        }
+      }
+    } catch (e) {}
+    return INITIAL_LINES
+  })
+
+  // Synchronize live commentary whenever new balls are scored
+  useEffect(() => {
+    function handleStorageChange() {
+      try {
+        const saved = localStorage.getItem('scoringheros_live_commentary')
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const liveArr = parsed.map((p) => ({
+              over: p.over || '10.4',
+              text: p.text,
+              context: `Shot: ${p.shot || 'Drive'}. Real-time score sync.`,
+              emotion: p.event === 'SIX' ? 'Peak Hype (Stadium Pro)' : p.event === 'BOUNDARY' ? 'Excited • Pitch Modulated' : 'Calm Analysis',
+              event: p.event || 'BOUNDARY',
+            }))
+            setCommentaryLines([...liveArr, ...INITIAL_LINES])
+          }
+        }
+      } catch (e) {}
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
 
   // Simulate real-time commentary generation (Feature 9.2)
   useEffect(() => {
-    if (!isPlaying) return
+    if (!isPlaying || commentaryLines.length === 0) return
     const interval = setInterval(() => {
       setFeedIndex((prev) => (prev + 1) % commentaryLines.length)
     }, 4500)
     return () => clearInterval(interval)
-  }, [isPlaying])
+  }, [isPlaying, commentaryLines.length])
 
-  const activeLine = commentaryLines[feedIndex]
+  // Speech narration release in English
+  useEffect(() => {
+    if (!isPlaying || isMuted) {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel()
+      }
+      return
+    }
+    const current = commentaryLines[feedIndex]
+    if (current && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel()
+        const utterance = new SpeechSynthesisUtterance(current.text)
+        utterance.lang = 'en-US'
+        utterance.rate = voiceEmotion === 'excited' ? 1.08 : voiceEmotion === 'classic' ? 0.95 : 1.0
+        utterance.pitch = voiceEmotion === 'excited' ? 1.05 : 1.0
+        utterance.volume = aiVoiceVol / 100
+        window.speechSynthesis.speak(utterance)
+      } catch (e) {
+        console.warn('Speech error:', e)
+      }
+    }
+  }, [feedIndex, isPlaying, isMuted, voiceEmotion, aiVoiceVol, commentaryLines])
+
+  const activeLine = commentaryLines[feedIndex] || commentaryLines[0]
 
   return (
     <Screen
@@ -160,18 +228,22 @@ export default function AICommentary() {
           </button>
         </div>
 
-        {/* Feature 9.1 Multi-Language Commentary System */}
+        {/* Feature 9.1 Multi-Language Commentary System (Strictly English Only) */}
         <div className="panel">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <Languages size={18} color="var(--cyan)" />
-            <h4 style={{ margin: 0, fontSize: 14 }}>Broadcast Language</h4>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Languages size={18} color="var(--cyan)" />
+              <h4 style={{ margin: 0, fontSize: 14 }}>Broadcast Language</h4>
+            </div>
+            <span className="pill" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676', fontSize: 11, fontWeight: 800 }}>
+              ✓ ENGLISH EXCLUSIVE
+            </span>
           </div>
           <div className="language-selector-grid">
             {[
-              { id: 'en', label: 'English', dialect: 'Neutral / Global' },
-              { id: 'hi', label: 'हिंदी (Hindi)', dialect: 'Desi Energy' },
-              { id: 'ta', label: 'தமிழ் (Tamil)', dialect: 'Kolly Vibe' },
-              { id: 'te', label: 'తెలుగు (Telugu)', dialect: 'Mass Commentary' },
+              { id: 'en-global', label: 'English (Stadium Pro)', dialect: 'Neutral / Global International' },
+              { id: 'en-radio', label: 'English (Classic Radio)', dialect: 'Descriptive Ball-by-Ball' },
+              { id: 'en-dugout', label: 'English (Analytical)', dialect: 'Shot Biomechanics & Field Angles' },
             ].map((lang) => (
               <button
                 key={lang.id}

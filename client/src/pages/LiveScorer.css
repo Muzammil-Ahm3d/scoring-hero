@@ -1,0 +1,336 @@
+/* =========================================================================
+   LIVE SCORER & AI COMMENTARY ENGINE STYLES (MOBILE-FIRST)
+   ========================================================================= */
+
+/* ── Live AI Commentary Release Box (Above Keypad) ── */
+.scorer-commentary-box {
+  background: linear-gradient(135deg, rgba(15, 28, 56, 0.95), rgba(10, 18, 36, 0.95));
+  border: 1px solid rgba(0, 230, 118, 0.35);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 0 12px rgba(0, 230, 118, 0.05);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.scorer-commentary-box.is-boundary {
+  border-color: #00e676;
+  box-shadow: 0 0 16px rgba(0, 230, 118, 0.25);
+}
+
+.scorer-commentary-box.is-six {
+  border-color: #a78bfa;
+  box-shadow: 0 0 16px rgba(167, 139, 250, 0.25);
+}
+
+.scorer-commentary-box.is-wicket {
+  border-color: #ef4444;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.3);
+}
+
+.scorer-comm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.scorer-comm-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #00e676;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.scorer-comm-quote {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #f1f5f9;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.scorer-comm-shot-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ── Shot Type Selection Tray ── */
+.scorer-shot-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+}
+
+.scorer-shot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scorer-shot-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+
+.scorer-shot-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+
+.scorer-shot-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.shot-pill-btn {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.shot-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.shot-pill-btn.is-active {
+  background: linear-gradient(135deg, rgba(0, 230, 118, 0.25), rgba(56, 189, 248, 0.25));
+  border-color: #00e676;
+  color: #00e676;
+  box-shadow: 0 0 10px rgba(0, 230, 118, 0.25);
+  font-weight: 800;
+}
+
+/* ── Dedicated Commentary Trigger Button ── */
+.commentary-trigger-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  margin: 4px 0 2px;
+}
+
+.btn-generate-comm {
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 230, 118, 0.4);
+  background: linear-gradient(135deg, #00e676, #00b0ff);
+  color: #020617;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 230, 118, 0.3);
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.btn-generate-comm:active {
+  transform: scale(0.98);
+}
+
+.btn-voice-toggle {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.85);
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-voice-toggle.is-muted {
+  color: var(--muted);
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* ── In-Depth Scorecard Sub-Page Styles ── */
+.scorecard-subpage {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 12px 14px 40px;
+  box-sizing: border-box;
+}
+
+.scorecard-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.scorecard-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+/* ── Shot Type Matrix Table ── */
+.shot-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 6px;
+}
+
+.shot-matrix-chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shot-matrix-chip .shot-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.shot-matrix-chip .shot-stats {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.shot-matrix-chip .shot-runs {
+  font-size: 12px;
+  font-weight: 800;
+  color: #00e676;
+}
+
+/* ── Wagon Wheel Field Direction Dispersion ── */
+.wagon-direction-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wagon-direction-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.wagon-dir-label {
+  width: 110px;
+  color: #cbd5e1;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wagon-dir-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.wagon-dir-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #00e676, #38bdf8);
+}
+
+.wagon-dir-pct {
+  width: 38px;
+  text-align: right;
+  font-weight: 800;
+  color: #00e676;
+}
+
+/* ── Ball-by-Ball Commentary Feed Item ── */
+.ball-commentary-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ball-comm-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ball-badge-round {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #000;
+}
