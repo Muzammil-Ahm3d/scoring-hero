@@ -37,6 +37,7 @@ import SportsMarketplace from './pages/SportsMarketplace'
 import SellerMerchantPortal from './pages/SellerMerchantPortal'
 import CoachPortal from './pages/CoachPortal'
 import StreamerPortal from './pages/StreamerPortal'
+import SponsorPortal from './pages/SponsorPortal'
 import ProductDetail from './pages/ProductDetail'
 import CartPage from './pages/CartPage'
 import WishlistPage from './pages/WishlistPage'
@@ -142,7 +143,8 @@ export default function App() {
         <Route path="partners" element={<ManufacturerPartners />} />
         <Route path="manufacturer" element={<ManufacturerPartners />} />
         <Route path="brands" element={<ManufacturerPartners />} />
-        <Route path="sponsorship" element={<SponsorshipAds />} />
+        <Route path="sponsor" element={<SponsorPortal />} />
+        <Route path="sponsorship" element={<SponsorPortal />} />
         <Route path="ads" element={<SponsorshipAds />} />
         <Route path="campaigns" element={<SponsorshipAds />} />
         <Route path="aimatch" element={<AIMatchSystem />} />

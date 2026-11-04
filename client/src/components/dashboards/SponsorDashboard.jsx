@@ -92,25 +92,25 @@ export default function SponsorDashboard({ user }) {
 
       {/* Quick Action Shortcuts (Allocated Features) */}
       <div className="sh-quick-actions-grid">
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/sponsorship')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/sponsor?tab=campaigns')}>
           <div className="sh-action-icon" style={{ background: 'rgba(255,214,0,0.15)', color: '#ffd600' }}>
             <Megaphone size={18} />
           </div>
           <span>Campaigns</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/epaper')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/sponsor?tab=creatives')}>
           <div className="sh-action-icon" style={{ background: 'rgba(61,224,255,0.15)', color: '#3de0ff' }}>
             <Newspaper size={18} />
           </div>
-          <span>Print Ads</span>
+          <span>Creatives</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/entertainment')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/sponsor?tab=wallet')}>
           <div className="sh-action-icon" style={{ background: 'rgba(255,45,58,0.15)', color: '#ff2d3a' }}>
             <Tv size={18} />
           </div>
-          <span>Arena Audio</span>
+          <span>Ad Wallet</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/stats')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/sponsor?tab=analytics')}>
           <div className="sh-action-icon" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676' }}>
             <BarChart3 size={18} />
           </div>
@@ -152,7 +152,7 @@ export default function SponsorDashboard({ user }) {
             <BarChart3 size={18} color="#ffd600" />
             <h3 style={{ margin: 0, fontSize: 15 }}>Active Brand Campaigns</h3>
           </div>
-          <button type="button" className="text-link" onClick={() => navigate('/app/sponsorship')}>
+          <button type="button" className="text-link" onClick={() => navigate('/app/sponsor?tab=campaigns')}>
             + New Campaign
           </button>
         </header>
