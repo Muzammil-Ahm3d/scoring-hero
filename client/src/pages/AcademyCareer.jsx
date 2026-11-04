@@ -734,8 +734,8 @@ export default function AcademyCareer() {
 
     triggerToast(`✓ Marked ₹${student.feeAmount.toLocaleString()} paid for ${student.name}! Added to Accounts Ledger (Ref: ${newReceiptNo}).`)
 
-    if (showStudentDetailsModal && showStudentDetailsModal.id === student.id) {
-      setShowStudentDetailsModal((prev) => ({
+    if (selectedStudentView && selectedStudentView.id === student.id) {
+      setSelectedStudentView((prev) => ({
         ...prev,
         feeStatus: 'Paid',
         receiptNo: newReceiptNo,
@@ -771,8 +771,8 @@ export default function AcademyCareer() {
     setAcademyTransactions((prev) => [debitTx, ...prev])
     triggerToast(`💸 Disbursed ₹${coach.salary.toLocaleString()} to ${coach.name}! Logged in Academy Ledger.`)
 
-    if (showCoachDetailsModal && showCoachDetailsModal.id === coach.id) {
-      setShowCoachDetailsModal((prev) => ({
+    if (selectedCoachView && selectedCoachView.id === coach.id) {
+      setSelectedCoachView((prev) => ({
         ...prev,
         payoutStatus: 'Paid (Disbursed)',
       }))
@@ -780,15 +780,15 @@ export default function AcademyCareer() {
   }
 
   // =========================================================================
-  // 6. MODALS STATE
+  // 6. DEDICATED INDIVIDUAL PAGE VIEWS (No popup windows per user requirement!)
   // =========================================================================
-  const [showStudentDetailsModal, setShowStudentDetailsModal] = useState(null)
-  const [showCoachDetailsModal, setShowCoachDetailsModal] = useState(null)
-  const [showAdmitModal, setShowAdmitModal] = useState(false)
-  const [showAddCoachModal, setShowAddCoachModal] = useState(false)
-  const [showAddDrillModal, setShowAddDrillModal] = useState(false)
-  const [showRecordExpenseModal, setShowRecordExpenseModal] = useState(false)
-  const [showStatementModal, setShowStatementModal] = useState(false)
+  const [selectedStudentView, setSelectedStudentView] = useState(null)
+  const [selectedCoachView, setSelectedCoachView] = useState(null)
+  const [showAdmitPage, setShowAdmitPage] = useState(false)
+  const [showAddCoachPage, setShowAddCoachPage] = useState(false)
+  const [showAddDrillPage, setShowAddDrillPage] = useState(false)
+  const [showRecordExpensePage, setShowRecordExpensePage] = useState(false)
+  const [showStatementPage, setShowStatementPage] = useState(false)
 
   // Forms
   const [admitForm, setAdmitForm] = useState({
@@ -881,7 +881,7 @@ export default function AcademyCareer() {
     }
 
     setStudents((prev) => [newStudent, ...prev])
-    setShowAdmitModal(false)
+    setShowAdmitPage(false)
     triggerToast(`Student ${newStudent.name} admitted with ID ${newId}!`)
   }
 
@@ -912,7 +912,7 @@ export default function AcademyCareer() {
     }
 
     setCoaches((prev) => [...prev, newCoach])
-    setShowAddCoachModal(false)
+    setShowAddCoachPage(false)
     triggerToast(`Coach ${newCoach.name} added to master roster!`)
   }
 
@@ -936,7 +936,7 @@ export default function AcademyCareer() {
       [selectedDrillDate]: [...(prev[selectedDrillDate] || []), newDrill],
     }))
 
-    setShowAddDrillModal(false)
+    setShowAddDrillPage(false)
     setDrillForm({
       time: '06:00 AM - 07:30 AM',
       title: '',
@@ -965,7 +965,7 @@ export default function AcademyCareer() {
     }
 
     setAcademyTransactions((prev) => [newExp, ...prev])
-    setShowRecordExpenseModal(false)
+    setShowRecordExpensePage(false)
     setExpenseForm({
       category: 'Cricket Gear & Equipment',
       desc: '',
@@ -975,6 +975,1735 @@ export default function AcademyCareer() {
     triggerToast(`Logged operational expense of ₹${newExp.amount.toLocaleString()} in Accounts!`)
   }
 
+
+  // =========================================================================
+  // DEDICATED PAGE VIEWS (No popup windows per user requirement!)
+  // =========================================================================
+
+  // 1. DEDICATED STUDENT ATHLETE PASSPORT PAGE
+  if (selectedStudentView) {
+    return (
+      <Screen
+        back
+        onBack={() => setSelectedStudentView(null)}
+        title={selectedStudentView.name}
+        subtitle={`Athlete Passport • Batch: ${selectedStudentView.batch}`}
+      >
+        <div style={{ maxWidth: 960, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setSelectedStudentView(null)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Student Batches
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span
+                style={{
+                  fontSize: 12,
+                  color: '#00e676',
+                  fontWeight: 800,
+                  padding: '4px 10px',
+                  borderRadius: 8,
+                  background: 'rgba(0, 230, 118, 0.1)',
+                  border: '1px solid rgba(0, 230, 118, 0.25)',
+                }}
+              >
+                ✓ Academy Certified Athlete
+              </span>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: 10,
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#f8fafc',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: 12,
+                  fontWeight: 700,
+                }}
+              >
+                <Printer size={15} /> Print Passport
+              </button>
+            </div>
+          </div>
+
+          {/* Student Hero Header Banner */}
+          <div
+            style={{
+              padding: '20px 24px',
+              borderRadius: 16,
+              background: 'linear-gradient(135deg, rgba(124, 77, 255, 0.15), rgba(0, 176, 255, 0.1))',
+              border: '1px solid rgba(124, 77, 255, 0.3)',
+              marginBottom: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 16,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div
+                style={{
+                  width: 68,
+                  height: 68,
+                  borderRadius: 16,
+                  background: 'linear-gradient(135deg, #7c4dff, #00b0ff)',
+                  color: '#fff',
+                  display: 'grid',
+                  placeItems: 'center',
+                  fontWeight: 900,
+                  fontSize: 28,
+                  boxShadow: '0 8px 24px rgba(124, 77, 255, 0.4)',
+                }}
+              >
+                {selectedStudentView.name.charAt(0)}
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <h1 style={{ fontSize: 24, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
+                    {selectedStudentView.name}
+                  </h1>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      padding: '3px 8px',
+                      borderRadius: 6,
+                      background: '#7c4dff',
+                      color: '#fff',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {selectedStudentView.studentId}
+                  </span>
+                </div>
+                <div style={{ fontSize: 14, color: '#38bdf8', fontWeight: 700, marginTop: 4 }}>
+                  {selectedStudentView.role} • {selectedStudentView.age} Years Old
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+                  Enrolled Batch: <strong style={{ color: '#ffc83d' }}>{selectedStudentView.batch}</strong> • Aadhaar Waived (Academy Endorsed)
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <a
+                href={`tel:${selectedStudentView.guardianPhone}`}
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: 10,
+                  background: 'rgba(0, 176, 255, 0.2)',
+                  border: '1px solid rgba(0, 176, 255, 0.4)',
+                  color: '#00b0ff',
+                  fontWeight: 800,
+                  fontSize: 13,
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <Phone size={16} /> Call Guardian ({selectedStudentView.guardianPhone})
+              </a>
+            </div>
+          </div>
+
+          {/* Playing Technical Specifications */}
+          <div
+            style={{
+              padding: '18px 20px',
+              borderRadius: 14,
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              marginBottom: 20,
+            }}
+          >
+            <h3 style={{ fontSize: 13, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+              Player Technical Profile & Playing Style
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
+              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>Batting Stance</span>
+                <strong style={{ fontSize: 15, color: '#f8fafc', marginTop: 2, display: 'block' }}>{selectedStudentView.battingStance}</strong>
+              </div>
+              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>Bowling Action</span>
+                <strong style={{ fontSize: 15, color: '#38bdf8', marginTop: 2, display: 'block' }}>{selectedStudentView.bowlingAction}</strong>
+              </div>
+              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>Competition Level</span>
+                <strong style={{ fontSize: 15, color: '#00e676', marginTop: 2, display: 'block' }}>{selectedStudentView.competitionTier}</strong>
+              </div>
+              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>Academy Registration</span>
+                <strong style={{ fontSize: 15, color: '#e879f9', marginTop: 2, display: 'block' }}>Enrolled & Certified</strong>
+              </div>
+            </div>
+          </div>
+
+          {/* Integrated Match Statistics */}
+          <div
+            style={{
+              padding: '18px 20px',
+              borderRadius: 14,
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              marginBottom: 20,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 800, color: '#ffc83d', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>
+                Live Match Statistics (Integrated Player Hub)
+              </h3>
+              <span style={{ fontSize: 11, color: 'var(--muted)' }}>Synchronized across academy fixtures</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, textAlign: 'center' }}>
+              <div style={{ padding: '12px 8px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.05)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700 }}>MATCHES</span>
+                <strong style={{ fontSize: 20, color: '#f8fafc', display: 'block', marginTop: 4 }}>{selectedStudentView.matches}</strong>
+              </div>
+              <div style={{ padding: '12px 8px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.05)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700 }}>RUNS</span>
+                <strong style={{ fontSize: 20, color: '#00e676', display: 'block', marginTop: 4 }}>{selectedStudentView.runs}</strong>
+              </div>
+              <div style={{ padding: '12px 8px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.05)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700 }}>BATTING AVG</span>
+                <strong style={{ fontSize: 20, color: '#38bdf8', display: 'block', marginTop: 4 }}>{selectedStudentView.battingAvg}</strong>
+              </div>
+              <div style={{ padding: '12px 8px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.05)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700 }}>WICKETS</span>
+                <strong style={{ fontSize: 20, color: '#e879f9', display: 'block', marginTop: 4 }}>{selectedStudentView.wickets}</strong>
+              </div>
+            </div>
+
+            {/* Recent Match Innings Breakdown */}
+            {selectedStudentView.recentInnings && selectedStudentView.recentInnings.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase' }}>
+                  Recent Tournament Innings
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 10, marginTop: 8 }}>
+                  {selectedStudentView.recentInnings.map((inn, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        padding: '12px 14px',
+                        background: 'rgba(255,255,255,0.02)',
+                        borderRadius: 8,
+                        border: '1px solid rgba(255,255,255,0.05)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <span style={{ fontSize: 13, color: '#f8fafc', fontWeight: 600 }}>{inn.fixture}</span>
+                      <strong style={{ fontSize: 13, color: '#00e676' }}>{inn.score}</strong>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Athleticism & Physical Benchmarks */}
+          <div
+            style={{
+              padding: '18px 20px',
+              borderRadius: 14,
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              marginBottom: 20,
+            }}
+          >
+            <h3 style={{ fontSize: 13, fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+              Physical Fitness & Conditioning Benchmarks
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+              <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(0, 230, 118, 0.05)', border: '1px solid rgba(0, 230, 118, 0.2)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>Attendance Rate</span>
+                <strong style={{ fontSize: 18, color: '#00e676', display: 'block', marginTop: 2 }}>{selectedStudentView.attendanceRate}</strong>
+                <span style={{ fontSize: 11, color: 'var(--muted)' }}>Consecutive regular sessions</span>
+              </div>
+              <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(255, 200, 61, 0.05)', border: '1px solid rgba(255, 200, 61, 0.2)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>Yo-Yo Test Score</span>
+                <strong style={{ fontSize: 18, color: '#ffc83d', display: 'block', marginTop: 2 }}>{selectedStudentView.yoyoScore}</strong>
+                <span style={{ fontSize: 11, color: 'var(--muted)' }}>State tournament qualification tier</span>
+              </div>
+              <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(0, 176, 255, 0.05)', border: '1px solid rgba(0, 176, 255, 0.2)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>30m Sprint Acceleration</span>
+                <strong style={{ fontSize: 18, color: '#00b0ff', display: 'block', marginTop: 2 }}>{selectedStudentView.sprint30m}</strong>
+                <span style={{ fontSize: 11, color: 'var(--muted)' }}>Elite boundary running benchmark</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Tuition Fee Management Card */}
+          <div
+            style={{
+              padding: '20px 24px',
+              borderRadius: 16,
+              background: selectedStudentView.feeStatus === 'Paid'
+                ? 'rgba(0, 230, 118, 0.08)'
+                : 'rgba(255, 59, 80, 0.08)',
+              border: selectedStudentView.feeStatus === 'Paid'
+                ? '1px solid rgba(0, 230, 118, 0.3)'
+                : '1px solid rgba(255, 59, 80, 0.35)',
+              marginBottom: 20,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 16,
+            }}
+          >
+            <div>
+              <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase' }}>
+                Tuition Fee Payment Record • November 2026
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+                <strong
+                  style={{
+                    fontSize: 20,
+                    color: selectedStudentView.feeStatus === 'Paid' ? '#00e676' : '#ff3b50',
+                  }}
+                >
+                  {selectedStudentView.feeStatus === 'Paid' ? 'PAID FOR NOVEMBER 2026' : 'PAYMENT OVERDUE / PENDING'}
+                </strong>
+                <span style={{ fontSize: 16, color: '#f8fafc', fontWeight: 700 }}>
+                  ₹{selectedStudentView.feeAmount.toLocaleString()}
+                </span>
+              </div>
+              {selectedStudentView.receiptNo ? (
+                <div style={{ fontSize: 12, color: '#38bdf8', marginTop: 4 }}>
+                  Verified Receipt ID: <strong>{selectedStudentView.receiptNo}</strong> (Synchronized in Academy Ledger)
+                </div>
+              ) : (
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+                  Monthly tuition fee is due at the beginning of the training cycle.
+                </div>
+              )}
+            </div>
+
+            <div>
+              {selectedStudentView.feeStatus === 'Overdue' ? (
+                <button
+                  type="button"
+                  onClick={() => markStudentFeePaid(selectedStudentView)}
+                  style={{
+                    padding: '12px 24px',
+                    borderRadius: 10,
+                    background: '#00e676',
+                    border: 'none',
+                    color: '#020617',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 20px rgba(0, 230, 118, 0.35)',
+                  }}
+                >
+                  💳 Mark This Month Fee Paid (₹{selectedStudentView.feeAmount.toLocaleString()})
+                </button>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#00e676', fontSize: 14, fontWeight: 900 }}>
+                  <span>✓ Fee Up to Date</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 2. DEDICATED COACH PROFILE & PAYOUT PAGE
+  if (selectedCoachView) {
+    return (
+      <Screen
+        back
+        onBack={() => setSelectedCoachView(null)}
+        title={selectedCoachView.name}
+        subtitle={`${selectedCoachView.role} • ${selectedCoachView.badge}`}
+      >
+        <div style={{ maxWidth: 960, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setSelectedCoachView(null)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Coaches & Staff
+            </button>
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 800,
+                color: selectedCoachView.present ? '#00e676' : '#ff3b50',
+                background: selectedCoachView.present ? 'rgba(0,230,118,0.15)' : 'rgba(255,59,80,0.15)',
+                padding: '4px 10px',
+                borderRadius: 8,
+                border: selectedCoachView.present ? '1px solid rgba(0,230,118,0.3)' : '1px solid rgba(255,59,80,0.3)',
+              }}
+            >
+              {selectedCoachView.present ? 'PRESENT (ON DUTY)' : 'OFF DUTY'}
+            </span>
+          </div>
+
+          <div
+            style={{
+              padding: '20px 24px',
+              borderRadius: 16,
+              background: 'linear-gradient(135deg, rgba(124, 77, 255, 0.15), rgba(0, 176, 255, 0.1))',
+              border: '1px solid rgba(124, 77, 255, 0.3)',
+              marginBottom: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 16,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div
+                style={{
+                  width: 68,
+                  height: 68,
+                  borderRadius: 16,
+                  background: 'linear-gradient(135deg, #7c4dff, #00b0ff)',
+                  color: '#fff',
+                  display: 'grid',
+                  placeItems: 'center',
+                  fontWeight: 900,
+                  fontSize: 28,
+                  boxShadow: '0 8px 24px rgba(124, 77, 255, 0.4)',
+                }}
+              >
+                {selectedCoachView.name.charAt(0)}
+              </div>
+              <div>
+                <h1 style={{ fontSize: 24, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
+                  {selectedCoachView.name}
+                </h1>
+                <div style={{ fontSize: 14, color: '#38bdf8', fontWeight: 700, marginTop: 4 }}>
+                  {selectedCoachView.role} ({selectedCoachView.badge})
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+                  {selectedCoachView.experience} • Shift: <strong style={{ color: '#ffc83d' }}>{selectedCoachView.shift}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <a
+                href={`tel:${selectedCoachView.phone}`}
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: 10,
+                  background: 'rgba(0, 176, 255, 0.2)',
+                  border: '1px solid rgba(0, 176, 255, 0.4)',
+                  color: '#00b0ff',
+                  fontWeight: 800,
+                  fontSize: 13,
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <Phone size={16} /> Call Coach ({selectedCoachView.phone})
+              </a>
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: '18px 20px',
+              borderRadius: 14,
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              marginBottom: 20,
+            }}
+          >
+            <h3 style={{ fontSize: 13, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+              Shift Attendance & Absence / Presence History
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
+              {selectedCoachView.attendanceLog?.map((log, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span style={{ fontSize: 13, color: '#f8fafc' }}>{log.date}</span>
+                  <strong style={{ fontSize: 12, color: log.status.includes('Present') ? '#00e676' : '#ff3b50' }}>
+                    {log.status}
+                  </strong>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: '18px 20px',
+              borderRadius: 14,
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              marginBottom: 20,
+            }}
+          >
+            <h3 style={{ fontSize: 13, fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+              Assigned Curriculum Drills Conducted
+            </h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {selectedCoachView.assignedDrills?.map((dr, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    background: 'rgba(0, 176, 255, 0.1)',
+                    border: '1px solid rgba(0, 176, 255, 0.25)',
+                    fontSize: 12,
+                    color: '#38bdf8',
+                    fontWeight: 700,
+                  }}
+                >
+                  ✓ {dr}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: '20px 24px',
+              borderRadius: 16,
+              background: 'rgba(255, 200, 61, 0.08)',
+              border: '1px solid rgba(255, 200, 61, 0.3)',
+              marginBottom: 20,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 16,
+            }}
+          >
+            <div>
+              <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase' }}>
+                Monthly Compensation & Payout Status
+              </span>
+              <strong style={{ fontSize: 24, color: '#ffc83d', display: 'block', marginTop: 4 }}>
+                ₹{selectedCoachView.salary.toLocaleString()} / month
+              </strong>
+              <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>
+                Status: <strong style={{ color: selectedCoachView.payoutStatus.includes('Paid') ? '#00e676' : '#ffc83d' }}>{selectedCoachView.payoutStatus}</strong>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => disburseCoachPayout(selectedCoachView)}
+              style={{
+                padding: '12px 24px',
+                borderRadius: 10,
+                background: '#00e676',
+                border: 'none',
+                color: '#020617',
+                fontWeight: 900,
+                fontSize: 14,
+                cursor: 'pointer',
+                boxShadow: '0 8px 20px rgba(0, 230, 118, 0.35)',
+              }}
+            >
+              💸 Disburse Coach Payout (₹{selectedCoachView.salary.toLocaleString()})
+            </button>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 3. DEDICATED ADMIT STUDENT PAGE
+  if (showAdmitPage) {
+    return (
+      <Screen
+        back
+        onBack={() => setShowAdmitPage(false)}
+        title="Admit New Student"
+        subtitle="Academy Enrollment & Athlete Profile Formulation"
+      >
+        <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowAdmitPage(false)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Student Batches
+            </button>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 16,
+              border: '1px solid rgba(124, 77, 255, 0.35)',
+              padding: 24,
+            }}
+          >
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#f8fafc', margin: '0 0 16px' }}>
+              🎓 Academy Student Admission Form
+            </h2>
+
+            <form onSubmit={handleAdmitStudent} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Full Student Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Yashasvi Jaiswal"
+                  value={admitForm.name}
+                  onChange={(e) => setAdmitForm({ ...admitForm, name: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Age *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="e.g. 15"
+                    value={admitForm.age}
+                    onChange={(e) => setAdmitForm({ ...admitForm, age: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Age Group *
+                  </label>
+                  <select
+                    value={admitForm.ageGroup}
+                    onChange={(e) => setAdmitForm({ ...admitForm, ageGroup: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="u12">Under-12 Grassroots</option>
+                    <option value="u14">Under-14 Foundation</option>
+                    <option value="u16">Under-16 Elite</option>
+                    <option value="u19">Under-19 High Performance</option>
+                    <option value="senior">Senior District Squad</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Assigned Training Batch *
+                </label>
+                <select
+                  value={admitForm.batch}
+                  onChange={(e) => setAdmitForm({ ...admitForm, batch: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: '#0b1329',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                >
+                  <option value="U-16 Evening Elite">U-16 Evening Elite (04:00 PM - 06:30 PM)</option>
+                  <option value="U-19 Pro High Performance">U-19 Pro High Performance (06:00 AM - 08:30 AM)</option>
+                  <option value="U-14 Foundation">U-14 Foundation (04:30 PM - 06:00 PM)</option>
+                  <option value="Weekend Grassroots Batch">Weekend Grassroots Batch (Sat & Sun 07:00 AM)</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Playing Role
+                  </label>
+                  <select
+                    value={admitForm.role}
+                    onChange={(e) => setAdmitForm({ ...admitForm, role: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="Top-Order Batsman">Top-Order Batsman</option>
+                    <option value="Right-arm Fast Bowler">Right-arm Fast Bowler</option>
+                    <option value="Left-arm Fast Bowler">Left-arm Fast Bowler</option>
+                    <option value="All-Rounder">All-Rounder</option>
+                    <option value="Wicketkeeper Batsman">Wicketkeeper Batsman</option>
+                    <option value="Leg-Spin Bowler">Leg-Spin Bowler</option>
+                    <option value="Off-Spin Bowler">Off-Spin Bowler</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Batting Stance
+                  </label>
+                  <select
+                    value={admitForm.battingStance}
+                    onChange={(e) => setAdmitForm({ ...admitForm, battingStance: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="Right Hand Bat">Right Hand Bat</option>
+                    <option value="Left Hand Bat">Left Hand Bat</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Bowling Action
+                </label>
+                <select
+                  value={admitForm.bowlingAction}
+                  onChange={(e) => setAdmitForm({ ...admitForm, bowlingAction: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: '#0b1329',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                >
+                  <option value="Right-arm Fast (Express Seam)">Right-arm Fast (Express Seam)</option>
+                  <option value="Left-arm Fast / Swing">Left-arm Fast / Swing</option>
+                  <option value="Right-arm Off Spin (Doosra)">Right-arm Off Spin (Doosra)</option>
+                  <option value="Left-arm Orthodox Spin">Left-arm Orthodox Spin</option>
+                  <option value="Right-arm Leg Break / Googly">Right-arm Leg Break / Googly</option>
+                  <option value="Does Not Bowl">Does Not Bowl</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Parent/Guardian Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Sanjay Jaiswal"
+                    value={admitForm.guardianName}
+                    onChange={(e) => setAdmitForm({ ...admitForm, guardianName: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Guardian Phone *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="e.g. +91 98401 12345"
+                    value={admitForm.guardianPhone}
+                    onChange={(e) => setAdmitForm({ ...admitForm, guardianPhone: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  background: 'rgba(0, 230, 118, 0.08)',
+                  border: '1px solid rgba(0, 230, 118, 0.25)',
+                  fontSize: 12,
+                  color: '#00e676',
+                }}
+              >
+                <strong>Aadhaar Card Waived:</strong> Students enrolling under academy do not require Aadhaar verification. Registration is certified directly by the Academy Director.
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #7c4dff, #00b0ff)',
+                    color: '#ffffff',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Admit & Enroll Student in Academy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAdmitPage(false)}
+                  style={{
+                    padding: '14px 24px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#94a3b8',
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 4. DEDICATED ONBOARD COACH PAGE
+  if (showAddCoachPage) {
+    return (
+      <Screen
+        back
+        onBack={() => setShowAddCoachPage(false)}
+        title="Onboard Coach & Staff"
+        subtitle="Staff Registration, Credentials & Monthly Payouts"
+      >
+        <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowAddCoachPage(false)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Coaches & Staff
+            </button>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 16,
+              border: '1px solid rgba(124, 77, 255, 0.35)',
+              padding: 24,
+            }}
+          >
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#f8fafc', margin: '0 0 16px' }}>
+              👨‍🏫 Coach & Specialist Registration
+            </h2>
+
+            <form onSubmit={handleAddCoach} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Coach / Staff Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. VVS Laxman"
+                  value={coachForm.name}
+                  onChange={(e) => setCoachForm({ ...coachForm, name: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Designation / Role *
+                  </label>
+                  <select
+                    value={coachForm.role}
+                    onChange={(e) => setCoachForm({ ...coachForm, role: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="Head Cricket Coach">Head Cricket Coach</option>
+                    <option value="Batting Coach & Biomechanics">Batting Coach & Biomechanics</option>
+                    <option value="Fast Bowling Specialist">Fast Bowling Specialist</option>
+                    <option value="Spin Bowling & Flight Coach">Spin Bowling & Flight Coach</option>
+                    <option value="Strength & Conditioning Trainer">Strength & Conditioning Trainer</option>
+                    <option value="Physiotherapist & Recovery">Physiotherapist & Recovery</option>
+                    <option value="Grounds & Turf Curator">Grounds & Turf Curator</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Certification Badge
+                  </label>
+                  <select
+                    value={coachForm.badge}
+                    onChange={(e) => setCoachForm({ ...coachForm, badge: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="BCCI Level 1">BCCI Level 1</option>
+                    <option value="BCCI Level 2">BCCI Level 2</option>
+                    <option value="BCCI Level 3">BCCI Level 3 (Elite)</option>
+                    <option value="Ranji Trophy Veteran">Ranji Trophy Veteran</option>
+                    <option value="NIS Certified">NIS Certified</option>
+                    <option value="CSCS Strength Specialist">CSCS Strength Specialist</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Contact Phone *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+91 98765 43210"
+                    value={coachForm.phone}
+                    onChange={(e) => setCoachForm({ ...coachForm, phone: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Monthly Base Salary (₹) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={coachForm.salary}
+                    onChange={(e) => setCoachForm({ ...coachForm, salary: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Assigned Shift
+                </label>
+                <select
+                  value={coachForm.shift}
+                  onChange={(e) => setCoachForm({ ...coachForm, shift: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: '#0b1329',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                >
+                  <option value="Morning (06:00 AM - 10:00 AM)">Morning (06:00 AM - 10:00 AM)</option>
+                  <option value="Evening (03:30 PM - 07:30 PM)">Evening (03:30 PM - 07:30 PM)</option>
+                  <option value="Full Day (Both Morning & Evening)">Full Day (Both Morning & Evening)</option>
+                  <option value="Weekend Special Camp">Weekend Special Camp</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Coaching Experience
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 8 Years Coaching Experience"
+                  value={coachForm.experience}
+                  onChange={(e) => setCoachForm({ ...coachForm, experience: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #7c4dff, #00b0ff)',
+                    color: '#ffffff',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Onboard Coach & Assign Batches
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddCoachPage(false)}
+                  style={{
+                    padding: '14px 24px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#94a3b8',
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 5. DEDICATED SCHEDULE DRILL PAGE
+  if (showAddDrillPage) {
+    return (
+      <Screen
+        back
+        onBack={() => setShowAddDrillPage(false)}
+        title="Schedule Training Drill"
+        subtitle={`Session Date: ${selectedDrillDate}`}
+      >
+        <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowAddDrillPage(false)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Training Drills & Attendance
+            </button>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 16,
+              border: '1px solid rgba(0, 176, 255, 0.35)',
+              padding: 24,
+            }}
+          >
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#f8fafc', margin: '0 0 16px' }}>
+              🏏 Schedule Drill on {selectedDrillDate}
+            </h2>
+
+            <form onSubmit={handleAddDrill} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Drill Title & Curriculum *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Backfoot Punch against Tennis Ball on Concrete"
+                  value={drillForm.title}
+                  onChange={(e) => setDrillForm({ ...drillForm, title: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Time Slot
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="06:00 AM - 07:30 AM"
+                    value={drillForm.time}
+                    onChange={(e) => setDrillForm({ ...drillForm, time: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Pitch / Venue
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Turf Nets A & B"
+                    value={drillForm.venue}
+                    onChange={(e) => setDrillForm({ ...drillForm, venue: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Lead Coach
+                  </label>
+                  <select
+                    value={drillForm.coach}
+                    onChange={(e) => setDrillForm({ ...drillForm, coach: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    {coaches.map((c) => (
+                      <option key={c.id} value={`${c.name} (${c.role.split(' ')[0]})`}>
+                        {c.name} ({c.role})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Target Squad
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="U-16 & U-19 Batsmen"
+                    value={drillForm.batch}
+                    onChange={(e) => setDrillForm({ ...drillForm, batch: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Technical Focus & Goal
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Head still, high elbow, weight transfer back and across"
+                  value={drillForm.focus}
+                  onChange={(e) => setDrillForm({ ...drillForm, focus: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#00b0ff',
+                    color: '#020617',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Schedule Drill on {selectedDrillDate}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddDrillPage(false)}
+                  style={{
+                    padding: '14px 24px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#94a3b8',
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 6. DEDICATED RECORD EXPENSE PAGE
+  if (showRecordExpensePage) {
+    return (
+      <Screen
+        back
+        onBack={() => setShowRecordExpensePage(false)}
+        title="Record Operational Expense"
+        subtitle="Academy Operational Ledger & Expenditure"
+      >
+        <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowRecordExpensePage(false)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Academy Accounts
+            </button>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 16,
+              border: '1px solid rgba(255, 59, 80, 0.35)',
+              padding: 24,
+            }}
+          >
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#f8fafc', margin: '0 0 16px' }}>
+              💸 Record Academy Operational Expense
+            </h2>
+
+            <form onSubmit={handleAddExpense} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Expense Category
+                </label>
+                <select
+                  value={expenseForm.category}
+                  onChange={(e) => setExpenseForm({ ...expenseForm, category: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: '#0b1329',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                >
+                  <option value="Coach & Trainer Stipends">Coach & Trainer Stipends</option>
+                  <option value="Cricket Gear & Equipment">Cricket Gear & Equipment (SG Match Balls / Cones)</option>
+                  <option value="Turf Ground & Net Lease">Turf Ground & Net Lease / Rent</option>
+                  <option value="Medical & Physio">Medical & Physio (Cold sprays / strapping)</option>
+                  <option value="Video Analysis & Tools">Video Analysis Software & iPad Mounts</option>
+                  <option value="Tournament Entry Fees">Tournament Registration & Match Fees</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Description / Particulars *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 2 Boxes SG Tournament White Leather Cricket Balls"
+                  value={expenseForm.desc}
+                  onChange={(e) => setExpenseForm({ ...expenseForm, desc: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Amount (₹) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="e.g. 5400"
+                    value={expenseForm.amount}
+                    onChange={(e) => setExpenseForm({ ...expenseForm, amount: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Payment Mode
+                  </label>
+                  <select
+                    value={expenseForm.mode}
+                    onChange={(e) => setExpenseForm({ ...expenseForm, mode: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="UPI / Online">UPI / QR Transfer</option>
+                    <option value="Bank NEFT">Bank NEFT Transfer</option>
+                    <option value="Cash Voucher">Cash Voucher</option>
+                    <option value="Debit Card">Debit Card</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#ff3b50',
+                    color: '#ffffff',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Deduct & Save in Accounts Ledger
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowRecordExpensePage(false)}
+                  style={{
+                    padding: '14px 24px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#94a3b8',
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 7. DEDICATED MONTHLY FINANCIAL AUDIT STATEMENT PAGE
+  if (showStatementPage) {
+    return (
+      <Screen
+        back
+        onBack={() => setShowStatementPage(false)}
+        title="Monthly Financial Audit Statement"
+        subtitle="November 2026 • Scoring Heroes Elite Academy"
+      >
+        <div style={{ maxWidth: 880, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowStatementPage(false)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Academy Accounts
+            </button>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 10,
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#f8fafc',
+                  fontWeight: 800,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <Printer size={15} /> Print Statement
+              </button>
+              <button
+                type="button"
+                onClick={() => triggerToast('Monthly financial audit statement downloaded as PDF!')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 10,
+                  background: '#00b0ff',
+                  border: 'none',
+                  color: '#020617',
+                  fontWeight: 900,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <Download size={15} /> Download PDF
+              </button>
+            </div>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 16,
+              border: '1px solid rgba(0, 176, 255, 0.35)',
+              padding: 24,
+            }}
+          >
+            <div style={{ marginBottom: 16 }}>
+              <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 800, textTransform: 'uppercase' }}>
+                OFFICIAL FINANCIAL AUDIT REPORT
+              </span>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: '#f8fafc', margin: '4px 0 0' }}>
+                Scoring Heroes Elite Cricket Academy
+              </h2>
+              <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+                Period: 01 November 2026 - 30 November 2026 • Verified by Academy Accounts Desk
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 12,
+                marginBottom: 24,
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ padding: 14, borderRadius: 12, background: 'rgba(0, 230, 118, 0.08)', border: '1px solid rgba(0, 230, 118, 0.25)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 800 }}>TOTAL TUITION INFLOW</span>
+                <strong style={{ fontSize: 22, color: '#00e676', display: 'block', marginTop: 4 }}>
+                  ₹{totalAcademyInflow.toLocaleString()}
+                </strong>
+              </div>
+              <div style={{ padding: 14, borderRadius: 12, background: 'rgba(255, 59, 80, 0.08)', border: '1px solid rgba(255, 59, 80, 0.25)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 800 }}>TOTAL OPERATING EXPENSES</span>
+                <strong style={{ fontSize: 22, color: '#ff3b50', display: 'block', marginTop: 4 }}>
+                  ₹{totalAcademyOutflow.toLocaleString()}
+                </strong>
+              </div>
+              <div style={{ padding: 14, borderRadius: 12, background: 'rgba(255, 200, 61, 0.08)', border: '1px solid rgba(255, 200, 61, 0.25)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 800 }}>NET OPERATING SURPLUS</span>
+                <strong style={{ fontSize: 22, color: '#ffc83d', display: 'block', marginTop: 4 }}>
+                  ₹{netAcademySurplus.toLocaleString()}
+                </strong>
+              </div>
+            </div>
+
+            <div>
+              <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase' }}>
+                Itemized Chronological Transaction Ledger
+              </span>
+              <div
+                style={{
+                  marginTop: 8,
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: 10,
+                  overflow: 'hidden',
+                }}
+              >
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: 'rgba(255, 255, 255, 0.04)', color: 'var(--muted)', textAlign: 'left' }}>
+                      <th style={{ padding: '10px 12px' }}>Date</th>
+                      <th style={{ padding: '10px 12px' }}>Particulars</th>
+                      <th style={{ padding: '10px 12px' }}>Category</th>
+                      <th style={{ padding: '10px 12px' }}>Reference</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right' }}>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {academyTransactions.map((tx) => (
+                      <tr key={tx.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                        <td style={{ padding: '10px 12px', color: '#94a3b8' }}>{tx.date}</td>
+                        <td style={{ padding: '10px 12px', color: '#f8fafc', fontWeight: 600 }}>{tx.desc}</td>
+                        <td style={{ padding: '10px 12px', color: '#38bdf8' }}>{tx.category}</td>
+                        <td style={{ padding: '10px 12px', color: '#ffc83d' }}>{tx.ref}</td>
+                        <td
+                          style={{
+                            padding: '10px 12px',
+                            textAlign: 'right',
+                            fontWeight: 800,
+                            color: tx.type === 'credit' ? '#00e676' : '#ff3b50',
+                          }}
+                        >
+                          {tx.type === 'credit' ? '+' : '-'}₹{tx.amount.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
   return (
     <Screen
       back
@@ -1115,7 +2844,7 @@ export default function AcademyCareer() {
 
                 <button
                   type="button"
-                  onClick={() => setShowAdmitModal(true)}
+                  onClick={() => setShowAdmitPage(true)}
                   style={{
                     padding: '8px 14px',
                     borderRadius: 10,
@@ -1375,7 +3104,7 @@ export default function AcademyCareer() {
 
                         <button
                           type="button"
-                          onClick={() => setShowStudentDetailsModal(st)}
+                          onClick={() => setSelectedStudentView(st)}
                           style={{
                             padding: '6px 14px',
                             borderRadius: 8,
@@ -1504,7 +3233,7 @@ export default function AcademyCareer() {
 
                 <button
                   type="button"
-                  onClick={() => setShowAddDrillModal(true)}
+                  onClick={() => setShowAddDrillPage(true)}
                   style={{
                     padding: '6px 12px',
                     borderRadius: 8,
@@ -1711,7 +3440,7 @@ export default function AcademyCareer() {
 
                 <button
                   type="button"
-                  onClick={() => setShowAddCoachModal(true)}
+                  onClick={() => setShowAddCoachPage(true)}
                   style={{
                     padding: '6px 12px',
                     borderRadius: 8,
@@ -1772,7 +3501,7 @@ export default function AcademyCareer() {
                     <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                       <button
                         type="button"
-                        onClick={() => setShowCoachDetailsModal(c)}
+                        onClick={() => setSelectedCoachView(c)}
                         style={{
                           flex: 1,
                           padding: '6px',
@@ -1841,7 +3570,7 @@ export default function AcademyCareer() {
                 <div style={{ display: 'flex', gap: 6 }}>
                   <button
                     type="button"
-                    onClick={() => setShowRecordExpenseModal(true)}
+                    onClick={() => setShowRecordExpensePage(true)}
                     style={{
                       padding: '8px 12px',
                       borderRadius: 10,
@@ -1861,7 +3590,7 @@ export default function AcademyCareer() {
 
                   <button
                     type="button"
-                    onClick={() => setShowStatementModal(true)}
+                    onClick={() => setShowStatementPage(true)}
                     style={{
                       padding: '8px 12px',
                       borderRadius: 10,
@@ -1971,1455 +3700,6 @@ export default function AcademyCareer() {
           </div>
         )}
 
-        {/* =========================================================================
-            MODAL 1: COMPREHENSIVE STUDENT DETAILS PAGE (The User's Core Demand!)
-        ========================================================================= */}
-        {showStudentDetailsModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.88)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 520,
-                maxHeight: '92vh',
-                overflowY: 'auto',
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(124, 77, 255, 0.45)',
-                padding: 20,
-                boxShadow: '0 25px 70px rgba(0, 0, 0, 0.85)',
-              }}
-            >
-              {/* Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span
-                    style={{
-                      padding: '3px 8px',
-                      borderRadius: 6,
-                      background: 'rgba(124, 77, 255, 0.15)',
-                      color: '#b388ff',
-                      fontSize: 11,
-                      fontWeight: 800,
-                    }}
-                  >
-                    STUDENT PROFILE & ATHLETE PASSPORT
-                  </span>
-                  <span style={{ fontSize: 11, color: '#00e676', fontWeight: 800 }}>✓ Academy Certified</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowStudentDetailsModal(null)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Student Hero Header */}
-              <div
-                style={{
-                  display: 'flex',
-                  gap: 12,
-                  alignItems: 'center',
-                  padding: '12px 14px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  borderRadius: 12,
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  marginBottom: 12,
-                }}
-              >
-                <div
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 12,
-                    background: 'linear-gradient(135deg, #7c4dff, #00b0ff)',
-                    color: '#fff',
-                    display: 'grid',
-                    placeItems: 'center',
-                    fontWeight: 900,
-                    fontSize: 20,
-                  }}
-                >
-                  {showStudentDetailsModal.name.charAt(0)}
-                </div>
-
-                <div>
-                  <h3 style={{ fontSize: 18, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                    {showStudentDetailsModal.name}
-                  </h3>
-                  <span style={{ fontSize: 12, color: '#38bdf8', fontWeight: 700 }}>
-                    {showStudentDetailsModal.role} • {showStudentDetailsModal.age} yrs
-                  </span>
-                  <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
-                    ID: <strong style={{ color: '#ffc83d' }}>{showStudentDetailsModal.studentId}</strong> • Batch: <span>{showStudentDetailsModal.batch}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Cricket Playing Specifications */}
-              <div
-                style={{
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  background: 'rgba(0, 176, 255, 0.06)',
-                  border: '1px solid rgba(0, 176, 255, 0.2)',
-                  fontSize: 11,
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 6,
-                  marginBottom: 12,
-                  textAlign: 'center',
-                }}
-              >
-                <div>
-                  <span style={{ color: 'var(--muted)', display: 'block' }}>Batting Stance</span>
-                  <strong style={{ color: '#f8fafc' }}>{showStudentDetailsModal.battingStance}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--muted)', display: 'block' }}>Bowling Action</span>
-                  <strong style={{ color: '#38bdf8' }}>{showStudentDetailsModal.bowlingAction}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--muted)', display: 'block' }}>Competition Tier</span>
-                  <strong style={{ color: '#00e676' }}>{showStudentDetailsModal.competitionTier}</strong>
-                </div>
-              </div>
-
-              {/* Match Performance Statistics Bar */}
-              <div style={{ marginBottom: 12 }}>
-                <span style={{ fontSize: 11, fontWeight: 800, color: '#ffc83d', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  Live Match Statistics (Integrated Player Hub)
-                </span>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginTop: 6, textAlign: 'center' }}>
-                  <div style={{ padding: 8, background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
-                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>MATCHES</span>
-                    <strong style={{ fontSize: 14, color: '#f8fafc', display: 'block' }}>{showStudentDetailsModal.matches}</strong>
-                  </div>
-                  <div style={{ padding: 8, background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
-                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>RUNS</span>
-                    <strong style={{ fontSize: 14, color: '#00e676', display: 'block' }}>{showStudentDetailsModal.runs}</strong>
-                  </div>
-                  <div style={{ padding: 8, background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
-                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>AVG</span>
-                    <strong style={{ fontSize: 14, color: '#38bdf8', display: 'block' }}>{showStudentDetailsModal.battingAvg}</strong>
-                  </div>
-                  <div style={{ padding: 8, background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
-                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>WICKETS</span>
-                    <strong style={{ fontSize: 14, color: '#e879f9', display: 'block' }}>{showStudentDetailsModal.wickets}</strong>
-                  </div>
-                </div>
-              </div>
-
-              {/* Recent Innings Fixtures */}
-              {showStudentDetailsModal.recentInnings && showStudentDetailsModal.recentInnings.length > 0 && (
-                <div style={{ marginBottom: 12 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase' }}>
-                    Recent Match Innings
-                  </span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 6 }}>
-                    {showStudentDetailsModal.recentInnings.map((inn, i) => (
-                      <div
-                        key={i}
-                        style={{
-                          padding: '6px 10px',
-                          background: 'rgba(255,255,255,0.02)',
-                          borderRadius: 6,
-                          fontSize: 11,
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <span style={{ color: '#f8fafc' }}>{inn.fixture}</span>
-                        <strong style={{ color: '#00e676' }}>{inn.score}</strong>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Attendance & Yo-Yo Track */}
-              <div
-                style={{
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                  marginBottom: 12,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: 12,
-                }}
-              >
-                <div>
-                  <span style={{ color: 'var(--muted)' }}>Attendance Rate:</span>
-                  <strong style={{ color: '#00e676', marginLeft: 6 }}>{showStudentDetailsModal.attendanceRate}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--muted)' }}>Yo-Yo Score:</span>
-                  <strong style={{ color: '#ffc83d', marginLeft: 6 }}>{showStudentDetailsModal.yoyoScore}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--muted)' }}>30m Sprint:</span>
-                  <strong style={{ color: '#38bdf8', marginLeft: 6 }}>{showStudentDetailsModal.sprint30m}</strong>
-                </div>
-              </div>
-
-              {/* Tuition Fee Status & Direct 1-Click Action */}
-              <div
-                style={{
-                  padding: '12px 14px',
-                  borderRadius: 12,
-                  background: showStudentDetailsModal.feeStatus === 'Paid'
-                    ? 'rgba(0, 230, 118, 0.08)'
-                    : 'rgba(255, 59, 80, 0.1)',
-                  border: showStudentDetailsModal.feeStatus === 'Paid'
-                    ? '1px solid rgba(0, 230, 118, 0.3)'
-                    : '1px solid rgba(255, 59, 80, 0.35)',
-                  marginBottom: 14,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: 8,
-                }}
-              >
-                <div>
-                  <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase' }}>
-                    Tuition Fee Status
-                  </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                    <strong
-                      style={{
-                        fontSize: 14,
-                        color: showStudentDetailsModal.feeStatus === 'Paid' ? '#00e676' : '#ff3b50',
-                      }}
-                    >
-                      {showStudentDetailsModal.feeStatus === 'Paid' ? 'PAID FOR NOVEMBER 2026' : 'PENDING / OVERDUE'}
-                    </strong>
-                    <span style={{ fontSize: 12, color: '#f8fafc' }}>
-                      (₹{showStudentDetailsModal.feeAmount.toLocaleString()})
-                    </span>
-                  </div>
-                  {showStudentDetailsModal.receiptNo && (
-                    <small style={{ fontSize: 10, color: '#38bdf8' }}>
-                      Receipt ID: {showStudentDetailsModal.receiptNo}
-                    </small>
-                  )}
-                </div>
-
-                {showStudentDetailsModal.feeStatus === 'Overdue' ? (
-                  <button
-                    type="button"
-                    onClick={() => markStudentFeePaid(showStudentDetailsModal)}
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: 8,
-                      background: '#00e676',
-                      border: 'none',
-                      color: '#020617',
-                      fontWeight: 900,
-                      fontSize: 12,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    💳 Mark Fee Paid (₹{showStudentDetailsModal.feeAmount})
-                  </button>
-                ) : (
-                  <span style={{ fontSize: 12, color: '#00e676', fontWeight: 800 }}>
-                    ✓ Fee Up to Date
-                  </span>
-                )}
-              </div>
-
-              {/* Guardian Contact Row */}
-              <div style={{ display: 'flex', gap: 8 }}>
-                <a
-                  href={`tel:${showStudentDetailsModal.guardianPhone}`}
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    borderRadius: 8,
-                    background: 'rgba(0, 176, 255, 0.15)',
-                    border: '1px solid rgba(0, 176, 255, 0.3)',
-                    color: '#00b0ff',
-                    fontSize: 12,
-                    fontWeight: 800,
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                  }}
-                >
-                  <Phone size={14} /> Call Guardian ({showStudentDetailsModal.guardianPhone})
-                </a>
-
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  style={{
-                    padding: '10px 14px',
-                    borderRadius: 8,
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#f8fafc',
-                    fontWeight: 800,
-                    fontSize: 12,
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Printer size={15} />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 2: INDIVIDUAL COACH DETAILS & PAYOUT
-        ========================================================================= */}
-        {showCoachDetailsModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.88)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 480,
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(124, 77, 255, 0.45)',
-                padding: 20,
-                boxShadow: '0 25px 70px rgba(0, 0, 0, 0.85)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <span
-                  style={{
-                    padding: '3px 8px',
-                    borderRadius: 6,
-                    background: 'rgba(124, 77, 255, 0.15)',
-                    color: '#b388ff',
-                    fontSize: 11,
-                    fontWeight: 800,
-                  }}
-                >
-                  COACH CREDENTIALS & PAYOUTS
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setShowCoachDetailsModal(null)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div style={{ textAlign: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#f8fafc', margin: '0 0 2px' }}>
-                  {showCoachDetailsModal.name}
-                </h3>
-                <span style={{ fontSize: 12, color: '#38bdf8', fontWeight: 700 }}>
-                  {showCoachDetailsModal.role} ({showCoachDetailsModal.badge})
-                </span>
-                <small style={{ color: 'var(--muted)', fontSize: 11, display: 'block', marginTop: 2 }}>
-                  {showCoachDetailsModal.experience}
-                </small>
-              </div>
-
-              {/* Absence & Presence Log */}
-              <div
-                style={{
-                  padding: '10px 12px',
-                  background: 'rgba(255,255,255,0.02)',
-                  borderRadius: 10,
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  marginBottom: 12,
-                }}
-              >
-                <span style={{ fontSize: 11, fontWeight: 800, color: '#ffc83d', textTransform: 'uppercase' }}>
-                  Shift Presence Log (Last 5 Sessions)
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 6 }}>
-                  {showCoachDetailsModal.attendanceLog?.map((log, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-                      <span style={{ color: '#94a3b8' }}>{log.date}</span>
-                      <strong style={{ color: log.status.includes('Present') ? '#00e676' : '#ff3b50' }}>
-                        {log.status}
-                      </strong>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* What Drills Are Performed */}
-              <div
-                style={{
-                  padding: '10px 12px',
-                  background: 'rgba(255,255,255,0.02)',
-                  borderRadius: 10,
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  marginBottom: 12,
-                }}
-              >
-                <span style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase' }}>
-                  Assigned Drills & Training Syllabus
-                </span>
-                <ul style={{ margin: '6px 0 0', paddingLeft: 16, fontSize: 12, color: '#f8fafc' }}>
-                  {showCoachDetailsModal.assignedDrills?.map((dr, idx) => (
-                    <li key={idx} style={{ marginBottom: 3 }}>{dr}</li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Payout Status & Disbursal */}
-              <div
-                style={{
-                  padding: '12px',
-                  borderRadius: 10,
-                  background: 'rgba(255, 200, 61, 0.08)',
-                  border: '1px solid rgba(255, 200, 61, 0.3)',
-                  marginBottom: 14,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 800 }}>MONTHLY SALARY</span>
-                  <strong style={{ fontSize: 16, color: '#ffc83d', display: 'block' }}>
-                    ₹{showCoachDetailsModal.salary.toLocaleString()}/mo
-                  </strong>
-                  <small style={{ fontSize: 10, color: '#94a3b8' }}>{showCoachDetailsModal.payoutStatus}</small>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => disburseCoachPayout(showCoachDetailsModal)}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 8,
-                    background: '#00e676',
-                    border: 'none',
-                    color: '#020617',
-                    fontWeight: 900,
-                    fontSize: 12,
-                    cursor: 'pointer',
-                  }}
-                >
-                  💸 Disburse Payout
-                </button>
-              </div>
-
-              <a
-                href={`tel:${showCoachDetailsModal.phone}`}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  borderRadius: 8,
-                  background: 'rgba(0, 176, 255, 0.15)',
-                  border: '1px solid rgba(0, 176, 255, 0.3)',
-                  color: '#00b0ff',
-                  fontSize: 12,
-                  fontWeight: 800,
-                  textDecoration: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                }}
-              >
-                <Phone size={14} /> Call Coach ({showCoachDetailsModal.phone})
-              </a>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 3: ADMIT NEW STUDENT
-        ========================================================================= */}
-        {showAdmitModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 480,
-                maxHeight: '90vh',
-                overflowY: 'auto',
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(124, 77, 255, 0.4)',
-                padding: 20,
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                  👥 Admit New Trainee
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowAdmitModal(false)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleAdmitStudent} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Student Full Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Senthil Raman"
-                    value={admitForm.name}
-                    onChange={(e) => setAdmitForm({ ...admitForm, name: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Age</label>
-                    <input
-                      type="number"
-                      required
-                      placeholder="15"
-                      value={admitForm.age}
-                      onChange={(e) => setAdmitForm({ ...admitForm, age: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Primary Role</label>
-                    <select
-                      value={admitForm.role}
-                      onChange={(e) => setAdmitForm({ ...admitForm, role: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="Top-Order Batsman">Top-Order Batsman</option>
-                      <option value="Middle-Order Batsman">Middle-Order Batsman</option>
-                      <option value="Right-Arm Fast Bowler">Right-Arm Fast Bowler</option>
-                      <option value="Left-Arm Fast Bowler">Left-Arm Fast Bowler</option>
-                      <option value="Spin Bowler">Spin Bowler</option>
-                      <option value="All-Rounder">All-Rounder</option>
-                      <option value="Wicketkeeper Batsman">Wicketkeeper Batsman</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Batting Stance</label>
-                    <select
-                      value={admitForm.battingStance}
-                      onChange={(e) => setAdmitForm({ ...admitForm, battingStance: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="Right Hand Bat">Right Hand Bat</option>
-                      <option value="Left Hand Bat">Left Hand Bat</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Bowling Action</label>
-                    <select
-                      value={admitForm.bowlingAction}
-                      onChange={(e) => setAdmitForm({ ...admitForm, bowlingAction: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="Right-arm Fast (Express Seam)">Right-arm Fast (Express Seam)</option>
-                      <option value="Left-arm Fast (Swing)">Left-arm Fast (Swing)</option>
-                      <option value="Legbreak Googly">Legbreak / Googly</option>
-                      <option value="Right-arm Offspin">Right-arm Offspin</option>
-                      <option value="Left-arm Orthodox Spin">Left-arm Orthodox Spin</option>
-                      <option value="None">None (Pure Batsman/Keeper)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Assigned Batch</label>
-                    <select
-                      value={admitForm.batch}
-                      onChange={(e) => {
-                        const val = e.target.value
-                        let grp = 'u16'
-                        if (val.includes('U-14')) grp = 'u14'
-                        else if (val.includes('U-19')) grp = 'u19'
-                        else if (val.includes('Weekend')) grp = 'weekend'
-                        setAdmitForm({ ...admitForm, batch: val, ageGroup: grp })
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="U-14 Morning Foundation">U-14 Morning Foundation</option>
-                      <option value="U-16 Evening Elite">U-16 Evening Elite</option>
-                      <option value="U-19 Pro High Performance">U-19 Pro High Performance</option>
-                      <option value="Weekend Grassroots Clinic">Weekend Grassroots Clinic</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Monthly Tuition (₹)</label>
-                    <input
-                      type="number"
-                      required
-                      value={admitForm.monthlyFee}
-                      onChange={(e) => setAdmitForm({ ...admitForm, monthlyFee: Number(e.target.value) })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#00e676',
-                        fontWeight: 900,
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Guardian Name</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Ramanathan S."
-                      value={admitForm.guardianName}
-                      onChange={(e) => setAdmitForm({ ...admitForm, guardianName: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Guardian Phone *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="9876543210"
-                      value={admitForm.guardianPhone}
-                      onChange={(e) => setAdmitForm({ ...admitForm, guardianPhone: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  style={{
-                    marginTop: 10,
-                    padding: '12px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: 'linear-gradient(135deg, #7c4dff, #00b0ff)',
-                    color: '#ffffff',
-                    fontWeight: 900,
-                    fontSize: 14,
-                    cursor: 'pointer',
-                  }}
-                >
-                  ✓ Admit Trainee & Issue Student ID
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 4: ADD NEW COACH / STAFF
-        ========================================================================= */}
-        {showAddCoachModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 440,
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(124, 77, 255, 0.4)',
-                padding: 20,
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                  👤 Add Coach / Staff Member
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowAddCoachModal(false)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleAddCoach} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Coach Full Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. S. Venkatraghavan"
-                    value={coachForm.name}
-                    onChange={(e) => setCoachForm({ ...coachForm, name: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Role</label>
-                    <select
-                      value={coachForm.role}
-                      onChange={(e) => setCoachForm({ ...coachForm, role: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="Head Coach & Director">Head Coach & Director</option>
-                      <option value="Batting Coach & Biomechanics">Batting Coach</option>
-                      <option value="Pace Bowling Specialist">Pace Bowling Coach</option>
-                      <option value="Spin Bowling Specialist">Spin Bowling Coach</option>
-                      <option value="Strength & Conditioning Trainer">S&C Trainer</option>
-                      <option value="Sports Physiotherapist">Physiotherapist</option>
-                      <option value="Kit Manager & Machine Operator">Kit Manager</option>
-                      <option value="Academy Administrator">Administrator</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>License / Badge</label>
-                    <input
-                      type="text"
-                      placeholder="BCCI Level 2"
-                      value={coachForm.badge}
-                      onChange={(e) => setCoachForm({ ...coachForm, badge: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Contact Mobile *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="9876543210"
-                      value={coachForm.phone}
-                      onChange={(e) => setCoachForm({ ...coachForm, phone: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Monthly Pay (₹)</label>
-                    <input
-                      type="number"
-                      required
-                      value={coachForm.salary}
-                      onChange={(e) => setCoachForm({ ...coachForm, salary: Number(e.target.value) })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#ffc83d',
-                        fontWeight: 900,
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Experience Note</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 8 Years Elite Coaching • Ex-First Class Player"
-                    value={coachForm.experience}
-                    onChange={(e) => setCoachForm({ ...coachForm, experience: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  style={{
-                    marginTop: 10,
-                    padding: '12px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: '#7c4dff',
-                    color: '#fff',
-                    fontWeight: 900,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                  }}
-                >
-                  ✓ Add to Academy Roster
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 5: RECORD ACADEMY EXPENSE
-        ========================================================================= */}
-        {showRecordExpenseModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 440,
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(255, 59, 80, 0.4)',
-                padding: 20,
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                  💸 Record Academy Operational Expense
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowRecordExpenseModal(false)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleAddExpense} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Expense Category</label>
-                  <select
-                    value={expenseForm.category}
-                    onChange={(e) => setExpenseForm({ ...expenseForm, category: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  >
-                    <option value="Coach & Staff Salaries">Coach & Staff Salaries / Payouts</option>
-                    <option value="Cricket Gear & Equipment">SG Leather Match Balls & Training Equipment</option>
-                    <option value="Turf & Facility Rent">Turf Nets & Ground Rental Lease</option>
-                    <option value="Medical & Physio">Physiotherapy & Medical First Aid Supplies</option>
-                    <option value="Refreshments & Energy Drinks">Trainee Refreshments & Hydration</option>
-                    <option value="Facility Electricity & Maintenance">Facility Power & Net Maintenance</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Description / Particulars *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 4 Boxes SG White Leather Match Balls (48 Units)"
-                    value={expenseForm.desc}
-                    onChange={(e) => setExpenseForm({ ...expenseForm, desc: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Amount (₹) *</label>
-                    <input
-                      type="number"
-                      required
-                      placeholder="12000"
-                      value={expenseForm.amount}
-                      onChange={(e) => setExpenseForm({ ...expenseForm, amount: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid #ff3b50',
-                        color: '#ff3b50',
-                        fontWeight: 900,
-                        fontSize: 14,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Payment Mode</label>
-                    <select
-                      value={expenseForm.mode}
-                      onChange={(e) => setExpenseForm({ ...expenseForm, mode: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="UPI / Online">UPI / QR Transfer</option>
-                      <option value="Bank NEFT">Bank NEFT / Direct Payout</option>
-                      <option value="Card / POS">Card / POS</option>
-                      <option value="Cash / Petty Cash">Cash / Petty Cash</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  style={{
-                    marginTop: 10,
-                    padding: '12px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: '#ff3b50',
-                    color: '#fff',
-                    fontWeight: 900,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                  }}
-                >
-                  ✓ Deduct & Log in Academy Ledger
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 6: ADD TRAINING DRILL
-        ========================================================================= */}
-        {showAddDrillModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 440,
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(0, 176, 255, 0.4)',
-                padding: 20,
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                  📋 Add Training Drill for {selectedDrillDate}
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowAddDrillModal(false)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleAddDrill} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Drill Title *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Boundary Relay & Throwing Direct Hits"
-                    value={drillForm.title}
-                    onChange={(e) => setDrillForm({ ...drillForm, title: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Time Slot</label>
-                    <input
-                      type="text"
-                      value={drillForm.time}
-                      onChange={(e) => setDrillForm({ ...drillForm, time: e.target.value })}
-                      placeholder="06:00 AM - 07:30 AM"
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Location / Pitch</label>
-                    <select
-                      value={drillForm.venue}
-                      onChange={(e) => setDrillForm({ ...drillForm, venue: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="Turf Nets A & B">Turf Nets A & B</option>
-                      <option value="Turf Net C (Bowling Machine)">Net C (Machine)</option>
-                      <option value="Main Oval Center Turf">Center Turf Wicket</option>
-                      <option value="Main Ground Outfield">Main Outfield</option>
-                      <option value="Gym & Fitness Zone">Gym & Fitness Zone</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Lead Coach</label>
-                  <select
-                    value={drillForm.coach}
-                    onChange={(e) => setDrillForm({ ...drillForm, coach: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  >
-                    {coaches.map((c) => (
-                      <option key={c.id} value={`${c.name} (${c.role.split(' ')[0]})`}>
-                        {c.name} — {c.role}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Technical Focus</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Target fielding, flat throws & direct hits"
-                    value={drillForm.focus}
-                    onChange={(e) => setDrillForm({ ...drillForm, focus: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  style={{
-                    marginTop: 10,
-                    padding: '12px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: '#00b0ff',
-                    color: '#020617',
-                    fontWeight: 900,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                  }}
-                >
-                  ✓ Save Drill for {selectedDrillDate}
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 7: MONTHLY REPORT OF TRANSACTIONS (The User Requested Audit)
-        ========================================================================= */}
-        {showStatementModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.88)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 480,
-                maxHeight: '92vh',
-                overflowY: 'auto',
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(0, 176, 255, 0.4)',
-                padding: 20,
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                  📄 Monthly Financial Audit Report
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowStatementModal(false)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div
-                style={{
-                  padding: '14px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  borderRadius: 12,
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  fontSize: 12,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 8,
-                  marginBottom: 14,
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Academy:</span>
-                  <strong style={{ color: '#f8fafc' }}>Scoring Heroes Elite Cricket Academy</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Audit Period:</span>
-                  <strong style={{ color: '#f8fafc' }}>01 Nov 2026 – 30 Nov 2026</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Gross Inflow (Tuition & Fees):</span>
-                  <strong style={{ color: '#00e676' }}>+₹{totalAcademyInflow.toLocaleString()}</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Total Outflow (Salaries & Ops):</span>
-                  <strong style={{ color: '#ff3b50' }}>-₹{totalAcademyOutflow.toLocaleString()}</strong>
-                </div>
-                <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                  <span style={{ color: '#f8fafc', fontWeight: 800 }}>Net Monthly Surplus:</span>
-                  <strong style={{ color: netAcademySurplus >= 0 ? '#38bdf8' : '#ff3b50' }}>
-                    {netAcademySurplus >= 0 ? `+₹${netAcademySurplus.toLocaleString()}` : `-₹${Math.abs(netAcademySurplus).toLocaleString()}`}
-                  </strong>
-                </div>
-              </div>
-
-              {/* Transactions Mini Ledger */}
-              <div style={{ marginBottom: 14 }}>
-                <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase' }}>
-                  Itemized Transactions Log ({academyTransactions.length})
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 6 }}>
-                  {academyTransactions.map((tx) => (
-                    <div
-                      key={tx.id}
-                      style={{
-                        padding: '6px 8px',
-                        background: 'rgba(255,255,255,0.02)',
-                        borderRadius: 6,
-                        fontSize: 11,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <span style={{ color: '#f8fafc', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '65%' }}>
-                        {tx.desc}
-                      </span>
-                      <strong style={{ color: tx.type === 'credit' ? '#00e676' : '#ff3b50' }}>
-                        {tx.type === 'credit' ? `+₹${tx.amount.toLocaleString()}` : `-₹${tx.amount.toLocaleString()}`}
-                      </strong>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    borderRadius: 8,
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#f8fafc',
-                    fontWeight: 800,
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                  }}
-                >
-                  <Printer size={15} /> Print Statement
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    triggerToast('Monthly financial audit statement downloaded as PDF!')
-                    setShowStatementModal(false)
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    borderRadius: 8,
-                    background: '#00b0ff',
-                    border: 'none',
-                    color: '#020617',
-                    fontWeight: 900,
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                  }}
-                >
-                  <Download size={15} /> Download PDF
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </Screen>
   )

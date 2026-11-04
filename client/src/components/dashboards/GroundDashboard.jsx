@@ -462,7 +462,7 @@ export default function GroundDashboard({ user }) {
               alignItems: 'center',
               gap: 5,
             }}
-            onClick={() => setShowStatementModal(true)}
+            onClick={() => navigate('/app/grounds?action=statement')}
           >
             <Download size={13} /> Statement
           </button>
@@ -652,7 +652,7 @@ export default function GroundDashboard({ user }) {
                 alignItems: 'center',
                 gap: 6,
               }}
-              onClick={() => setShowBookingModal(true)}
+              onClick={() => navigate('/app/grounds?action=book')}
             >
               <Plus size={15} /> + Quick Walk-In Booking
             </button>
@@ -861,7 +861,7 @@ export default function GroundDashboard({ user }) {
                           alignItems: 'center',
                           gap: 5,
                         }}
-                        onClick={() => setShowGatePassModal(slot)}
+                        onClick={() => navigate('/app/grounds?action=book')}
                       >
                         <QrCode size={13} /> Gate Pass QR
                       </button>
@@ -886,7 +886,7 @@ export default function GroundDashboard({ user }) {
                       }}
                       onClick={() => {
                         setNewBooking((prev) => ({ ...prev, time: slot.time, pitch: slot.pitch }))
-                        setShowBookingModal(true)
+                        navigate('/app/grounds?action=book')
                       }}
                     >
                       + Book Walk-In Match
@@ -966,7 +966,7 @@ export default function GroundDashboard({ user }) {
                 alignItems: 'center',
                 gap: 6,
               }}
-              onClick={() => setShowStatementModal(true)}
+              onClick={() => navigate('/app/grounds?action=statement')}
             >
               <Download size={14} /> Download Account Sheet (PDF / Excel)
             </button>
@@ -1312,410 +1312,6 @@ export default function GroundDashboard({ user }) {
         </div>
       )}
 
-      {/* =========================================================================
-          MODAL: QUICK WALK-IN / COUNTER BOOKING
-      ========================================================================= */}
-      {showBookingModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(2, 6, 23, 0.85)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 10000,
-            display: 'grid',
-            placeItems: 'center',
-            padding: 16,
-          }}
-        >
-          <div
-            style={{
-              background: '#0f172a',
-              border: '1px solid rgba(0, 176, 255, 0.4)',
-              borderRadius: 18,
-              maxWidth: 460,
-              width: '100%',
-              padding: 22,
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: '#f8fafc' }}>
-                  Quick Walk-In Slot Booking
-                </h3>
-                <small style={{ color: 'var(--muted)', fontSize: 11 }}>
-                  Counter reservation for teams & tournament matches
-                </small>
-              </div>
-              <button
-                type="button"
-                className="icon-btn"
-                onClick={() => setShowBookingModal(false)}
-                style={{ width: 28, height: 28 }}
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateBooking} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                <div>
-                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Team A Name</label>
-                  <input
-                    type="text"
-                    className="sh-white-input"
-                    value={newBooking.teamA}
-                    onChange={(e) => setNewBooking({ ...newBooking, teamA: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Team B Name</label>
-                  <input
-                    type="text"
-                    className="sh-white-input"
-                    value={newBooking.teamB}
-                    onChange={(e) => setNewBooking({ ...newBooking, teamB: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Captain Phone Number</label>
-                <input
-                  type="tel"
-                  className="sh-white-input"
-                  value={newBooking.captainPhone}
-                  onChange={(e) => setNewBooking({ ...newBooking, captainPhone: e.target.value })}
-                  placeholder="10-digit mobile number"
-                  required
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                <div>
-                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Pitch Allocation</label>
-                  <select
-                    className="sh-white-select"
-                    value={newBooking.pitch}
-                    onChange={(e) => setNewBooking({ ...newBooking, pitch: e.target.value })}
-                  >
-                    <option value="Main Stadium Oval (Red Soil)">Main Stadium Oval</option>
-                    <option value="Practice Turf 2 (Black Soil)">Practice Turf 2</option>
-                    <option value="Astroturf Box Arena">Astroturf Box Arena</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Slot Time</label>
-                  <select
-                    className="sh-white-select"
-                    value={newBooking.time}
-                    onChange={(e) => setNewBooking({ ...newBooking, time: e.target.value })}
-                  >
-                    <option value="06:00 AM - 09:00 AM">06:00 AM - 09:00 AM</option>
-                    <option value="09:30 AM - 12:30 PM">09:30 AM - 12:30 PM</option>
-                    <option value="01:00 PM - 04:00 PM">01:00 PM - 04:00 PM</option>
-                    <option value="04:30 PM - 07:30 PM">04:30 PM - 07:30 PM</option>
-                    <option value="08:00 PM - 11:30 PM">08:00 PM - 11:30 PM (Night)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                <div>
-                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Tariff Amount (₹)</label>
-                  <input
-                    type="number"
-                    className="sh-white-input"
-                    value={newBooking.price}
-                    onChange={(e) => setNewBooking({ ...newBooking, price: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginBottom: 4 }}>Payment Mode</label>
-                  <select
-                    className="sh-white-select"
-                    value={newBooking.paymentMode}
-                    onChange={(e) => setNewBooking({ ...newBooking, paymentMode: e.target.value })}
-                  >
-                    <option value="UPI QR Scan">UPI QR Scan (Instant)</option>
-                    <option value="Cash at Counter">Cash at Counter</option>
-                    <option value="Bank NEFT">Bank NEFT / Net Banking</option>
-                  </select>
-                </div>
-              </div>
-
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#ffd600', cursor: 'pointer', margin: '4px 0' }}>
-                <input
-                  type="checkbox"
-                  checked={newBooking.floodlights}
-                  onChange={(e) => setNewBooking({ ...newBooking, floodlights: e.target.checked })}
-                />
-                <span>Include Night Floodlight Tower Rental (800-Lux)</span>
-              </label>
-
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  marginTop: 8,
-                  padding: '12px',
-                  borderRadius: 10,
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #00b0ff, #00e676)',
-                  color: '#020617',
-                  fontWeight: 900,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                }}
-              >
-                Confirm & Issue Digital Gate Pass QR →
-              </button>
-            </form>
           </div>
-        </div>
-      )}
-
-      {/* =========================================================================
-          MODAL: DIGITAL GATE ENTRY PASS QR (Feature 15.7)
-          FIXED: "Send to Captain" button is clearly visible and high-contrast!
-      ========================================================================= */}
-      {showGatePassModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(2, 6, 23, 0.85)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 10000,
-            display: 'grid',
-            placeItems: 'center',
-            padding: 16,
-          }}
-        >
-          <div
-            style={{
-              background: '#0f172a',
-              border: '1px solid rgba(0, 176, 255, 0.4)',
-              borderRadius: 18,
-              maxWidth: 380,
-              width: '100%',
-              padding: 22,
-              textAlign: 'center',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <span className="pill" style={{ background: 'rgba(0, 176, 255, 0.15)', color: '#00b0ff', fontSize: 10 }}>
-                STADIUM OFFICIAL GATE PASS
-              </span>
-              <button
-                type="button"
-                className="icon-btn"
-                onClick={() => setShowGatePassModal(null)}
-                style={{ width: 26, height: 26 }}
-              >
-                ✕
-              </button>
-            </div>
-
-            <h3 style={{ margin: 0, fontSize: 18, color: '#f8fafc', fontWeight: 900 }}>
-              {showGatePassModal.teamA} VS {showGatePassModal.teamB}
-            </h3>
-            <p style={{ margin: '4px 0 14px', fontSize: 12, color: '#38bdf8' }}>
-              {showGatePassModal.pitch} • {showGatePassModal.time}
-            </p>
-
-            {/* Simulated QR Code Canvas */}
-            <div
-              style={{
-                width: 170,
-                height: 170,
-                margin: '0 auto 14px',
-                background: '#fff',
-                borderRadius: 14,
-                padding: 12,
-                display: 'grid',
-                placeItems: 'center',
-              }}
-            >
-              <QrCode size={140} color="#020617" />
-            </div>
-
-            <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 14 }}>
-              Pass Code: <strong style={{ color: '#f8fafc' }}>SH-GATE-{showGatePassModal.id.toUpperCase()}</strong>
-              <div style={{ fontSize: 11, color: '#00e676', marginTop: 2 }}>Scan at Turnstile Gate A for entry</div>
-            </div>
-
-            {/* BUTTON ROW: High-contrast visible styling */}
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button
-                type="button"
-                style={{
-                  flex: 1,
-                  padding: '10px 14px',
-                  borderRadius: 10,
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  color: '#ffffff',
-                  fontWeight: 800,
-                  fontSize: 12,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                }}
-                onClick={() => triggerToast('Gate Pass QR copied to clipboard for WhatsApp dispatch!')}
-              >
-                <Share2 size={14} color="#38bdf8" />
-                <span>Send to Captain</span>
-              </button>
-              <button
-                type="button"
-                style={{
-                  flex: 1,
-                  padding: '10px 14px',
-                  borderRadius: 10,
-                  border: 'none',
-                  background: '#00b0ff',
-                  color: '#020617',
-                  fontWeight: 900,
-                  fontSize: 12,
-                  cursor: 'pointer',
-                }}
-                onClick={() => setShowGatePassModal(null)}
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* =========================================================================
-          MODAL: MONTHLY ACCOUNT STATEMENT DOWNLOAD (Feature 13.8)
-      ========================================================================= */}
-      {showStatementModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(2, 6, 23, 0.85)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 10000,
-            display: 'grid',
-            placeItems: 'center',
-            padding: 16,
-          }}
-        >
-          <div
-            style={{
-              background: '#0f172a',
-              border: '1px solid rgba(0, 230, 118, 0.4)',
-              borderRadius: 18,
-              maxWidth: 480,
-              width: '100%',
-              padding: 22,
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: '#f8fafc' }}>
-                  Monthly Account Sheet & Audit Export
-                </h3>
-                <small style={{ color: 'var(--muted)', fontSize: 11 }}>
-                  Dual Module Ledger • Certified by Scoring Heroes Platform
-                </small>
-              </div>
-              <button
-                type="button"
-                className="icon-btn"
-                onClick={() => setShowStatementModal(false)}
-                style={{ width: 28, height: 28 }}
-              >
-                ✕
-              </button>
-            </div>
-
-            <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
-                <span style={{ color: 'var(--muted)' }}>Statement Period:</span>
-                <strong style={{ color: '#f8fafc' }}>01 Oct 2026 – 31 Oct 2026</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
-                <span style={{ color: 'var(--muted)' }}>Total Gross Inflow:</span>
-                <strong style={{ color: '#00e676' }}>₹ 10,75,000</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
-                <span style={{ color: 'var(--muted)' }}>Total Operating Cost:</span>
-                <strong style={{ color: '#ef4444' }}>₹ 2,32,400</strong>
-              </div>
-              <div style={{ borderTop: '1px solid var(--line)', paddingTop: 6, display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <strong style={{ color: '#f8fafc' }}>Net Settled Profit:</strong>
-                <strong style={{ color: '#00e676' }}>₹ 8,42,600</strong>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button
-                type="button"
-                style={{
-                  flex: 1,
-                  padding: '10px 14px',
-                  borderRadius: 10,
-                  border: 'none',
-                  background: '#00e676',
-                  color: '#020617',
-                  fontWeight: 900,
-                  fontSize: 12,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                }}
-                onClick={() => {
-                  setShowStatementModal(false)
-                  triggerToast('Monthly statement downloaded as PDF!')
-                }}
-              >
-                <Download size={14} /> Download PDF
-              </button>
-              <button
-                type="button"
-                style={{
-                  flex: 1,
-                  padding: '10px 14px',
-                  borderRadius: 10,
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  color: '#f8fafc',
-                  fontWeight: 700,
-                  fontSize: 12,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                }}
-                onClick={() => {
-                  setShowStatementModal(false)
-                  triggerToast('Excel spreadsheet exported!')
-                }}
-              >
-                <FileText size={14} /> Export Excel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
   )
 }

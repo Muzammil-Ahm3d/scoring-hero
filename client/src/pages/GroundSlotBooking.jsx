@@ -577,13 +577,13 @@ export default function GroundSlotBooking() {
   const profitMargin = totalInflow > 0 ? ((netProfit / totalInflow) * 100).toFixed(1) : 0
 
   // =========================================================================
-  // 5. MODAL STATES
+  // 5. DEDICATED INDIVIDUAL PAGE VIEWS (No popup windows!)
   // =========================================================================
-  const [showBookingModal, setShowBookingModal] = useState(false)
-  const [showGatePassModal, setShowGatePassModal] = useState(null)
-  const [showAddStaffModal, setShowAddStaffModal] = useState(false)
-  const [showAddExpenseModal, setShowAddExpenseModal] = useState(false)
-  const [showStatementModal, setShowStatementModal] = useState(false)
+  const [showBookingPage, setShowBookingPage] = useState(false)
+  const [selectedGatePassView, setSelectedGatePassView] = useState(null)
+  const [showAddStaffPage, setShowAddStaffPage] = useState(false)
+  const [showAddExpensePage, setShowAddExpensePage] = useState(false)
+  const [showStatementPage, setShowStatementPage] = useState(false)
 
   // Booking Form State
   const [bookingForm, setBookingForm] = useState({
@@ -663,8 +663,8 @@ export default function GroundSlotBooking() {
       ...prev,
     ])
 
-    setShowBookingModal(false)
-    setShowGatePassModal(newSlot)
+    setShowBookingPage(false)
+    setSelectedGatePassView(newSlot)
     triggerToast(`Slot booked successfully for ${bookingForm.customerName}!`)
   }
 
@@ -691,7 +691,7 @@ export default function GroundSlotBooking() {
     }
 
     setStaffList((prev) => [...prev, newMember])
-    setShowAddStaffModal(false)
+    setShowAddStaffPage(false)
     setStaffForm({
       name: '',
       role: 'Assistant Pitch Curator',
@@ -723,7 +723,7 @@ export default function GroundSlotBooking() {
     }
 
     setTransactions((prev) => [newExp, ...prev])
-    setShowAddExpenseModal(false)
+    setShowAddExpensePage(false)
     setExpenseForm({
       category: 'Pitch Maintenance',
       desc: '',
@@ -738,6 +738,1042 @@ export default function GroundSlotBooking() {
     (s) => s.pitchId === selectedPitchId && s.day === selectedDay
   )
 
+
+  // =========================================================================
+  // DEDICATED PAGE VIEWS (No popup windows per user requirement!)
+  // =========================================================================
+
+  // 1. DEDICATED BOOK PITCH SLOT PAGE
+  if (showBookingPage) {
+    return (
+      <Screen
+        back
+        onBack={() => setShowBookingPage(false)}
+        title="Book Pitch Slot"
+        subtitle="Match Slot Reservation & Walk-In Scheduling"
+      >
+        <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowBookingPage(false)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Schedule & Slots
+            </button>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 16,
+              border: '1px solid rgba(0, 176, 255, 0.35)',
+              padding: 24,
+            }}
+          >
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#f8fafc', margin: '0 0 16px' }}>
+              📅 Reserve Stadium Pitch Slot
+            </h2>
+
+            <form onSubmit={handleCreateBooking} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                  Venue / Pitch *
+                </label>
+                <select
+                  value={bookingForm.pitchId}
+                  onChange={(e) => {
+                    const sel = venues.find((v) => v.id === e.target.value)
+                    setBookingForm((prev) => ({
+                      ...prev,
+                      pitchId: e.target.value,
+                      price: sel ? sel.standardRate : prev.price,
+                    }))
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: '#0b1329',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                >
+                  {venues.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.name} ({v.type}) - ₹{v.standardRate.toLocaleString()}/slot
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                    Day of Month
+                  </label>
+                  <select
+                    value={bookingForm.day}
+                    onChange={(e) => setBookingForm((prev) => ({ ...prev, day: Number(e.target.value) }))}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    {[10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((d) => (
+                      <option key={d} value={d}>
+                        {d} November 2026
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                    Time Slot
+                  </label>
+                  <select
+                    value={bookingForm.startTime}
+                    onChange={(e) => {
+                      const st = e.target.value
+                      const end =
+                        st === '06:00 AM'
+                          ? '09:00 AM'
+                          : st === '09:30 AM'
+                            ? '12:30 PM'
+                            : st === '01:30 PM'
+                              ? '04:30 PM'
+                              : '08:00 PM'
+                      setBookingForm((prev) => ({ ...prev, startTime: st, endTime: end }))
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="06:00 AM">Morning Slot (06:00 AM - 09:00 AM)</option>
+                    <option value="09:30 AM">Day Slot 1 (09:30 AM - 12:30 PM)</option>
+                    <option value="01:30 PM">Afternoon Slot (01:30 PM - 04:30 PM)</option>
+                    <option value="05:00 PM">Evening Floodlight (05:00 PM - 08:00 PM)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                    Customer Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Dinesh Karthik"
+                    value={bookingForm.customerName}
+                    onChange={(e) => setBookingForm((prev) => ({ ...prev, customerName: e.target.value }))}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                    Customer Phone *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+91 98401 23456"
+                    value={bookingForm.customerPhone}
+                    onChange={(e) => setBookingForm((prev) => ({ ...prev, customerPhone: e.target.value }))}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                    Team 1 Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Marina Titans"
+                    value={bookingForm.teamA}
+                    onChange={(e) => setBookingForm((prev) => ({ ...prev, teamA: e.target.value }))}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                    Team 2 Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Besant Blasters"
+                    value={bookingForm.teamB}
+                    onChange={(e) => setBookingForm((prev) => ({ ...prev, teamB: e.target.value }))}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                    Slot Price (₹)
+                  </label>
+                  <input
+                    type="number"
+                    value={bookingForm.price}
+                    onChange={(e) => setBookingForm((prev) => ({ ...prev, price: Number(e.target.value) }))}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                    Payment Mode
+                  </label>
+                  <select
+                    value={bookingForm.paymentMode}
+                    onChange={(e) => setBookingForm((prev) => ({ ...prev, paymentMode: e.target.value }))}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="UPI QR">UPI / QR Transfer</option>
+                    <option value="Cash Counter">Cash at Counter</option>
+                    <option value="Debit Card">Debit / Credit Card</option>
+                    <option value="Bank NEFT">Bank NEFT</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#00e676',
+                    color: '#020617',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Confirm Slot & Generate Gate Pass
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowBookingPage(false)}
+                  style={{
+                    padding: '14px 24px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#94a3b8',
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 2. DEDICATED DIGITAL GATE PASS PAGE
+  if (selectedGatePassView) {
+    return (
+      <Screen
+        back
+        onBack={() => setSelectedGatePassView(null)}
+        title="Stadium Digital Gate Pass"
+        subtitle="Match Day Security & Token Verification"
+      >
+        <div style={{ maxWidth: 640, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setSelectedGatePassView(null)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Schedule & Slots
+            </button>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 18,
+              border: '2px solid rgba(0, 230, 118, 0.4)',
+              padding: 24,
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 8, background: 'rgba(0, 230, 118, 0.15)', color: '#00e676', fontSize: 12, fontWeight: 900, marginBottom: 14 }}>
+              ✓ VERIFIED ENTRY TOKEN
+            </div>
+
+            <h2 style={{ fontSize: 24, fontWeight: 900, color: '#f8fafc', margin: '0 0 6px' }}>
+              {selectedGatePassView.teamA} vs {selectedGatePassView.teamB || 'Practice Squad'}
+            </h2>
+            <div style={{ fontSize: 14, color: '#38bdf8', fontWeight: 700 }}>
+              {venues.find((v) => v.id === selectedGatePassView.pitchId)?.name || 'Main Stadium Oval'}
+            </div>
+
+            {/* QR Mock */}
+            <div
+              style={{
+                width: 170,
+                height: 170,
+                margin: '20px auto',
+                background: '#ffffff',
+                borderRadius: 16,
+                padding: 12,
+                display: 'grid',
+                placeItems: 'center',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              <QrCode size={135} color="#020617" />
+            </div>
+
+            <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>
+              Pass Code: <strong style={{ color: '#ffc83d' }}>GP-{selectedGatePassView.id.toString().slice(-6).toUpperCase()}</strong>
+            </div>
+
+            <div
+              style={{
+                padding: '16px 20px',
+                borderRadius: 12,
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 12,
+                textAlign: 'left',
+                fontSize: 13,
+                marginBottom: 20,
+              }}
+            >
+              <div>
+                <span style={{ color: 'var(--muted)', display: 'block' }}>Match Time</span>
+                <strong style={{ color: '#f8fafc', marginTop: 2, display: 'block' }}>{selectedGatePassView.time}</strong>
+              </div>
+              <div>
+                <span style={{ color: 'var(--muted)', display: 'block' }}>Booked By</span>
+                <strong style={{ color: '#f8fafc', marginTop: 2, display: 'block' }}>
+                  {selectedGatePassView.customerName} ({selectedGatePassView.customerPhone})
+                </strong>
+              </div>
+              <div>
+                <span style={{ color: 'var(--muted)', display: 'block' }}>Payment Paid</span>
+                <strong style={{ color: '#00e676', marginTop: 2, display: 'block' }}>
+                  ₹{selectedGatePassView.price?.toLocaleString()} ({selectedGatePassView.paymentMode})
+                </strong>
+              </div>
+              <div>
+                <span style={{ color: 'var(--muted)', display: 'block' }}>Floodlights</span>
+                <strong style={{ color: selectedGatePassView.floodlight ? '#ffc83d' : '#94a3b8', marginTop: 2, display: 'block' }}>
+                  {selectedGatePassView.floodlight ? 'Enabled' : 'Natural Light'}
+                </strong>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: 10,
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#f8fafc',
+                  fontWeight: 800,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                }}
+              >
+                <Printer size={16} /> Print Pass
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedGatePassView(null)}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: 10,
+                  background: '#00e676',
+                  border: 'none',
+                  color: '#020617',
+                  fontWeight: 900,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
+              >
+                ✓ Done
+              </button>
+            </div>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 3. DEDICATED ADD STAFF PAGE
+  if (showAddStaffPage) {
+    return (
+      <Screen
+        back
+        onBack={() => setShowAddStaffPage(false)}
+        title="Onboard Ground Staff"
+        subtitle="Staff Roster, Shift Allocations & Pay Rates"
+      >
+        <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowAddStaffPage(false)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Staff Management
+            </button>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 16,
+              border: '1px solid rgba(0, 176, 255, 0.35)',
+              padding: 24,
+            }}
+          >
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#f8fafc', margin: '0 0 16px' }}>
+              👷 Add Ground Crew / Maintenance Staff
+            </h2>
+
+            <form onSubmit={handleCreateStaff} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Ramesh Kumar"
+                  value={staffForm.name}
+                  onChange={(e) => setStaffForm({ ...staffForm, name: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Staff Role *
+                  </label>
+                  <select
+                    value={staffForm.role}
+                    onChange={(e) => setStaffForm({ ...staffForm, role: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="Head Pitch Curator">Head Pitch Curator</option>
+                    <option value="Assistant Pitch Curator">Assistant Pitch Curator</option>
+                    <option value="Floodlight & Generator Tech">Floodlight & Generator Tech</option>
+                    <option value="Match Day Umpire Coordinator">Match Day Umpire Coordinator</option>
+                    <option value="Net Bowler Coordinator">Net Bowler Coordinator</option>
+                    <option value="Pavilion Housekeeping">Pavilion Housekeeping</option>
+                    <option value="Security Guard">Security Guard</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+91 98402 34567"
+                    value={staffForm.phone}
+                    onChange={(e) => setStaffForm({ ...staffForm, phone: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Assigned Zone
+                  </label>
+                  <select
+                    value={staffForm.zone}
+                    onChange={(e) => setStaffForm({ ...staffForm, zone: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="Main Stadium Oval">Main Stadium Oval</option>
+                    <option value="North Turf Ground">North Turf Ground</option>
+                    <option value="Floodlit Turf Nets 1-4">Floodlit Turf Nets 1-4</option>
+                    <option value="Pavilion & Dressing Rooms">Pavilion & Dressing Rooms</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Monthly Pay (₹)
+                  </label>
+                  <input
+                    type="number"
+                    value={staffForm.salary}
+                    onChange={(e) => setStaffForm({ ...staffForm, salary: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#00b0ff',
+                    color: '#020617',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Onboard Crew Member
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddStaffPage(false)}
+                  style={{
+                    padding: '14px 24px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#94a3b8',
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 4. DEDICATED RECORD EXPENSE PAGE
+  if (showAddExpensePage) {
+    return (
+      <Screen
+        back
+        onBack={() => setShowAddExpensePage(false)}
+        title="Record Operational Expense"
+        subtitle="Pitch Maintenance, Diesel, Electricity & Supplies"
+      >
+        <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowAddExpensePage(false)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Accounts & P&L
+            </button>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 16,
+              border: '1px solid rgba(255, 59, 80, 0.35)',
+              padding: 24,
+            }}
+          >
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#f8fafc', margin: '0 0 16px' }}>
+              💸 Record Ground Operational Expense
+            </h2>
+
+            <form onSubmit={handleCreateExpense} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Expense Category
+                </label>
+                <select
+                  value={expenseForm.category}
+                  onChange={(e) => setExpenseForm({ ...expenseForm, category: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: '#0b1329',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                >
+                  <option value="Pitch Red Soil & Grass Maintenance">Pitch Red Soil & Grass Maintenance</option>
+                  <option value="Diesel for Pitch Roller / Generator">Diesel for Pitch Roller / Generator</option>
+                  <option value="Stadium Floodlight Power Bill">Stadium Floodlight Power Bill</option>
+                  <option value="Water Tanker & Irrigation">Water Tanker & Irrigation</option>
+                  <option value="Turf Net Repairs & Boundary Ropes">Turf Net Repairs & Boundary Ropes</option>
+                  <option value="Ground Staff Tea & Refreshments">Ground Staff Tea & Refreshments</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                  Description / Particulars *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 50 Litres Diesel for Pitch Heavy Roller"
+                  value={expenseForm.desc}
+                  onChange={(e) => setExpenseForm({ ...expenseForm, desc: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#f8fafc',
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Amount (₹) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="e.g. 5000"
+                    value={expenseForm.amount}
+                    onChange={(e) => setExpenseForm({ ...expenseForm, amount: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'block', marginBottom: 6 }}>
+                    Payment Mode
+                  </label>
+                  <select
+                    value={expenseForm.mode}
+                    onChange={(e) => setExpenseForm({ ...expenseForm, mode: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0b1329',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#f8fafc',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="UPI / QR Transfer">UPI / QR Transfer</option>
+                    <option value="Cash Voucher">Cash Voucher</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="Bank NEFT">Bank NEFT</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#ff3b50',
+                    color: '#ffffff',
+                    fontWeight: 900,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ Deduct & Save in Accounts Ledger
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddExpensePage(false)}
+                  style={{
+                    padding: '14px 24px',
+                    borderRadius: 10,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#94a3b8',
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // 5. DEDICATED MONTHLY FINANCIAL STATEMENT PAGE
+  if (showStatementPage) {
+    return (
+      <Screen
+        back
+        onBack={() => setShowStatementPage(false)}
+        title="Monthly Financial Statement"
+        subtitle="November 2026 Audit Report • Stadium Ledger"
+      >
+        <div style={{ maxWidth: 880, margin: '0 auto', paddingBottom: 80 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setShowStatementPage(false)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#f8fafc',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to Accounts & P&L
+            </button>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 10,
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#f8fafc',
+                  fontWeight: 800,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <Printer size={15} /> Print Statement
+              </button>
+              <button
+                type="button"
+                onClick={() => triggerToast('Statement downloaded as PDF successfully!')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 10,
+                  background: '#00b0ff',
+                  border: 'none',
+                  color: '#020617',
+                  fontWeight: 900,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <Download size={15} /> Download PDF
+              </button>
+            </div>
+          </div>
+
+          <div
+            style={{
+              background: '#0b1329',
+              borderRadius: 16,
+              border: '1px solid rgba(0, 176, 255, 0.35)',
+              padding: 24,
+            }}
+          >
+            <div style={{ marginBottom: 16 }}>
+              <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 800, textTransform: 'uppercase' }}>
+                STADIUM OPERATING STATEMENT
+              </span>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: '#f8fafc', margin: '4px 0 0' }}>
+                Marina International Cricket Grounds
+              </h2>
+              <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+                Period: 01 November 2026 - 30 November 2026 • Verified by Stadium Accounts Desk
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 12,
+                marginBottom: 24,
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ padding: 14, borderRadius: 12, background: 'rgba(0, 230, 118, 0.08)', border: '1px solid rgba(0, 230, 118, 0.25)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 800 }}>TOTAL BOOKING REVENUE</span>
+                <strong style={{ fontSize: 22, color: '#00e676', display: 'block', marginTop: 4 }}>
+                  ₹{totalInflow.toLocaleString()}
+                </strong>
+              </div>
+              <div style={{ padding: 14, borderRadius: 12, background: 'rgba(255, 59, 80, 0.08)', border: '1px solid rgba(255, 59, 80, 0.25)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 800 }}>TOTAL OPERATIONAL EXPENSES</span>
+                <strong style={{ fontSize: 22, color: '#ff3b50', display: 'block', marginTop: 4 }}>
+                  ₹{totalOutflow.toLocaleString()}
+                </strong>
+              </div>
+              <div style={{ padding: 14, borderRadius: 12, background: 'rgba(255, 200, 61, 0.08)', border: '1px solid rgba(255, 200, 61, 0.25)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 800 }}>NET STADIUM SURPLUS ({profitMargin}%)</span>
+                <strong style={{ fontSize: 22, color: '#ffc83d', display: 'block', marginTop: 4 }}>
+                  ₹{netProfit.toLocaleString()}
+                </strong>
+              </div>
+            </div>
+
+            <div>
+              <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase' }}>
+                Itemized Chronological Transaction Ledger
+              </span>
+              <div
+                style={{
+                  marginTop: 8,
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: 10,
+                  overflow: 'hidden',
+                }}
+              >
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: 'rgba(255, 255, 255, 0.04)', color: 'var(--muted)', textAlign: 'left' }}>
+                      <th style={{ padding: '10px 12px' }}>Date</th>
+                      <th style={{ padding: '10px 12px' }}>Particulars</th>
+                      <th style={{ padding: '10px 12px' }}>Category</th>
+                      <th style={{ padding: '10px 12px' }}>Reference</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right' }}>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transactions.map((tx) => (
+                      <tr key={tx.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                        <td style={{ padding: '10px 12px', color: '#94a3b8' }}>{tx.date}</td>
+                        <td style={{ padding: '10px 12px', color: '#f8fafc', fontWeight: 600 }}>{tx.desc}</td>
+                        <td style={{ padding: '10px 12px', color: '#38bdf8' }}>{tx.category}</td>
+                        <td style={{ padding: '10px 12px', color: '#ffc83d' }}>{tx.ref}</td>
+                        <td
+                          style={{
+                            padding: '10px 12px',
+                            textAlign: 'right',
+                            fontWeight: 800,
+                            color: tx.type === 'credit' ? '#00e676' : '#ff3b50',
+                          }}
+                        >
+                          {tx.type === 'credit' ? '+' : '-'}₹{tx.amount.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
   return (
     <Screen
       back
@@ -884,7 +1920,7 @@ export default function GroundSlotBooking() {
                       day: selectedDay,
                       price: activePitch.standardRate,
                     }))
-                    setShowBookingModal(true)
+                    setShowBookingPage(true)
                   }}
                   style={{
                     padding: '8px 14px',
@@ -1088,7 +2124,7 @@ export default function GroundSlotBooking() {
                         day: selectedDay,
                         price: activePitch.standardRate,
                       }))
-                      setShowBookingModal(true)
+                      setShowBookingPage(true)
                     }}
                     style={{
                       padding: '8px 16px',
@@ -1275,7 +2311,7 @@ export default function GroundSlotBooking() {
 
                               <button
                                 type="button"
-                                onClick={() => setShowGatePassModal(slot)}
+                                onClick={() => setSelectedGatePassView(slot)}
                                 style={{
                                   padding: '7px 12px',
                                   borderRadius: 8,
@@ -1343,7 +2379,7 @@ export default function GroundSlotBooking() {
                                   endTime: slot.time.split(' - ')[1],
                                   price: slot.price,
                                 }))
-                                setShowBookingModal(true)
+                                setShowBookingPage(true)
                               }}
                               style={{
                                 padding: '8px 14px',
@@ -1422,7 +2458,7 @@ export default function GroundSlotBooking() {
 
                 <button
                   type="button"
-                  onClick={() => setShowAddStaffModal(true)}
+                  onClick={() => setShowAddStaffPage(true)}
                   style={{
                     padding: '8px 14px',
                     borderRadius: 10,
@@ -1712,7 +2748,7 @@ export default function GroundSlotBooking() {
                 <div style={{ display: 'flex', gap: 6 }}>
                   <button
                     type="button"
-                    onClick={() => setShowAddExpenseModal(true)}
+                    onClick={() => setShowAddExpensePage(true)}
                     style={{
                       padding: '8px 12px',
                       borderRadius: 10,
@@ -1733,7 +2769,7 @@ export default function GroundSlotBooking() {
 
                   <button
                     type="button"
-                    onClick={() => setShowStatementModal(true)}
+                    onClick={() => setShowStatementPage(true)}
                     style={{
                       padding: '8px 12px',
                       borderRadius: 10,
@@ -1919,963 +2955,6 @@ export default function GroundSlotBooking() {
           </div>
         )}
 
-        {/* =========================================================================
-            MODAL 1: WALK-IN / NEW SLOT BOOKING FORM
-        ========================================================================= */}
-        {showBookingModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 480,
-                maxHeight: '90vh',
-                overflowY: 'auto',
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(0, 176, 255, 0.4)',
-                padding: 20,
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                  📅 Book Pitch Slot
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowBookingModal(false)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleCreateBooking} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {/* 1. Select Venue */}
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase' }}>
-                    Venue / Pitch
-                  </label>
-                  <select
-                    value={bookingForm.pitchId}
-                    onChange={(e) => {
-                      const sel = venues.find((v) => v.id === e.target.value)
-                      setBookingForm((prev) => ({
-                        ...prev,
-                        pitchId: e.target.value,
-                        price: sel ? sel.standardRate : prev.price,
-                      }))
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  >
-                    {venues.map((v) => (
-                      <option key={v.id} value={v.id} style={{ background: '#0b1329', color: '#fff' }}>
-                        {v.name} ({v.pitchType}) — ₹{v.standardRate.toLocaleString()}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* 2. Date & Timing */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Day (July)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="31"
-                      value={bookingForm.day}
-                      onChange={(e) => setBookingForm({ ...bookingForm, day: Number(e.target.value) })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Start Time</label>
-                    <input
-                      type="text"
-                      value={bookingForm.startTime}
-                      onChange={(e) => setBookingForm({ ...bookingForm, startTime: e.target.value })}
-                      placeholder="06:00 AM"
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>End Time</label>
-                    <input
-                      type="text"
-                      value={bookingForm.endTime}
-                      onChange={(e) => setBookingForm({ ...bookingForm, endTime: e.target.value })}
-                      placeholder="09:00 AM"
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* 3. Customer Info */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Customer Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Rajesh Kumar"
-                      value={bookingForm.customerName}
-                      onChange={(e) => setBookingForm({ ...bookingForm, customerName: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Mobile Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="9876543210"
-                      value={bookingForm.customerPhone}
-                      onChange={(e) => setBookingForm({ ...bookingForm, customerPhone: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* 4. Teams & Format */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Team A Name</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Marina Super Kings"
-                      value={bookingForm.teamA}
-                      onChange={(e) => setBookingForm({ ...bookingForm, teamA: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Team B Name</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. City Tigers Club"
-                      value={bookingForm.teamB}
-                      onChange={(e) => setBookingForm({ ...bookingForm, teamB: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* 5. Floodlights & Tariff */}
-                <div
-                  style={{
-                    padding: '10px 12px',
-                    borderRadius: 10,
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.06)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div>
-                    <strong style={{ fontSize: 13, color: '#f8fafc', display: 'block' }}>
-                      ⚡ Night Floodlights Required?
-                    </strong>
-                    <small style={{ color: 'var(--muted)', fontSize: 10 }}>Adds +₹1,500 lighting fee</small>
-                  </div>
-
-                  <input
-                    type="checkbox"
-                    checked={bookingForm.floodlight}
-                    onChange={(e) => {
-                      const fl = e.target.checked
-                      setBookingForm((prev) => ({
-                        ...prev,
-                        floodlight: fl,
-                        price: fl ? prev.price + 1500 : Math.max(1000, prev.price - 1500),
-                      }))
-                    }}
-                    style={{ width: 20, height: 20, cursor: 'pointer' }}
-                  />
-                </div>
-
-                {/* 6. Price & Payment Mode */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Total Tariff (₹)</label>
-                    <input
-                      type="number"
-                      value={bookingForm.price}
-                      onChange={(e) => setBookingForm({ ...bookingForm, price: Number(e.target.value) })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid #00e676',
-                        color: '#00e676',
-                        fontWeight: 900,
-                        fontSize: 14,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Payment Mode</label>
-                    <select
-                      value={bookingForm.paymentMode}
-                      onChange={(e) => setBookingForm({ ...bookingForm, paymentMode: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="UPI QR">UPI QR Scan</option>
-                      <option value="Cash on Ground">Cash on Ground</option>
-                      <option value="Bank NEFT">Bank NEFT / IMPS</option>
-                      <option value="Pay on Arrival">Pay on Arrival</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  style={{
-                    marginTop: 10,
-                    padding: '12px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: 'linear-gradient(135deg, #00b0ff, #00e676)',
-                    color: '#020617',
-                    fontWeight: 900,
-                    fontSize: 14,
-                    cursor: 'pointer',
-                  }}
-                >
-                  ✓ Confirm Booking & Generate Gate Pass
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 2: DIGITAL GATE PASS (Printable QR Ticket)
-        ========================================================================= */}
-        {showGatePassModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 420,
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(0, 230, 118, 0.4)',
-                padding: 20,
-                textAlign: 'center',
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <span
-                  style={{
-                    padding: '3px 8px',
-                    borderRadius: 6,
-                    background: 'rgba(0, 176, 255, 0.15)',
-                    color: '#00b0ff',
-                    fontSize: 11,
-                    fontWeight: 800,
-                  }}
-                >
-                  STADIUM OFFICIAL ENTRY PASS
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setShowGatePassModal(null)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* QR Box */}
-              <div
-                style={{
-                  width: 140,
-                  height: 140,
-                  margin: '0 auto 12px',
-                  background: '#fff',
-                  padding: 10,
-                  borderRadius: 12,
-                  display: 'grid',
-                  placeItems: 'center',
-                }}
-              >
-                <QrCode size={110} color="#020617" />
-              </div>
-
-              <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: '0 0 2px' }}>
-                {showGatePassModal.teamA} vs {showGatePassModal.teamB || 'Practice'}
-              </h3>
-              <span style={{ fontSize: 12, color: '#00e676', fontWeight: 800 }}>
-                {venues.find((v) => v.id === showGatePassModal.pitchId)?.name || 'Main Stadium Oval'}
-              </span>
-
-              <div
-                style={{
-                  marginTop: 12,
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  textAlign: 'left',
-                  fontSize: 11,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 4,
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Time Slot:</span>
-                  <strong style={{ color: '#f8fafc' }}>{showGatePassModal.time}</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Booked By:</span>
-                  <strong style={{ color: '#f8fafc' }}>{showGatePassModal.customerName} ({showGatePassModal.customerPhone})</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Tariff Paid:</span>
-                  <strong style={{ color: '#00e676' }}>₹{showGatePassModal.price?.toLocaleString()} ({showGatePassModal.paymentMode})</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Security Check:</span>
-                  <strong style={{ color: '#38bdf8' }}>Gate 1 Main Turnstile Access</strong>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    window.print()
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    borderRadius: 8,
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#f8fafc',
-                    fontWeight: 800,
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                  }}
-                >
-                  <Printer size={15} /> Print Pass
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard?.writeText(
-                      `*STADIUM GATE PASS*\nMatch: ${showGatePassModal.teamA} vs ${showGatePassModal.teamB}\nTime: ${showGatePassModal.time}\nPitch: Main Stadium Oval\nPass ID: GP-${Date.now().toString().slice(-6)}`
-                    )
-                    triggerToast('Gate pass link copied to clipboard!')
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    borderRadius: 8,
-                    background: '#00e676',
-                    border: 'none',
-                    color: '#020617',
-                    fontWeight: 900,
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                  }}
-                >
-                  <Share2 size={15} /> Share with Captain
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 3: ADD NEW STAFF
-        ========================================================================= */}
-        {showAddStaffModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 440,
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(255, 200, 61, 0.4)',
-                padding: 20,
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                  👷 Add Staff Member
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowAddStaffModal(false)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleCreateStaff} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Full Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Senthil Nathan"
-                    value={staffForm.name}
-                    onChange={(e) => setStaffForm({ ...staffForm, name: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Role</label>
-                    <select
-                      value={staffForm.role}
-                      onChange={(e) => setStaffForm({ ...staffForm, role: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="Assistant Pitch Curator">Assistant Curator</option>
-                      <option value="Floodlight Electrician">Electrician / Tech</option>
-                      <option value="Gate Security Marshal">Gate Security</option>
-                      <option value="Turf Watering Crew">Watering & Net Crew</option>
-                      <option value="Pavilion Housekeeper">Housekeeping</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Mobile Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="9876543210"
-                      value={staffForm.phone}
-                      onChange={(e) => setStaffForm({ ...staffForm, phone: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Shift</label>
-                    <select
-                      value={staffForm.shift}
-                      onChange={(e) => setStaffForm({ ...staffForm, shift: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="Morning (05:30 AM - 02:00 PM)">Morning Shift</option>
-                      <option value="Full Day (07:00 AM - 05:00 PM)">Full Day Shift</option>
-                      <option value="Evening (03:00 PM - 11:30 PM)">Evening Shift</option>
-                      <option value="Night (07:00 PM - 07:00 AM)">Night Shift</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Monthly Pay (₹)</label>
-                    <input
-                      type="number"
-                      required
-                      value={staffForm.salary}
-                      onChange={(e) => setStaffForm({ ...staffForm, salary: Number(e.target.value) })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#ffc83d',
-                        fontWeight: 900,
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  style={{
-                    marginTop: 10,
-                    padding: '12px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: '#ffc83d',
-                    color: '#020617',
-                    fontWeight: 900,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                  }}
-                >
-                  ✓ Add Staff to Roster
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 4: RECORD NEW EXPENSE
-        ========================================================================= */}
-        {showAddExpenseModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 440,
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(255, 59, 80, 0.4)',
-                padding: 20,
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                  💸 Record Operational Expense
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowAddExpenseModal(false)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleCreateExpense} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Expense Category</label>
-                  <select
-                    value={expenseForm.category}
-                    onChange={(e) => setExpenseForm({ ...expenseForm, category: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  >
-                    <option value="Pitch Maintenance">Pitch Red Soil & Grass Maintenance</option>
-                    <option value="Electricity & Utilities">Floodlight & Utility Power Bill</option>
-                    <option value="Diesel & Machinery">Roller Diesel Fuel & Machine Service</option>
-                    <option value="Equipment Repair">Stump / Net / Sight Screen Repair</option>
-                    <option value="Staff Payroll">Staff Salary & Contractor Wage</option>
-                    <option value="Water Supply">Water Tanker & Irrigation Supply</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Description / Particulars *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 50 Litres Diesel for Pitch Heavy Roller"
-                    value={expenseForm.desc}
-                    onChange={(e) => setExpenseForm({ ...expenseForm, desc: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: 8,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
-                      fontSize: 13,
-                      marginTop: 4,
-                    }}
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Amount (₹) *</label>
-                    <input
-                      type="number"
-                      required
-                      placeholder="5000"
-                      value={expenseForm.amount}
-                      onChange={(e) => setExpenseForm({ ...expenseForm, amount: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid #ff3b50',
-                        color: '#ff3b50',
-                        fontWeight: 900,
-                        fontSize: 14,
-                        marginTop: 4,
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>Payment Mode</label>
-                    <select
-                      value={expenseForm.mode}
-                      onChange={(e) => setExpenseForm({ ...expenseForm, mode: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: 8,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#f8fafc',
-                        fontSize: 13,
-                        marginTop: 4,
-                      }}
-                    >
-                      <option value="UPI / Online">UPI / QR Transfer</option>
-                      <option value="Bank NEFT">Bank NEFT</option>
-                      <option value="Cash / Petty Cash">Cash / Petty Cash</option>
-                      <option value="Cheque">Bank Cheque</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  style={{
-                    marginTop: 10,
-                    padding: '12px',
-                    borderRadius: 10,
-                    border: 'none',
-                    background: '#ff3b50',
-                    color: '#fff',
-                    fontWeight: 900,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                  }}
-                >
-                  ✓ Deduct & Save in Accounts Ledger
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* =========================================================================
-            MODAL 5: STATEMENT DOWNLOAD / AUDIT PREVIEW
-        ========================================================================= */}
-        {showStatementModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.85)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 16,
-            }}
-          >
-            <div
-              style={{
-                width: '100%',
-                maxWidth: 460,
-                maxHeight: '90vh',
-                overflowY: 'auto',
-                background: '#0b1329',
-                borderRadius: 16,
-                border: '1px solid rgba(0, 176, 255, 0.4)',
-                padding: 20,
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#f8fafc', margin: 0 }}>
-                  📄 Monthly Financial Statement
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowStatementModal(false)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div
-                style={{
-                  padding: '14px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  borderRadius: 12,
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  fontSize: 12,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 8,
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Period:</span>
-                  <strong style={{ color: '#f8fafc' }}>01 Oct 2026 – 04 Nov 2026</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Facility:</span>
-                  <strong style={{ color: '#f8fafc' }}>SH Sports Stadium Complex (4 Pitches)</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Gross Inflow:</span>
-                  <strong style={{ color: '#00e676' }}>+₹{totalInflow.toLocaleString()}</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--muted)' }}>Total Outflow:</span>
-                  <strong style={{ color: '#ff3b50' }}>-₹{totalOutflow.toLocaleString()}</strong>
-                </div>
-                <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                  <span style={{ color: '#f8fafc', fontWeight: 800 }}>Net Operational Profit:</span>
-                  <strong style={{ color: '#00e676' }}>+₹{netProfit.toLocaleString()}</strong>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    window.print()
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    borderRadius: 8,
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#f8fafc',
-                    fontWeight: 800,
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                  }}
-                >
-                  <Printer size={15} /> Print Statement
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    triggerToast('Statement downloaded as PDF successfully!')
-                    setShowStatementModal(false)
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    borderRadius: 8,
-                    background: '#00b0ff',
-                    border: 'none',
-                    color: '#020617',
-                    fontWeight: 900,
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                  }}
-                >
-                  <Download size={15} /> Download PDF
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </Screen>
   )
