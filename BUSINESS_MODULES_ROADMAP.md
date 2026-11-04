@@ -12,7 +12,7 @@
 | **1** | **Ground & Stadium Owner** | `9999999999` | Pitch Slots & Booking, Staff Attendance & Payroll, Accounts P&L | ✅ **Completed & Deployed** |
 | **2** | **Sports Academy & Institute** | `8888888888` | Student Batches, Attendance, Fee Tracking & Reminders, Training Curriculum | ✅ **Completed & Deployed** |
 | **3** | **Sports Equipment Seller** | `7777777777` | Catalog Management, Order Queue & Fulfillment, Escrow Payouts | ✅ **Completed & Deployed** |
-| **4** | **Independent Coach & Trainer**| `6666666666` | Trainee Profiles, 1-on-1 Sessions, Video Drills, Coaching Income | ⚪ Pending Real Ops Portal |
+| **4** | **Independent Coach & Trainer**| `6666666666` | Trainee Profiles, 1-on-1 Sessions, Video Drills, Coaching Income | 🏗️ **In Progress (Active Build)** |
 | **5** | **Live Streamer & Broadcaster**| `5555555555` | RTMP Ingest & Stream Keys, Live Score Overlays, Instant Clips, Earnings | ⚪ Pending Real Ops Portal |
 | **6** | **Tournament Sponsor & Brand** | `4444444444` | Ad Campaigns, Real-Time ROI Analytics, Creative Assets, Ad Wallet | ⚪ Pending Real Ops Portal |
 

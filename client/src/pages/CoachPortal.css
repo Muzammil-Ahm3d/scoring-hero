@@ -1,0 +1,312 @@
+/* =========================================================================
+   COACH & TRAINER OPERATIONS PORTAL STYLES (MOBILE-FIRST)
+   ========================================================================= */
+
+.coach-portal-container {
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 12px 14px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* ── Top Header Bar ── */
+.coach-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 8px;
+}
+
+.coach-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Primary 4-Portal Tab Bar ── */
+.coach-tab-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  background: rgba(15, 23, 42, 0.85);
+  padding: 5px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.coach-tab-btn {
+  padding: 8px 3px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 800;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.coach-tab-btn.is-active {
+  background: linear-gradient(135deg, #00e676, #00b0ff);
+  color: #020617;
+  box-shadow: 0 4px 12px rgba(0, 230, 118, 0.25);
+}
+
+.coach-tab-btn:not(.is-active) {
+  background: transparent;
+  color: #94a3b8;
+}
+
+.coach-tab-btn:not(.is-active):hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #f8fafc;
+}
+
+@media (min-width: 641px) {
+  .coach-tab-btn {
+    flex-direction: row;
+    padding: 10px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+}
+
+/* ── Section Cards ── */
+.coach-card {
+  background: rgba(15, 23, 42, 0.75);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  transition: border-color 0.15s ease;
+}
+
+.coach-card:hover {
+  border-color: rgba(0, 230, 118, 0.3);
+}
+
+.coach-card-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+/* ── Horizontal Scrollable Filter Row ── */
+.coach-scroll-filters {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  padding-bottom: 2px;
+  box-sizing: border-box;
+}
+
+.coach-scroll-filters::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Trainee Cards Grid ── */
+.coach-trainee-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 641px) {
+  .coach-trainee-grid {
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  }
+}
+
+.coach-trainee-card {
+  background: rgba(15, 23, 42, 0.75);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.coach-trainee-card:hover {
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+/* ── Biomechanics Metrics Mini-Bar ── */
+.coach-metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: center;
+}
+
+.coach-metric-item span {
+  font-size: 9px;
+  color: var(--muted);
+  display: block;
+  text-transform: uppercase;
+}
+
+.coach-metric-item strong {
+  font-size: 12px;
+  color: #f8fafc;
+  display: block;
+  margin-top: 1px;
+}
+
+/* ── Sessions Grid ── */
+.coach-session-card {
+  background: rgba(15, 23, 42, 0.75);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.coach-session-card:hover {
+  border-color: rgba(0, 230, 118, 0.3);
+}
+
+/* ── Drills Library Grid ── */
+.coach-drill-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 641px) {
+  .coach-drill-grid {
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  }
+}
+
+.coach-drill-card {
+  background: rgba(15, 23, 42, 0.75);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.coach-drill-card:hover {
+  border-color: rgba(255, 200, 61, 0.35);
+}
+
+.coach-drill-video-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  background: #090d16;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coach-drill-video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.coach-drill-play-overlay {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 230, 118, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #020617;
+  box-shadow: 0 0 16px rgba(0, 230, 118, 0.6);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.coach-drill-play-overlay:hover {
+  transform: scale(1.12);
+}
+
+/* ── Earnings KPI Grid ── */
+.coach-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 500px) {
+  .coach-kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  }
+}
+
+/* ── Printable Coaching Receipt ── */
+.coach-receipt-paper {
+  background: #090d16;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 16px;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
