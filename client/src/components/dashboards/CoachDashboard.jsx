@@ -116,28 +116,68 @@ export default function CoachDashboard({ user }) {
       </section>
 
       {/* 22-Player Intra-Squad Practice Match & Scorer Card */}
-      <section className="panel" style={{ padding: '14px 16px', background: 'linear-gradient(135deg, rgba(0,230,118,0.08), rgba(56,189,248,0.04))', border: '1.5px solid rgba(0,230,118,0.3)', borderRadius: 12, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <Trophy size={17} color="#00e676" />
-              <h3 style={{ margin: 0, fontSize: 15, color: '#f8fafc', fontWeight: 800 }}>
-                22-Player Intra-Squad Trial Match
-              </h3>
-            </div>
-            <p style={{ margin: 0, fontSize: 12, color: '#94a3b8', lineHeight: 1.4 }}>
-              Select 22 trainees (Team A vs Team B), conduct coin toss, and score live ball-by-ball with shot analysis & commentary.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="btn btn--primary"
-            style={{ padding: '10px 16px', whiteSpace: 'nowrap', fontWeight: 800, fontSize: 13, flexShrink: 0 }}
-            onClick={() => navigate('/app/scorer')}
+      <section
+        className="panel"
+        style={{
+          padding: '14px 16px',
+          background: 'linear-gradient(135deg, rgba(0,230,118,0.06), rgba(56,189,248,0.02))',
+          border: '1.5px solid rgba(0,230,118,0.25)',
+          borderRadius: 12,
+          marginBottom: 14,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+          <div
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              background: 'rgba(0, 230, 118, 0.15)',
+              border: '1px solid rgba(0, 230, 118, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
           >
-            🏏 Start Match →
-          </button>
+            <Trophy size={18} color="#00e676" />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3 style={{ margin: 0, fontSize: 15, color: '#f8fafc', fontWeight: 800 }}>
+              22-Player Intra-Squad Match
+            </h3>
+            <span style={{ fontSize: 11, color: '#00e676', fontWeight: 700, letterSpacing: '0.4px' }}>
+              SELECTION & TRIAL SCORER
+            </span>
+          </div>
         </div>
+
+        <p style={{ margin: '0 0 12px', fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>
+          Draft 22 trainees (Team A vs Team B), conduct the toss, and score live ball-by-ball with shot analysis & commentary.
+        </p>
+
+        <button
+          type="button"
+          onClick={() => navigate('/app/scorer')}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            padding: '11px',
+            background: 'linear-gradient(135deg, #00e676, #00b248)',
+            border: 'none',
+            borderRadius: 10,
+            color: '#0a1628',
+            fontSize: 14,
+            fontWeight: 800,
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0, 230, 118, 0.25)',
+          }}
+        >
+          🏏 Start 22-Player Match →
+        </button>
       </section>
 
       {/* Coach Operations Grid */}
