@@ -1,0 +1,233 @@
+/* =========================================================================
+   SELLER & MERCHANT PORTAL MOBILE-FIRST RESPONSIVE STYLES
+   ========================================================================= */
+
+.seller-portal-container {
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 12px 14px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* ── Top Header Bar ── */
+.seller-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 8px;
+}
+
+.seller-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Primary 3-Portal Tab Bar ── */
+.seller-tab-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  padding: 5px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.seller-tab-btn {
+  padding: 8px 4px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 800;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.seller-tab-btn.is-active {
+  background: linear-gradient(135deg, #00e676, #00b0ff);
+  color: #020617;
+}
+
+.seller-tab-btn:not(.is-active) {
+  background: transparent;
+  color: #94a3b8;
+}
+
+@media (min-width: 641px) {
+  .seller-tab-btn {
+    flex-direction: row;
+    padding: 10px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+}
+
+/* ── Product Catalog Grid ── */
+.seller-product-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 641px) {
+  .seller-product-grid {
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  }
+}
+
+.seller-product-card {
+  background: rgba(15, 23, 42, 0.75);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ── Horizontal Scrollable Filter Row ── */
+.seller-scroll-filters {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  padding-bottom: 2px;
+  box-sizing: border-box;
+}
+
+.seller-scroll-filters::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Orders Queue Cards ── */
+.seller-order-card {
+  background: rgba(15, 23, 42, 0.75);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.seller-order-info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@media (min-width: 641px) {
+  .seller-order-info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Order Action Controls ── */
+.seller-order-actions-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.seller-order-btn-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.seller-order-main-cta {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: none;
+  color: #020617;
+  font-weight: 900;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+/* ── Escrow Payouts KPI Grid ── */
+.seller-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 500px) {
+  .seller-kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+/* ── Invoice Paper ── */
+.seller-invoice-paper {
+  background: #090d16;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 16px;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.seller-invoice-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}

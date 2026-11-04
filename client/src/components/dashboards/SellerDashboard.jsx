@@ -116,110 +116,115 @@ export default function SellerDashboard({ user }) {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 10,
+          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+          gap: 6,
+          width: '100%',
+          boxSizing: 'border-box',
         }}
       >
         <button
           type="button"
           onClick={() => navigate('/app/seller?tab=inventory')}
           style={{
-            padding: '16px 12px',
-            borderRadius: 14,
+            padding: '12px 6px',
+            borderRadius: 12,
             background: 'linear-gradient(135deg, rgba(0, 230, 118, 0.12), rgba(0, 176, 255, 0.06))',
             border: '1.5px solid rgba(0, 230, 118, 0.35)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 8,
+            gap: 6,
             cursor: 'pointer',
             textAlign: 'center',
-            transition: 'all 0.2s ease',
+            minWidth: 0,
+            boxSizing: 'border-box',
           }}
         >
           <div
             style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
+              width: 38,
+              height: 38,
+              borderRadius: 10,
               background: 'rgba(0, 230, 118, 0.2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Boxes size={22} color="#00e676" />
+            <Boxes size={18} color="#00e676" />
           </div>
-          <strong style={{ fontSize: 13, color: '#f8fafc' }}>Stock & Catalog</strong>
-          <span style={{ fontSize: 10, color: 'var(--muted)' }}>38 SKUs • Restock</span>
+          <strong style={{ fontSize: 11, color: '#f8fafc', whiteSpace: 'nowrap' }}>Catalog</strong>
+          <span style={{ fontSize: 9, color: 'var(--muted)', whiteSpace: 'nowrap' }}>38 SKUs</span>
         </button>
 
         <button
           type="button"
           onClick={() => navigate('/app/seller?tab=orders')}
           style={{
-            padding: '16px 12px',
-            borderRadius: 14,
+            padding: '12px 6px',
+            borderRadius: 12,
             background: 'linear-gradient(135deg, rgba(0, 176, 255, 0.12), rgba(147, 51, 234, 0.06))',
             border: '1.5px solid rgba(0, 176, 255, 0.35)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 8,
+            gap: 6,
             cursor: 'pointer',
             textAlign: 'center',
-            transition: 'all 0.2s ease',
+            minWidth: 0,
+            boxSizing: 'border-box',
           }}
         >
           <div
             style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
+              width: 38,
+              height: 38,
+              borderRadius: 10,
               background: 'rgba(0, 176, 255, 0.2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Truck size={22} color="#38bdf8" />
+            <Truck size={18} color="#38bdf8" />
           </div>
-          <strong style={{ fontSize: 13, color: '#f8fafc' }}>Orders & Queue</strong>
-          <span style={{ fontSize: 10, color: '#ffc83d' }}>14 Active • BlueDart Air</span>
+          <strong style={{ fontSize: 11, color: '#f8fafc', whiteSpace: 'nowrap' }}>Orders (14)</strong>
+          <span style={{ fontSize: 9, color: '#ffc83d', whiteSpace: 'nowrap' }}>Queue</span>
         </button>
 
         <button
           type="button"
           onClick={() => navigate('/app/seller?tab=payouts')}
           style={{
-            padding: '16px 12px',
-            borderRadius: 14,
+            padding: '12px 6px',
+            borderRadius: 12,
             background: 'linear-gradient(135deg, rgba(255, 200, 61, 0.12), rgba(0, 230, 118, 0.06))',
             border: '1.5px solid rgba(255, 200, 61, 0.35)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 8,
+            gap: 6,
             cursor: 'pointer',
             textAlign: 'center',
-            transition: 'all 0.2s ease',
+            minWidth: 0,
+            boxSizing: 'border-box',
           }}
         >
           <div
             style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
+              width: 38,
+              height: 38,
+              borderRadius: 10,
               background: 'rgba(255, 200, 61, 0.2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <DollarSign size={22} color="#ffc83d" />
+            <DollarSign size={18} color="#ffc83d" />
           </div>
-          <strong style={{ fontSize: 13, color: '#f8fafc' }}>Escrow Payouts</strong>
-          <span style={{ fontSize: 10, color: '#00e676' }}>₹1.82L Ready</span>
+          <strong style={{ fontSize: 11, color: '#f8fafc', whiteSpace: 'nowrap' }}>Payouts</strong>
+          <span style={{ fontSize: 9, color: '#00e676', whiteSpace: 'nowrap' }}>₹1.82L Ready</span>
         </button>
       </div>
 
