@@ -18,6 +18,7 @@ export default function Home() {
   const { user } = useAuth()
 
   const currentRole = user?.role || 'player'
+  const isBusinessVendor = ['ground', 'academy', 'seller', 'coach', 'streamer', 'sponsor', 'admin', 'staff', 'organizer'].includes(currentRole)
 
   // Map active role to its corresponding dedicated dashboard
   function renderRoleDashboard() {
@@ -53,8 +54,8 @@ export default function Home() {
   return (
     <Screen branded padded={false}>
       <div className="home-dashboard-container">
-        {/* Modular Hero Banner Carousel showcasing latest world updates, news, and gear offers */}
-        <HeroBannerCarousel />
+        {/* Only show consumer / fan hero carousel for players and fans, NOT for business owners! */}
+        {!isBusinessVendor && <HeroBannerCarousel />}
 
         {/* Dedicated Role Dashboard */}
         {renderRoleDashboard()}

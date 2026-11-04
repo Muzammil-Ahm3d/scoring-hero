@@ -5,10 +5,15 @@ import {
   PlaySquare,
   Newspaper,
   ShoppingBag,
+  Calendar,
+  Users,
+  DollarSign,
+  Building,
 } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
-// Exactly 5 fixed bottom navigation icons per requirements: Home, Matches, Videos, News, Shop
-const NAV_ITEMS = [
+// Player & Fan Bottom Navigation
+const PLAYER_NAV_ITEMS = [
   {
     to: '/app',
     label: 'Home',
@@ -41,9 +46,47 @@ const NAV_ITEMS = [
   },
 ]
 
+// Ground & Stadium Owner Dedicated Navigation (Feature 13 & 14 from Blueprint)
+const GROUND_NAV_ITEMS = [
+  {
+    to: '/app',
+    label: 'Home',
+    icon: Building,
+    end: true,
+  },
+  {
+    to: '/app/grounds?mode=slots&sys=2',
+    label: 'Slots',
+    icon: Calendar,
+    aliases: ['/app/grounds', '/app/stadium'],
+  },
+  {
+    to: '/app/grounds?mode=stadium&sys=2',
+    label: 'Staff Ops',
+    icon: Users,
+    aliases: ['/app/grounds?mode=stadium&sys=3', '/app/grounds?mode=stadium&sys=4'],
+  },
+  {
+    to: '/app/grounds?mode=stadium&sys=7',
+    label: 'Accounts',
+    icon: DollarSign,
+    aliases: ['/app/grounds?mode=stadium&sys=5', '/app/grounds?mode=stadium&sys=6', '/app/grounds?mode=stadium&sys=10'],
+  },
+  {
+    to: '/app/marketplace',
+    label: 'Gear Store',
+    icon: ShoppingBag,
+    aliases: ['/app/shop', '/app/store', '/app/market'],
+  },
+]
+
 export default function BottomNav() {
+  const { user } = useAuth()
   const location = useLocation()
   const currentPath = location.pathname
+
+  const isGroundOwner = user?.role === 'ground'
+  const navItems = isGroundOwner ? GROUND_NAV_ITEMS : PLAYER_NAV_ITEMS
 
   // Hide the bottom navigation bar on camera/capture pages
   if (
@@ -54,13 +97,17 @@ export default function BottomNav() {
   }
 
   function checkIsActive(item) {
+    const [itemPath, itemQuery] = item.to.split('?')
     if (item.end) {
       return currentPath === '/app' || currentPath === '/app/'
     }
-    if (currentPath.startsWith(item.to)) {
+    if (itemQuery) {
+      return currentPath === itemPath && location.search.includes(itemQuery)
+    }
+    if (currentPath.startsWith(itemPath)) {
       return true
     }
-    if (item.aliases && item.aliases.some((alias) => currentPath.startsWith(alias))) {
+    if (item.aliases && item.aliases.some((alias) => currentPath.startsWith(alias.split('?')[0]))) {
       return true
     }
     return false
@@ -68,7 +115,7 @@ export default function BottomNav() {
 
   return (
     <nav className="tabbar tabbar--fixed" aria-label="Main Navigation">
-      {NAV_ITEMS.map((item) => {
+      {navItems.map((item) => {
         const active = checkIsActive(item)
         const IconComponent = item.icon
 

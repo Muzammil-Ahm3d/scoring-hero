@@ -29,16 +29,18 @@ import {
   Printer,
   Share2,
   Sparkles,
+  ExternalLink,
+  ChevronRight,
 } from 'lucide-react'
 
 export default function GroundDashboard({ user }) {
   const navigate = useNavigate()
   const details = user?.roleDetails || {}
 
-  // Active navigation sub-tab
+  // Active sub-tab inside the dashboard
   const [activeTab, setActiveTab] = useState('slots') // 'slots' | 'finance' | 'staff' | 'equipment' | 'leases'
 
-  // Selected Pitch filter
+  // Pitch filter
   const [selectedPitch, setSelectedPitch] = useState('all') // 'all' | 'p1' | 'p2' | 'p3'
 
   // Calendar Day Picker
@@ -51,7 +53,6 @@ export default function GroundDashboard({ user }) {
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [showGatePassModal, setShowGatePassModal] = useState(null)
   const [showStatementModal, setShowStatementModal] = useState(false)
-  const [showInspectionModal, setShowInspectionModal] = useState(false)
 
   // Booking Form State for quick walk-in counter booking
   const [newBooking, setNewBooking] = useState({
@@ -195,7 +196,7 @@ export default function GroundDashboard({ user }) {
   ])
 
   // Tournament Leases (Feature 14.8 & 15.3)
-  const [tournamentLeases, setTournamentLeases] = useState([
+  const [tournamentLeases] = useState([
     {
       id: 'lse-1',
       name: 'Chennai Premier Youth Cup (U19)',
@@ -217,7 +218,7 @@ export default function GroundDashboard({ user }) {
   ])
 
   // Boundary LED Billboards (Feature 15.10 & 18.5)
-  const [billboards, setBillboards] = useState([
+  const [billboards] = useState([
     { id: 'bb1', position: 'Perimeter Board 1 (Mid-Wicket Pavilion)', advertiser: 'Velocity Sports Nutrition', rate: '₹16,000 / mo', status: 'Active' },
     { id: 'bb2', position: 'Perimeter Board 2 (Cover Boundary)', advertiser: 'Velocity Sports Nutrition', rate: '₹16,000 / mo', status: 'Active' },
     { id: 'bb3', position: 'Perimeter Board 3 (Sight Screen Right)', advertiser: 'Apex Willow & Pro Gear Co.', rate: '₹16,000 / mo', status: 'Active' },
@@ -277,7 +278,7 @@ export default function GroundDashboard({ user }) {
   })
 
   return (
-    <div className="sh-dashboard-layout" style={{ maxWidth: 840, margin: '0 auto', paddingBottom: 60 }}>
+    <div className="sh-dashboard-layout" style={{ maxWidth: 840, margin: '0 auto', padding: '10px 14px 80px' }}>
       {/* Toast Notification */}
       {toastMsg && (
         <div
@@ -286,15 +287,15 @@ export default function GroundDashboard({ user }) {
             top: 20,
             left: '50%',
             transform: 'translateX(-50%)',
-            zIndex: 9999,
+            zIndex: 99999,
             background: 'linear-gradient(135deg, #0f172a, #1e293b)',
             color: '#00e676',
             border: '1px solid #00e676',
             boxShadow: '0 8px 30px rgba(0, 230, 118, 0.25)',
-            padding: '10px 18px',
+            padding: '10px 20px',
             borderRadius: 12,
             fontSize: 13,
-            fontWeight: 700,
+            fontWeight: 800,
             display: 'flex',
             alignItems: 'center',
             gap: 8,
@@ -305,40 +306,37 @@ export default function GroundDashboard({ user }) {
         </div>
       )}
 
-      {/* 1. STADIUM MASTER HERO CARD (Feature 13.1 & 14.1) */}
+      {/* 1. MASTER VENUE EXECUTIVE COMMAND CARD (Redesigned & Clean) */}
       <section
-        className="sh-dash-hero-card"
         style={{
-          background: 'radial-gradient(ellipse at top right, rgba(0, 176, 255, 0.15), rgba(15, 23, 42, 0.95)), #090e17',
-          border: '1px solid rgba(0, 176, 255, 0.3)',
-          borderRadius: 16,
-          padding: '20px 22px',
-          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.6)',
+          background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 29, 0.98) 100%)',
+          border: '1px solid rgba(0, 176, 255, 0.25)',
+          borderRadius: 18,
+          padding: '18px 20px',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.55)',
           position: 'relative',
-          overflow: 'hidden',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14 }}>
-          {/* Stadium Details */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+        {/* Top Venue Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div
               style={{
-                width: 60,
-                height: 60,
-                borderRadius: 14,
-                background: 'linear-gradient(135deg, rgba(0, 176, 255, 0.25), rgba(0, 230, 118, 0.15))',
-                border: '1px solid #00b0ff',
+                width: 48,
+                height: 48,
+                borderRadius: 12,
+                background: 'linear-gradient(135deg, rgba(0, 176, 255, 0.2), rgba(0, 230, 118, 0.15))',
+                border: '1px solid rgba(0, 176, 255, 0.4)',
                 display: 'grid',
                 placeItems: 'center',
-                boxShadow: '0 0 20px rgba(0, 176, 255, 0.3)',
               }}
             >
-              <Building size={32} color="#00b0ff" />
+              <Building size={24} color="#00b0ff" />
             </div>
 
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: 20, fontWeight: 900, color: '#f8fafc', margin: 0, letterSpacing: -0.5 }}>
+                <h1 style={{ fontSize: 18, fontWeight: 900, color: '#f8fafc', margin: 0, letterSpacing: -0.4 }}>
                   {details.venueName || 'Marina International Cricket Arena & Turfs'}
                 </h1>
                 <span
@@ -350,12 +348,9 @@ export default function GroundDashboard({ user }) {
                     borderRadius: 999,
                     fontSize: 10,
                     fontWeight: 800,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
                   }}
                 >
-                  <ShieldCheck size={12} /> VENUE VERIFIED
+                  VENUE VERIFIED
                 </span>
                 <span
                   style={{
@@ -372,51 +367,62 @@ export default function GroundDashboard({ user }) {
                 </span>
               </div>
 
-              <p style={{ margin: '4px 0 0', fontSize: 13, color: '#94a3b8' }}>
-                Stadium Director: <strong style={{ color: '#f8fafc' }}>{user?.fullName || 'Dev Anand'}</strong> • {details.city || 'Chennai'}
-              </p>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6, fontSize: 11, color: '#64748b' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4, fontSize: 12, color: '#94a3b8' }}>
+                <span>Stadium Director: <strong style={{ color: '#f1f5f9' }}>{user?.fullName || 'Dev Anand'}</strong></span>
+                <span>•</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#38bdf8' }}>
-                  <MapPin size={13} /> Marina Beach Road, Chennai 600005
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#ffd600' }}>
-                  <Sun size={13} /> 800-Lux Night Floodlights Active
+                  <MapPin size={12} /> Marina Beach Road, Chennai 600005
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Net Month Revenue Callout */}
-          <div
-            style={{
-              padding: '10px 16px',
-              borderRadius: 12,
-              background: 'rgba(0, 230, 118, 0.08)',
-              border: '1px solid rgba(0, 230, 118, 0.3)',
-              textAlign: 'right',
-            }}
-          >
-            <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--muted)', letterSpacing: 0.8, textTransform: 'uppercase' }}>
-              Monthly Net P&L (Feature 14.7)
+          {/* Quick Stadium Status Badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span
+              style={{
+                background: 'rgba(255, 214, 0, 0.12)',
+                color: '#ffd600',
+                border: '1px solid rgba(255, 214, 0, 0.3)',
+                padding: '4px 10px',
+                borderRadius: 999,
+                fontSize: 11,
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+              }}
+            >
+              <Sun size={12} /> 800-Lux Lights Active
             </span>
-            <div style={{ fontSize: 22, fontWeight: 900, color: '#00e676', lineHeight: 1.1, marginTop: 2 }}>
-              ₹ 8,42,600
-            </div>
-            <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 600 }}>
-              +78.3% Margin • Audited
+            <span
+              style={{
+                background: 'rgba(0, 230, 118, 0.12)',
+                color: '#00e676',
+                border: '1px solid rgba(0, 230, 118, 0.3)',
+                padding: '4px 10px',
+                borderRadius: 999,
+                fontSize: 11,
+                fontWeight: 800,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+              }}
+            >
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00e676', display: 'inline-block' }} />
+              MATCH READY
             </span>
           </div>
         </div>
 
-        {/* Multi-Pitch Status Bar (Feature 14.1) */}
+        {/* Integrated Financial Health Bar (Blueprint Feature 14.7) */}
         <div
           style={{
-            marginTop: 16,
+            marginTop: 14,
             padding: '10px 14px',
-            background: 'rgba(15, 23, 42, 0.7)',
+            background: 'rgba(255, 255, 255, 0.02)',
             borderRadius: 12,
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -424,173 +430,186 @@ export default function GroundDashboard({ user }) {
             gap: 10,
           }}
         >
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8' }}>Venues in Complex:</span>
-            <span className="pill" style={{ background: 'rgba(0, 176, 255, 0.15)', color: '#00b0ff', fontSize: 11 }}>
-              Pitch 1: Main Stadium Oval (Red Soil • Ready)
-            </span>
-            <span className="pill" style={{ background: 'rgba(255, 200, 61, 0.15)', color: '#ffc83d', fontSize: 11 }}>
-              Pitch 2: Black Soil Turf
-            </span>
-            <span className="pill" style={{ background: 'rgba(0, 230, 118, 0.15)', color: '#00e676', fontSize: 11 }}>
-              Pitch 3: Box Astroturf Net
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <div>
+              <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>GROSS INFLOW</span>
+              <strong style={{ fontSize: 14, color: '#f8fafc', display: 'block' }}>₹ 10,75,000</strong>
+            </div>
+            <div style={{ width: 1, height: 26, background: 'rgba(255, 255, 255, 0.1)' }} />
+            <div>
+              <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>OPERATING COST</span>
+              <strong style={{ fontSize: 14, color: '#f87171', display: 'block' }}>₹ 2,32,400</strong>
+            </div>
+            <div style={{ width: 1, height: 26, background: 'rgba(255, 255, 255, 0.1)' }} />
+            <div>
+              <span style={{ fontSize: 10, color: '#00e676', fontWeight: 800, textTransform: 'uppercase' }}>NET AUDITED PROFIT</span>
+              <strong style={{ fontSize: 15, color: '#00e676', display: 'block' }}>₹ 8,42,600 (+78.3%)</strong>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#00e676', fontWeight: 700 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00e676', display: 'inline-block', boxShadow: '0 0 8px #00e676' }} />
-            LIVE STATUS: HEALTHY
-          </div>
+          <button
+            type="button"
+            style={{
+              padding: '6px 12px',
+              borderRadius: 8,
+              background: 'rgba(0, 230, 118, 0.12)',
+              border: '1px solid rgba(0, 230, 118, 0.3)',
+              color: '#00e676',
+              fontSize: 11,
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 5,
+            }}
+            onClick={() => setShowStatementModal(true)}
+          >
+            <Download size={13} /> Statement
+          </button>
         </div>
 
-        {/* 4 KPI Telemetry Cards (Feature 13.1 & 14.9) */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginTop: 14 }}>
-          <div style={{ padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+        {/* 4 KPI Telemetry Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginTop: 12 }}>
+          <div style={{ padding: '8px 10px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.06)', textAlign: 'center' }}>
             <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>GROUNDS</span>
-            <strong style={{ fontSize: 18, color: '#00b0ff', display: 'block', marginTop: 2 }}>3 Active</strong>
-            <small style={{ fontSize: 10, color: '#64748b' }}>Multi-Venue Complex</small>
+            <strong style={{ fontSize: 16, color: '#00b0ff', display: 'block', marginTop: 1 }}>3 Active</strong>
+            <small style={{ fontSize: 9, color: '#64748b' }}>Multi-Venue</small>
           </div>
 
-          <div style={{ padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+          <div style={{ padding: '8px 10px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.06)', textAlign: 'center' }}>
             <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>STAFF ON DUTY</span>
-            <strong style={{ fontSize: 18, color: '#00e676', display: 'block', marginTop: 2 }}>8 Present</strong>
-            <small style={{ fontSize: 10, color: '#64748b' }}>Curator & Tech</small>
+            <strong style={{ fontSize: 16, color: '#00e676', display: 'block', marginTop: 1 }}>8 Present</strong>
+            <small style={{ fontSize: 9, color: '#64748b' }}>Curator & Tech</small>
           </div>
 
-          <div style={{ padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+          <div style={{ padding: '8px 10px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.06)', textAlign: 'center' }}>
             <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>HOURLY SLOT</span>
-            <strong style={{ fontSize: 18, color: '#ffc83d', display: 'block', marginTop: 2 }}>₹2,500</strong>
-            <small style={{ fontSize: 10, color: '#64748b' }}>Standard Tariff</small>
+            <strong style={{ fontSize: 16, color: '#ffc83d', display: 'block', marginTop: 1 }}>₹2,500</strong>
+            <small style={{ fontSize: 9, color: '#64748b' }}>Standard Tariff</small>
           </div>
 
-          <div style={{ padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+          <div style={{ padding: '8px 10px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.06)', textAlign: 'center' }}>
             <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 700, textTransform: 'uppercase' }}>UTILISATION</span>
-            <strong style={{ fontSize: 18, color: '#38bdf8', display: 'block', marginTop: 2 }}>92%</strong>
-            <small style={{ fontSize: 10, color: '#64748b' }}>High Demand</small>
+            <strong style={{ fontSize: 16, color: '#38bdf8', display: 'block', marginTop: 1 }}>92%</strong>
+            <small style={{ fontSize: 9, color: '#64748b' }}>High Demand</small>
           </div>
         </div>
       </section>
 
-      {/* 2. SUB-SYSTEM NAVIGATION TABS (Features 13 & 14 from Master Blueprint) */}
+      {/* 2. DIRECT BLUEPRINT 24-SYSTEMS LAUNCHPAD (Answers: "Where are the other features?") */}
+      <section
+        style={{
+          marginTop: 12,
+          padding: '12px 14px',
+          background: 'linear-gradient(135deg, rgba(0, 176, 255, 0.08), rgba(0, 230, 118, 0.05))',
+          borderRadius: 14,
+          border: '1px solid rgba(0, 176, 255, 0.25)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Sparkles size={16} color="#00b0ff" />
+            <strong style={{ fontSize: 12, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              Master Blueprint Systems Suite (Features 13 & 14)
+            </strong>
+          </div>
+          <span style={{ fontSize: 10, color: '#38bdf8', fontWeight: 700 }}>24 Full Systems</span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <button
+            type="button"
+            style={{
+              padding: '10px 12px',
+              borderRadius: 10,
+              background: 'rgba(0, 176, 255, 0.15)',
+              border: '1px solid rgba(0, 176, 255, 0.35)',
+              color: '#f8fafc',
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: 'pointer',
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+            onClick={() => navigate('/app/grounds?mode=stadium&sys=1')}
+          >
+            <div>
+              <div style={{ color: '#00b0ff' }}>🏟️ Multi-Venue Operations</div>
+              <small style={{ color: '#94a3b8', fontSize: 10 }}>12 Systems (Staff, Payroll, P&L)</small>
+            </div>
+            <ChevronRight size={16} color="#00b0ff" />
+          </button>
+
+          <button
+            type="button"
+            style={{
+              padding: '10px 12px',
+              borderRadius: 10,
+              background: 'rgba(0, 230, 118, 0.15)',
+              border: '1px solid rgba(0, 230, 118, 0.35)',
+              color: '#f8fafc',
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: 'pointer',
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+            onClick={() => navigate('/app/grounds?mode=slots&sys=1')}
+          >
+            <div>
+              <div style={{ color: '#00e676' }}>📅 Ground Slot Booking</div>
+              <small style={{ color: '#94a3b8', fontSize: 10 }}>12 Systems (Matrix, Pricing, Funds)</small>
+            </div>
+            <ChevronRight size={16} color="#00e676" />
+          </button>
+        </div>
+      </section>
+
+      {/* 3. PROMINENT SUB-SYSTEM NAVIGATION TABS */}
       <div
         style={{
           display: 'flex',
           gap: 6,
-          marginTop: 16,
-          marginBottom: 16,
+          marginTop: 14,
+          marginBottom: 14,
           overflowX: 'auto',
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch',
           paddingBottom: 4,
+          maxWidth: '100%',
         }}
       >
-        <button
-          type="button"
-          onClick={() => setActiveTab('slots')}
-          style={{
-            padding: '8px 14px',
-            borderRadius: 10,
-            fontSize: 12,
-            fontWeight: 800,
-            cursor: 'pointer',
-            border: activeTab === 'slots' ? '1px solid #00b0ff' : '1px solid rgba(255, 255, 255, 0.08)',
-            background: activeTab === 'slots' ? 'rgba(0, 176, 255, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-            color: activeTab === 'slots' ? '#00b0ff' : 'var(--text)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <Calendar size={15} />
-          <span>📅 Slot Booking & Match Calendar</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('finance')}
-          style={{
-            padding: '8px 14px',
-            borderRadius: 10,
-            fontSize: 12,
-            fontWeight: 800,
-            cursor: 'pointer',
-            border: activeTab === 'finance' ? '1px solid #00e676' : '1px solid rgba(255, 255, 255, 0.08)',
-            background: activeTab === 'finance' ? 'rgba(0, 230, 118, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-            color: activeTab === 'finance' ? '#00e676' : 'var(--text)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <DollarSign size={15} />
-          <span>💰 Dual Module Accounts & P&L</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('staff')}
-          style={{
-            padding: '8px 14px',
-            borderRadius: 10,
-            fontSize: 12,
-            fontWeight: 800,
-            cursor: 'pointer',
-            border: activeTab === 'staff' ? '1px solid #ffc83d' : '1px solid rgba(255, 255, 255, 0.08)',
-            background: activeTab === 'staff' ? 'rgba(255, 200, 61, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-            color: activeTab === 'staff' ? '#ffc83d' : 'var(--text)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <Users size={15} />
-          <span>👷 Central Staff & Shift Payroll</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('equipment')}
-          style={{
-            padding: '8px 14px',
-            borderRadius: 10,
-            fontSize: 12,
-            fontWeight: 800,
-            cursor: 'pointer',
-            border: activeTab === 'equipment' ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.08)',
-            background: activeTab === 'equipment' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-            color: activeTab === 'equipment' ? '#38bdf8' : 'var(--text)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <Wrench size={15} />
-          <span>🛠️ Asset & Equipment Stock</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('leases')}
-          style={{
-            padding: '8px 14px',
-            borderRadius: 10,
-            fontSize: 12,
-            fontWeight: 800,
-            cursor: 'pointer',
-            border: activeTab === 'leases' ? '1px solid #e10613' : '1px solid rgba(255, 255, 255, 0.08)',
-            background: activeTab === 'leases' ? 'rgba(225, 6, 19, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-            color: activeTab === 'leases' ? '#e10613' : 'var(--text)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <Megaphone size={15} />
-          <span>🤝 Tournament Leases & Ads</span>
-        </button>
+        {[
+          { id: 'slots', label: '📅 Slot Booking & Matches', color: '#00b0ff' },
+          { id: 'finance', label: '💰 Dual Module Accounts', color: '#00e676' },
+          { id: 'staff', label: '👷 Staff Attendance & Payroll', color: '#ffc83d' },
+          { id: 'equipment', label: '🛠️ Equipment & Roller Stock', color: '#38bdf8' },
+          { id: 'leases', label: '🤝 Tournament Leases & Ads', color: '#f87171' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            style={{
+              padding: '8px 14px',
+              borderRadius: 10,
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              border: activeTab === tab.id ? `1.5px solid ${tab.color}` : '1px solid rgba(255, 255, 255, 0.08)',
+              background: activeTab === tab.id ? `${tab.color}22` : 'rgba(255, 255, 255, 0.03)',
+              color: activeTab === tab.id ? tab.color : 'var(--text)',
+              boxShadow: activeTab === tab.id ? `0 0 12px ${tab.color}44` : 'none',
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* =========================================================================
@@ -602,7 +621,7 @@ export default function GroundDashboard({ user }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
             <div>
               <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: '#f8fafc' }}>
-                Time Slot Booking & Match Schedule
+                Time Slot Booking & Match Schedule (Feature 13.2)
               </h2>
               <small style={{ color: 'var(--muted)', fontSize: 11 }}>
                 Real-time pitch allocation, walk-in reservations & match fixture linking
@@ -611,11 +630,15 @@ export default function GroundDashboard({ user }) {
 
             <button
               type="button"
-              className="btn btn--primary btn--sm"
               style={{
+                padding: '8px 14px',
+                borderRadius: 10,
+                border: 'none',
                 background: 'linear-gradient(135deg, #00b0ff, #00e676)',
                 color: '#020617',
-                fontWeight: 800,
+                fontWeight: 900,
+                fontSize: 12,
+                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
@@ -630,7 +653,7 @@ export default function GroundDashboard({ user }) {
           <div
             style={{
               padding: 12,
-              background: 'rgba(15, 23, 42, 0.6)',
+              background: 'rgba(15, 23, 42, 0.7)',
               borderRadius: 14,
               border: '1px solid rgba(255, 255, 255, 0.08)',
             }}
@@ -679,24 +702,35 @@ export default function GroundDashboard({ user }) {
             </div>
           </div>
 
-          {/* Pitch Filter Pills */}
-          <div style={{ display: 'flex', gap: 6 }}>
+          {/* Pitch Filter Pills (FIXED: Full wrapping & zero edge clipping!) */}
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 8,
+              width: '100%',
+              padding: '2px 0',
+            }}
+          >
             {[
               { id: 'all', label: 'All Complex Pitches' },
-              { id: 'p1', label: '🏟️ Pitch 1: Main Stadium Oval' },
+              { id: 'p1', label: '🏟️ Pitch 1: Main Stadium Oval (Red Soil)' },
               { id: 'p2', label: '🌱 Pitch 2: Black Soil Turf' },
-              { id: 'p3', label: '🥅 Pitch 3: Box Astroturf' },
+              { id: 'p3', label: '🥅 Pitch 3: Box Astroturf Net' },
             ].map((p) => (
               <button
                 key={p.id}
                 type="button"
-                className={`pill ${selectedPitch === p.id ? 'is-active' : ''}`}
                 style={{
+                  padding: '7px 14px',
+                  borderRadius: 999,
+                  border: selectedPitch === p.id ? '1.5px solid #00b0ff' : '1px solid rgba(255, 255, 255, 0.1)',
                   background: selectedPitch === p.id ? '#00b0ff' : 'rgba(255, 255, 255, 0.04)',
-                  color: selectedPitch === p.id ? '#020617' : 'var(--text)',
+                  color: selectedPitch === p.id ? '#020617' : '#cbd5e1',
                   cursor: 'pointer',
                   fontSize: 11,
-                  fontWeight: selectedPitch === p.id ? 800 : 500,
+                  fontWeight: selectedPitch === p.id ? 800 : 600,
+                  whiteSpace: 'nowrap',
                 }}
                 onClick={() => setSelectedPitch(p.id)}
               >
@@ -805,8 +839,19 @@ export default function GroundDashboard({ user }) {
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button
                         type="button"
-                        className="btn btn--sm"
-                        style={{ background: 'rgba(0, 176, 255, 0.15)', color: '#00b0ff', fontSize: 11 }}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: 8,
+                          background: 'rgba(0, 176, 255, 0.15)',
+                          border: '1px solid rgba(0, 176, 255, 0.35)',
+                          color: '#00b0ff',
+                          fontSize: 11,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 5,
+                        }}
                         onClick={() => setShowGatePassModal(slot)}
                       >
                         <QrCode size={13} /> Gate Pass QR
@@ -815,13 +860,21 @@ export default function GroundDashboard({ user }) {
                   </div>
                 )}
 
-                {/* Available Slot Actions */}
+                {/* Available Slot Actions (FIXED: Invisible button styling completely resolved!) */}
                 {slot.status === 'Available' && (
                   <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
                     <button
                       type="button"
-                      className="btn btn--primary btn--sm"
-                      style={{ background: '#00e676', color: '#020617', fontWeight: 800, fontSize: 11 }}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: 8,
+                        background: '#00e676',
+                        border: 'none',
+                        color: '#020617',
+                        fontWeight: 900,
+                        fontSize: 11,
+                        cursor: 'pointer',
+                      }}
                       onClick={() => {
                         setNewBooking((prev) => ({ ...prev, time: slot.time, pitch: slot.pitch }))
                         setShowBookingModal(true)
@@ -831,8 +884,16 @@ export default function GroundDashboard({ user }) {
                     </button>
                     <button
                       type="button"
-                      className="btn btn--outline btn--sm"
-                      style={{ fontSize: 11 }}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: 8,
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        color: '#f8fafc',
+                        fontWeight: 700,
+                        fontSize: 11,
+                        cursor: 'pointer',
+                      }}
                       onClick={() => {
                         setSlots((prev) =>
                           prev.map((s) => (s.id === slot.id ? { ...s, status: 'Maintenance', teamA: 'Pitch Roller Rest' } : s))
@@ -883,15 +944,26 @@ export default function GroundDashboard({ user }) {
 
             <button
               type="button"
-              className="btn btn--outline btn--sm"
-              style={{ borderColor: '#00e676', color: '#00e676', display: 'flex', alignItems: 'center', gap: 6 }}
+              style={{
+                padding: '8px 14px',
+                borderRadius: 10,
+                background: 'rgba(0, 230, 118, 0.15)',
+                border: '1px solid #00e676',
+                color: '#00e676',
+                fontWeight: 800,
+                fontSize: 12,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
               onClick={() => setShowStatementModal(true)}
             >
               <Download size={14} /> Download Account Sheet (PDF / Excel)
             </button>
           </div>
 
-          {/* Dual Module Ledger Grid (Feature 13.3 & 14.5/14.6) */}
+          {/* Dual Module Ledger Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
             {/* Income Card */}
             <div
@@ -985,8 +1057,16 @@ export default function GroundDashboard({ user }) {
 
             <button
               type="button"
-              className="btn btn--primary btn--sm"
-              style={{ background: 'linear-gradient(135deg, #ffc83d, #ff9100)', color: '#020617', fontWeight: 800 }}
+              style={{
+                padding: '8px 14px',
+                borderRadius: 10,
+                border: 'none',
+                background: 'linear-gradient(135deg, #ffc83d, #ff9100)',
+                color: '#020617',
+                fontWeight: 900,
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
               onClick={handleDisbursePayroll}
             >
               Disburse Staff Payroll (₹1,00,000) →
@@ -1034,7 +1114,7 @@ export default function GroundDashboard({ user }) {
                     type="button"
                     onClick={() => toggleStaffAttendance(staff.id)}
                     style={{
-                      padding: '6px 12px',
+                      padding: '6px 14px',
                       borderRadius: 8,
                       fontSize: 11,
                       fontWeight: 800,
@@ -1070,8 +1150,16 @@ export default function GroundDashboard({ user }) {
 
             <button
               type="button"
-              className="btn btn--outline btn--sm"
-              style={{ fontSize: 11 }}
+              style={{
+                padding: '8px 14px',
+                borderRadius: 8,
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                color: '#f8fafc',
+                fontSize: 11,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
               onClick={() => {
                 triggerToast('Curator equipment inspection logged in register!')
               }}
@@ -1364,8 +1452,18 @@ export default function GroundDashboard({ user }) {
 
               <button
                 type="submit"
-                className="btn btn--primary"
-                style={{ width: '100%', marginTop: 8, background: 'linear-gradient(135deg, #00b0ff, #00e676)', color: '#020617', fontWeight: 800 }}
+                style={{
+                  width: '100%',
+                  marginTop: 8,
+                  padding: '12px',
+                  borderRadius: 10,
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #00b0ff, #00e676)',
+                  color: '#020617',
+                  fontWeight: 900,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
               >
                 Confirm & Issue Digital Gate Pass QR →
               </button>
@@ -1376,6 +1474,7 @@ export default function GroundDashboard({ user }) {
 
       {/* =========================================================================
           MODAL: DIGITAL GATE ENTRY PASS QR (Feature 15.7)
+          FIXED: "Send to Captain" button is clearly visible and high-contrast!
       ========================================================================= */}
       {showGatePassModal && (
         <div
@@ -1444,19 +1543,43 @@ export default function GroundDashboard({ user }) {
               <div style={{ fontSize: 11, color: '#00e676', marginTop: 2 }}>Scan at Turnstile Gate A for entry</div>
             </div>
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            {/* BUTTON ROW: High-contrast visible styling */}
+            <div style={{ display: 'flex', gap: 10 }}>
               <button
                 type="button"
-                className="btn btn--outline btn--sm"
-                style={{ flex: 1 }}
+                style={{
+                  flex: 1,
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  color: '#ffffff',
+                  fontWeight: 800,
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
                 onClick={() => triggerToast('Gate Pass QR copied to clipboard for WhatsApp dispatch!')}
               >
-                <Share2 size={13} /> Send to Captain
+                <Share2 size={14} color="#38bdf8" />
+                <span>Send to Captain</span>
               </button>
               <button
                 type="button"
-                className="btn btn--primary btn--sm"
-                style={{ flex: 1, background: '#00b0ff', color: '#020617', fontWeight: 800 }}
+                style={{
+                  flex: 1,
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  border: 'none',
+                  background: '#00b0ff',
+                  color: '#020617',
+                  fontWeight: 900,
+                  fontSize: 12,
+                  cursor: 'pointer',
+                }}
                 onClick={() => setShowGatePassModal(null)}
               >
                 Done
@@ -1534,8 +1657,21 @@ export default function GroundDashboard({ user }) {
             <div style={{ display: 'flex', gap: 8 }}>
               <button
                 type="button"
-                className="btn btn--primary btn--sm"
-                style={{ flex: 1, background: '#00e676', color: '#020617', fontWeight: 800 }}
+                style={{
+                  flex: 1,
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  border: 'none',
+                  background: '#00e676',
+                  color: '#020617',
+                  fontWeight: 900,
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
                 onClick={() => {
                   setShowStatementModal(false)
                   triggerToast('Monthly statement downloaded as PDF!')
@@ -1545,8 +1681,21 @@ export default function GroundDashboard({ user }) {
               </button>
               <button
                 type="button"
-                className="btn btn--outline btn--sm"
-                style={{ flex: 1 }}
+                style={{
+                  flex: 1,
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  color: '#f8fafc',
+                  fontWeight: 700,
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
                 onClick={() => {
                   setShowStatementModal(false)
                   triggerToast('Excel spreadsheet exported!')

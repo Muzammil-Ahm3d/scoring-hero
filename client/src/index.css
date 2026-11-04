@@ -567,6 +567,20 @@ img { max-width: 100%; display: block; }
   transform: translateY(-1px);
 }
 
+/* Outline Button with High Contrast */
+.btn--outline {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #f8fafc !important;
+  font-weight: 700 !important;
+}
+.btn--outline:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
 /* Cyan Action Button */
 .btn--cyan {
   background: linear-gradient(135deg, #00b0ff 0%, #3de0ff 100%);

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   MapPin,
   Calendar,
@@ -28,15 +28,26 @@ import Screen from '../components/Screen'
 
 export default function GroundSlotBooking() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  const urlMode = searchParams.get('mode')
+  const urlSys = Number(searchParams.get('sys'))
 
   // Top Mode: 'stadium' (Feature 14 Multi-Venue Stadium Ops) vs 'slots' (Feature 13 Ground Slot Booking)
-  const [opsMode, setOpsMode] = useState('stadium') // 'stadium' | 'slots'
+  const [opsMode, setOpsMode] = useState(urlMode === 'slots' ? 'slots' : 'stadium')
 
   // 1 to 12 Systems
-  const [activeSystem, setActiveSystem] = useState(1)
+  const [activeSystem, setActiveSystem] = useState(urlSys >= 1 && urlSys <= 12 ? urlSys : 1)
   const [selectedDay, setSelectedDay] = useState(12)
   const [toastMsg, setToastMsg] = useState('')
   const [dualModuleTab, setDualModuleTab] = useState('booking') // 'booking' | 'accounts'
+
+  useEffect(() => {
+    const m = searchParams.get('mode')
+    const s = Number(searchParams.get('sys'))
+    if (m === 'slots' || m === 'stadium') setOpsMode(m)
+    if (s >= 1 && s <= 12) setActiveSystem(s)
+  }, [searchParams])
 
   // Time Slots state
   const [slots, setSlots] = useState([
