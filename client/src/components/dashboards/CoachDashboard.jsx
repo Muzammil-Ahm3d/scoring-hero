@@ -19,6 +19,7 @@ import {
   DollarSign,
   PlaySquare,
   ChevronRight,
+  Trophy,
 } from 'lucide-react'
 
 export default function CoachDashboard({ user }) {
@@ -111,6 +112,31 @@ export default function CoachDashboard({ user }) {
             <strong>4.9 ★</strong>
             <span>Player Rating</span>
           </div>
+        </div>
+      </section>
+
+      {/* 22-Player Intra-Squad Practice Match & Scorer Card */}
+      <section className="panel" style={{ padding: '14px 16px', background: 'linear-gradient(135deg, rgba(0,230,118,0.08), rgba(56,189,248,0.04))', border: '1.5px solid rgba(0,230,118,0.3)', borderRadius: 12, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <Trophy size={17} color="#00e676" />
+              <h3 style={{ margin: 0, fontSize: 15, color: '#f8fafc', fontWeight: 800 }}>
+                22-Player Intra-Squad Trial Match
+              </h3>
+            </div>
+            <p style={{ margin: 0, fontSize: 12, color: '#94a3b8', lineHeight: 1.4 }}>
+              Select 22 trainees (Team A vs Team B), conduct coin toss, and score live ball-by-ball with shot analysis & commentary.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="btn btn--primary"
+            style={{ padding: '10px 16px', whiteSpace: 'nowrap', fontWeight: 800, fontSize: 13, flexShrink: 0 }}
+            onClick={() => navigate('/app/scorer')}
+          >
+            🏏 Start Match →
+          </button>
         </div>
       </section>
 

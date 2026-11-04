@@ -2036,6 +2036,14 @@ export default function CoachPortal() {
               </div>
               <button
                 type="button"
+                className="btn btn--secondary btn--sm"
+                onClick={() => navigate('/app/scorer')}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', borderColor: '#00e676', color: '#00e676' }}
+              >
+                🏏 22-Player Match
+              </button>
+              <button
+                type="button"
                 className="btn btn--primary btn--sm"
                 onClick={() => setShowEnrollTraineePage(true)}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
