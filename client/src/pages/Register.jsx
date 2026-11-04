@@ -94,6 +94,12 @@ export default function Register({ defaultTab }) {
   const [customStreamerRig, setCustomStreamerRig] = useState('')
   const [customSponsorCategory, setCustomSponsorCategory] = useState('')
 
+  // Academy enrollment for player (waives Aadhaar verification requirement)
+  const [enrolledUnderAcademy, setEnrolledUnderAcademy] = useState(false)
+  const [selectedAcademyName, setSelectedAcademyName] = useState('Scoring Heroes Elite Cricket Academy')
+  const [enrolledBatch, setEnrolledBatch] = useState('U-16 Evening Elite')
+  const [guardianPhone, setGuardianPhone] = useState('')
+
   // Memoized display strings for previews & payload
   const displayCompetitionLevel = useMemo(() => {
     if (competitionLevel === 'Other') return customCompetitionLevel.trim() || 'Custom Tier'
@@ -237,6 +243,10 @@ export default function Register({ defaultTab }) {
         sportId: currentSportItem.id,
         activityCategory,
         stage: displayCompetitionLevel || 'Active Competitive Athlete',
+        enrolledUnderAcademy,
+        academyName: enrolledUnderAcademy ? selectedAcademyName : null,
+        batch: enrolledUnderAcademy ? enrolledBatch : null,
+        guardianPhone: enrolledUnderAcademy ? guardianPhone : null,
       }
     }
 
@@ -315,6 +325,30 @@ export default function Register({ defaultTab }) {
     const targetRoleId = accountType === 'player' ? 'player' : selectedBusinessRoleId
     const finalRoleDetails = buildRoleDetails()
 
+    // IF REGISTERING UNDER AN ACADEMY: AADHAAR VERIFICATION IS WAIVED BY ACADEMY DIRECTOR!
+    if (accountType === 'player' && enrolledUnderAcademy) {
+      completeSignup({
+        role: targetRoleId,
+        roleCategory: 'player',
+        nickname: handleName,
+        fullName: handleName,
+        city: 'Chennai',
+        phoneCode,
+        phone: cleanPhone || '9876543210',
+        email: cleanEmail || `${handleName.toLowerCase().replace(/\s+/g, '')}@scoringheroes.com`,
+        sportId: currentSportItem.id,
+        sportName: currentSportItem.name,
+        competitionLevel: displayCompetitionLevel,
+        roleDetails: finalRoleDetails,
+        verified: true,
+        aadhaarVerified: true,
+        academyCertified: true,
+        onboardingComplete: true,
+      })
+      navigate('/app', { replace: true })
+      return
+    }
+
     completeSignup({
       role: targetRoleId,
       roleCategory: accountType === 'player' ? 'player' : 'official',
@@ -330,10 +364,10 @@ export default function Register({ defaultTab }) {
       roleDetails: finalRoleDetails,
       verified: false,
       aadhaarVerified: false,
-      onboardingComplete: true,
+      onboardingComplete: false,
     })
 
-    // REDIRECT TO AADHAAR VERIFICATION ON MOBILE OTP PER USER SPECIFICATION
+    // REDIRECT TO AADHAAR VERIFICATION ON MOBILE OTP PER USER SPECIFICATION FOR INDEPENDENT ATHLETES
     navigate('/aadhaar', { replace: true })
   }
 
@@ -671,6 +705,116 @@ export default function Register({ defaultTab }) {
                               onChange={(e) => setCustomCompetitionLevel(e.target.value)}
                               required
                             />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 6. ACADEMY ENROLLMENT / AFFILIATION */}
+                      <div className="sh-white-group">
+                        <label className="sh-white-label">
+                          <span>Sports Academy Affiliation</span>
+                          <span className="sh-white-hint">
+                            {enrolledUnderAcademy ? 'Enrolled under Academy' : 'Independent'}
+                          </span>
+                        </label>
+                        <div className="sh-white-option-pills">
+                          <button
+                            type="button"
+                            className={`sh-white-option-pill ${!enrolledUnderAcademy ? 'is-active' : ''}`}
+                            onClick={() => setEnrolledUnderAcademy(false)}
+                          >
+                            {!enrolledUnderAcademy && <Check size={12} strokeWidth={3} />}
+                            <span>Independent Player</span>
+                          </button>
+                          <button
+                            type="button"
+                            className={`sh-white-option-pill ${enrolledUnderAcademy ? 'is-active' : ''}`}
+                            onClick={() => setEnrolledUnderAcademy(true)}
+                          >
+                            {enrolledUnderAcademy && <Check size={12} strokeWidth={3} />}
+                            <span>Enrolled under Academy</span>
+                          </button>
+                        </div>
+
+                        {enrolledUnderAcademy && (
+                          <div
+                            style={{
+                              marginTop: 10,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 8,
+                              padding: '10px 12px',
+                              background: 'rgba(124, 77, 255, 0.08)',
+                              borderRadius: 10,
+                              border: '1px solid rgba(124, 77, 255, 0.25)',
+                            }}
+                          >
+                            <div>
+                              <label className="sh-white-label" style={{ fontSize: 11 }}>
+                                Select Affiliated Academy
+                              </label>
+                              <select
+                                className="sh-white-select"
+                                value={selectedAcademyName}
+                                onChange={(e) => setSelectedAcademyName(e.target.value)}
+                              >
+                                <option value="Scoring Heroes Elite Cricket Academy">
+                                  Scoring Heroes Elite Cricket Academy (Chennai Central)
+                                </option>
+                                <option value="Marina Strikers Cricket Academy">
+                                  Marina Strikers Cricket Academy
+                                </option>
+                                <option value="Apex High Performance Center">
+                                  Apex High Performance Center
+                                </option>
+                                <option value="Other Academy">Other Affiliated Academy</option>
+                              </select>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                              <div>
+                                <label className="sh-white-label" style={{ fontSize: 11 }}>
+                                  Assigned Batch
+                                </label>
+                                <select
+                                  className="sh-white-select"
+                                  value={enrolledBatch}
+                                  onChange={(e) => setEnrolledBatch(e.target.value)}
+                                >
+                                  <option value="U-14 Morning Foundation">U-14 Morning Foundation</option>
+                                  <option value="U-16 Evening Elite">U-16 Evening Elite</option>
+                                  <option value="U-19 Pro High Performance">U-19 Pro High Performance</option>
+                                  <option value="Weekend Grassroots Clinic">Weekend Grassroots Clinic</option>
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="sh-white-label" style={{ fontSize: 11 }}>
+                                  Guardian Phone
+                                </label>
+                                <input
+                                  type="tel"
+                                  className="sh-white-input"
+                                  placeholder="Guardian 10-digit phone"
+                                  value={guardianPhone}
+                                  onChange={(e) => setGuardianPhone(e.target.value)}
+                                />
+                              </div>
+                            </div>
+
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                color: '#00e676',
+                                fontSize: 11,
+                                fontWeight: 700,
+                              }}
+                            >
+                              <ShieldCheck size={16} />
+                              <span>Academy Certified Student — Aadhaar verification is waived!</span>
+                            </div>
                           </div>
                         )}
                       </div>
