@@ -126,7 +126,7 @@
   display: none;
 }
 
-/* ── Orders Queue Cards ── */
+/* ── Order Queue Simplified Card ── */
 .seller-order-card {
   background: rgba(15, 23, 42, 0.75);
   border-radius: 14px;
@@ -138,59 +138,145 @@
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
+  transition: border-color 0.15s ease;
 }
 
-.seller-order-info-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-sizing: border-box;
+.seller-order-card:hover {
+  border-color: rgba(0, 230, 118, 0.3);
+}
+
+/* ── Milestone Stepper Styles ── */
+.milestone-stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
   width: 100%;
+  padding: 10px 0 6px;
+  box-sizing: border-box;
 }
 
-@media (min-width: 641px) {
-  .seller-order-info-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* ── Order Action Controls ── */
-.seller-order-actions-box {
+.milestone-step-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  width: 100%;
-  box-sizing: border-box;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  text-align: center;
 }
 
-.seller-order-btn-pair {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.seller-order-main-cta {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 9px;
-  border: none;
-  color: #020617;
-  font-weight: 900;
-  font-size: 12px;
-  cursor: pointer;
+.milestone-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  font-size: 11px;
+  font-weight: 900;
+  z-index: 2;
+  transition: all 0.2s ease;
+}
+
+.milestone-circle.is-complete {
+  background: #00e676;
+  color: #020617;
+  box-shadow: 0 0 12px rgba(0, 230, 118, 0.4);
+}
+
+.milestone-circle.is-active {
+  background: #38bdf8;
+  color: #020617;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  border: 2px solid #ffffff;
+}
+
+.milestone-circle.is-pending {
+  background: rgba(255, 255, 255, 0.08);
+  color: #64748b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.milestone-label {
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 6px;
+  line-height: 1.2;
+}
+
+.milestone-line {
+  position: absolute;
+  top: 13px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+
+.milestone-line.is-complete {
+  background: #00e676;
+}
+
+/* ── Section Card in Order Details ── */
+.detail-section-card {
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   box-sizing: border-box;
+  width: 100%;
+}
+
+.detail-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+/* ── Preset Image Picker ── */
+.image-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.image-preset-btn {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.image-preset-btn.is-selected {
+  border-color: #00e676;
+  background: rgba(0, 230, 118, 0.12);
+  box-shadow: 0 0 10px rgba(0, 230, 118, 0.3);
+}
+
+.image-preset-btn img {
+  max-width: 100%;
+  max-height: 80%;
+  object-fit: contain;
 }
 
 /* ── Escrow Payouts KPI Grid ── */
@@ -231,3 +317,157 @@
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
 }
+
+/* ── Order Card Layout & Controls ── */
+.seller-order-info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+@media (min-width: 600px) {
+  .seller-order-info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.seller-order-actions-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.seller-order-btn-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.seller-order-main-cta {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: none;
+  color: #020617;
+  font-weight: 900;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.seller-order-main-cta:hover {
+  filter: brightness(1.1);
+}
+
+.seller-order-main-cta:active {
+  transform: scale(0.98);
+}
+
+/* ── Streamlined Order Queue Card ── */
+.order-queue-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.order-queue-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.order-queue-thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* ── Copy Address Button ── */
+.copy-address-btn {
+  background: rgba(0, 230, 118, 0.12);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  color: #00e676;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.copy-address-btn:hover {
+  background: rgba(0, 230, 118, 0.22);
+  border-color: #00e676;
+}
+
+/* ── Price Cuts & Badges ── */
+.price-mrp-cut {
+  text-decoration: line-through;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.price-discount-badge {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.price-highlight-badge {
+  background: rgba(0, 230, 118, 0.15);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  color: #00e676;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+/* ── Dynamic Category Spec Grid ── */
+.dynamic-spec-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+  .dynamic-spec-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
