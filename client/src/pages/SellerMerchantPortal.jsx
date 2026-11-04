@@ -556,48 +556,142 @@ export default function SellerMerchantPortal() {
     triggerToast(`Customer address copied for ${order.buyerName}!`)
   }
 
-  // Order Stage Updaters
-  const markOrderPacked = (orderId) => {
+  // Milestone Checks Helper
+  const getMilestoneChecks = (ord) => {
+    if (ord.milestoneChecks) return ord.milestoneChecks
+    return {
+      placed: true,
+      packed: ord.orderStage === 'packed_ready' || ord.orderStage === 'dispatched' || ord.orderStage === 'delivered',
+      dispatched: ord.orderStage === 'dispatched' || ord.orderStage === 'delivered',
+      out_delivery: Boolean(ord.outForDelivery) || ord.orderStage === 'delivered',
+      delivered: ord.orderStage === 'delivered',
+    }
+  }
+
+  // Interactive Vendor Milestone Check Mark Updater
+  const toggleMilestone = (orderId, milestoneId) => {
+    if (milestoneId === 'placed') {
+      triggerToast('Order Placed is verified upon customer checkout & escrow lock.')
+      return
+    }
+
     setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id === orderId) {
-          const updated = {
-            ...o,
-            orderStage: 'packed_ready',
-            stageLabel: 'Packed / Ready for Pickup',
-            packedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      prev.map((ord) => {
+        if (ord.id === orderId) {
+          const currentChecks = getMilestoneChecks(ord)
+          const willBeChecked = !currentChecks[milestoneId]
+          const updatedChecks = { ...currentChecks }
+
+          if (willBeChecked) {
+            if (milestoneId === 'packed') {
+              updatedChecks.packed = true
+            } else if (milestoneId === 'dispatched') {
+              updatedChecks.packed = true
+              updatedChecks.dispatched = true
+              if (!ord.trackingId) {
+                ord.courierPartner = ord.courierPartner || 'BlueDart Express Air'
+                ord.trackingId = `BLUEDART-${Math.floor(100000 + Math.random() * 900000)}`
+                ord.trackingLink = ord.trackingLink || `https://www.bluedart.com/tracking/${ord.trackingId}`
+              }
+            } else if (milestoneId === 'out_delivery') {
+              updatedChecks.packed = true
+              updatedChecks.dispatched = true
+              updatedChecks.out_delivery = true
+              if (!ord.trackingId) {
+                ord.courierPartner = ord.courierPartner || 'BlueDart Express Air'
+                ord.trackingId = `BLUEDART-${Math.floor(100000 + Math.random() * 900000)}`
+                ord.trackingLink = ord.trackingLink || `https://www.bluedart.com/tracking/${ord.trackingId}`
+              }
+            } else if (milestoneId === 'delivered') {
+              updatedChecks.packed = true
+              updatedChecks.dispatched = true
+              updatedChecks.out_delivery = true
+              updatedChecks.delivered = true
+            }
+          } else {
+            if (milestoneId === 'packed') {
+              updatedChecks.packed = false
+              updatedChecks.dispatched = false
+              updatedChecks.out_delivery = false
+              updatedChecks.delivered = false
+            } else if (milestoneId === 'dispatched') {
+              updatedChecks.dispatched = false
+              updatedChecks.out_delivery = false
+              updatedChecks.delivered = false
+            } else if (milestoneId === 'out_delivery') {
+              updatedChecks.out_delivery = false
+              updatedChecks.delivered = false
+            } else if (milestoneId === 'delivered') {
+              updatedChecks.delivered = false
+            }
           }
+
+          let newStage = 'pending_packing'
+          let newLabel = 'New / Pending Packing'
+          let newEscrow = 'Secured in Escrow'
+
+          if (updatedChecks.delivered) {
+            newStage = 'delivered'
+            newLabel = 'Delivered & Settled'
+            newEscrow = 'Released to Ready Balance'
+          } else if (updatedChecks.out_delivery) {
+            newStage = 'dispatched'
+            newLabel = 'Out for Delivery'
+            newEscrow = 'Escrow Holding (In Transit)'
+          } else if (updatedChecks.dispatched) {
+            newStage = 'dispatched'
+            newLabel = 'Dispatched / In Transit'
+            newEscrow = 'Escrow Holding (In Transit)'
+          } else if (updatedChecks.packed) {
+            newStage = 'packed_ready'
+            newLabel = 'Packed / Ready for Pickup'
+            newEscrow = 'Secured in Escrow'
+          }
+
+          const nowTime = 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          const updatedOrder = {
+            ...ord,
+            milestoneChecks: updatedChecks,
+            orderStage: newStage,
+            stageLabel: newLabel,
+            escrowStatus: newEscrow,
+            outForDelivery: updatedChecks.out_delivery,
+            packedAt: updatedChecks.packed ? (ord.packedAt || nowTime) : '',
+            dispatchedAt: updatedChecks.dispatched ? (ord.dispatchedAt || nowTime) : '',
+            deliveredAt: updatedChecks.delivered ? (ord.deliveredAt || nowTime) : '',
+          }
+
           if (viewingOrder && viewingOrder.id === orderId) {
-            setViewingOrder(updated)
+            setViewingOrder(updatedOrder)
           }
-          return updated
+
+          const milestoneNames = {
+            packed: 'Packed & Labelled',
+            dispatched: 'In Transit',
+            out_delivery: 'Out for Delivery',
+            delivered: 'Delivered & Settled',
+          }
+
+          triggerToast(
+            willBeChecked
+              ? `✓ Milestone "${milestoneNames[milestoneId]}" marked as complete!`
+              : `Milestone "${milestoneNames[milestoneId]}" unchecked.`
+          )
+
+          return updatedOrder
         }
-        return o
+        return ord
       })
     )
-    triggerToast(`Order ${orderId} marked PACKED and ready for courier pickup!`)
+  }
+
+  // Order Stage Updaters
+  const markOrderPacked = (orderId) => {
+    toggleMilestone(orderId, 'packed')
   }
 
   const markOrderDelivered = (orderId) => {
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id === orderId) {
-          const updated = {
-            ...o,
-            orderStage: 'delivered',
-            stageLabel: 'Delivered',
-            deliveredAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            escrowStatus: 'Released to Ready Balance',
-          }
-          if (viewingOrder && viewingOrder.id === orderId) {
-            setViewingOrder(updated)
-          }
-          return updated
-        }
-        return o
-      })
-    )
-    triggerToast(`Order ${orderId} marked DELIVERED! Escrow proceeds released to ready balance.`)
+    toggleMilestone(orderId, 'delivered')
   }
 
   // =========================================================================
@@ -715,45 +809,58 @@ export default function SellerMerchantPortal() {
   // =========================================================================
   if (viewingOrder) {
     const o = viewingOrder
-    const isPacked = o.orderStage === 'packed_ready' || o.orderStage === 'dispatched' || o.orderStage === 'delivered'
-    const isDispatched = o.orderStage === 'dispatched' || o.orderStage === 'delivered'
-    const isDelivered = o.orderStage === 'delivered'
+    const checks = getMilestoneChecks(o)
 
     const milestones = [
       {
         id: 'placed',
+        stepNum: 1,
         label: '1. Order Placed',
         status: 'complete',
+        isComplete: true,
         time: o.date,
         desc: 'Prepaid & Escrow Locked',
+        sub: 'Verified (UPI Auto-Escrow)',
       },
       {
         id: 'packed',
+        stepNum: 2,
         label: '2. Packed & Labelled',
-        status: isPacked ? 'complete' : o.orderStage === 'pending_packing' ? 'active' : 'pending',
-        time: o.packedAt || (isPacked ? 'Packed' : 'Pending packaging'),
+        status: checks.packed ? 'complete' : !checks.packed ? 'active' : 'pending',
+        isComplete: Boolean(checks.packed),
+        time: o.packedAt || (checks.packed ? 'Packed' : 'Pending packaging'),
         desc: 'Inspected with GST invoice slip',
+        sub: checks.packed ? `Packed & sealed (${o.packedAt || 'Today'})` : 'Click check mark to confirm packing',
       },
       {
         id: 'dispatched',
+        stepNum: 3,
         label: '3. In Transit',
-        status: isDispatched ? 'complete' : o.orderStage === 'packed_ready' ? 'active' : 'pending',
-        time: o.dispatchedAt || (isDispatched ? 'Dispatched' : 'Courier assignment pending'),
+        status: checks.dispatched ? 'complete' : (checks.packed && !checks.dispatched) ? 'active' : 'pending',
+        isComplete: Boolean(checks.dispatched),
+        time: o.dispatchedAt || (checks.dispatched ? 'Dispatched' : 'Courier assignment pending'),
         desc: o.courierPartner || 'Logistics handover',
+        sub: checks.dispatched ? `With ${o.courierPartner || 'Carrier'} · AWB: ${o.trackingId || 'Assigned'}` : 'Click check mark or assign courier',
       },
       {
         id: 'out_delivery',
+        stepNum: 4,
         label: '4. Out for Delivery',
-        status: isDelivered ? 'complete' : o.orderStage === 'dispatched' ? 'active' : 'pending',
+        status: checks.out_delivery ? 'complete' : (checks.dispatched && !checks.out_delivery) ? 'active' : 'pending',
+        isComplete: Boolean(checks.out_delivery),
         time: o.estimatedDelivery ? `ETA: ${o.estimatedDelivery}` : 'Pending dispatch',
         desc: 'Final local delivery courier hub',
+        sub: checks.out_delivery ? 'Package reached buyer local delivery hub' : 'Pending in-transit completion',
       },
       {
         id: 'delivered',
+        stepNum: 5,
         label: '5. Delivered & Settled',
-        status: isDelivered ? 'complete' : 'pending',
-        time: o.deliveredAt || (isDelivered ? 'Delivered' : 'Escrow auto-releases on delivery'),
-        desc: isDelivered ? 'Funds added to ready balance' : '7-day buyer warranty window',
+        status: checks.delivered ? 'complete' : (checks.out_delivery && !checks.delivered) ? 'active' : 'pending',
+        isComplete: Boolean(checks.delivered),
+        time: o.deliveredAt || (checks.delivered ? 'Delivered' : 'Escrow auto-releases on delivery'),
+        desc: checks.delivered ? 'Funds added to ready balance' : '7-day buyer warranty window',
+        sub: checks.delivered ? `Delivered successfully (${o.deliveredAt || 'Today'})` : 'Click check mark to release escrow to bank balance',
       },
     ]
 
@@ -814,7 +921,7 @@ export default function SellerMerchantPortal() {
             </div>
           </div>
 
-          {/* Section 1: Milestone Progress Stepper */}
+          {/* Section 1: Milestone Progress Stepper with Vendor Check Mark Controls */}
           <div className="detail-section-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h4 className="detail-section-title">
@@ -848,40 +955,153 @@ export default function SellerMerchantPortal() {
               </span>
             </div>
 
-            {/* Stepper Graphic */}
+            {/* Stepper Graphic with Clickable Milestone Circles */}
             <div className="milestone-stepper">
               {milestones.map((m, idx) => (
                 <div key={m.id} className="milestone-step-item">
                   {idx > 0 && (
                     <div
                       className={`milestone-line ${
-                        m.status === 'complete' || milestones[idx - 1].status === 'complete' ? 'is-complete' : ''
+                        milestones[idx].isComplete ? 'is-complete' : ''
                       }`}
                     />
                   )}
-                  <div
+                  <button
+                    type="button"
+                    onClick={() => toggleMilestone(o.id, m.id)}
                     className={`milestone-circle ${
-                      m.status === 'complete'
+                      m.isComplete
                         ? 'is-complete'
                         : m.status === 'active'
                         ? 'is-active'
                         : 'is-pending'
                     }`}
+                    title={
+                      m.id === 'placed'
+                        ? 'Order Placed (Verified by customer payment)'
+                        : m.isComplete
+                        ? `Click to uncheck "${m.label.split('. ')[1]}"`
+                        : `Click to mark "${m.label.split('. ')[1]}" as complete`
+                    }
                   >
-                    {m.status === 'complete' ? <Check size={13} /> : idx + 1}
-                  </div>
+                    {m.isComplete ? <Check size={14} strokeWidth={3} /> : m.stepNum}
+                  </button>
                   <div
+                    onClick={() => toggleMilestone(o.id, m.id)}
                     className="milestone-label"
                     style={{
                       color:
-                        m.status === 'complete'
+                        m.isComplete
                           ? '#00e676'
                           : m.status === 'active'
                           ? '#38bdf8'
                           : '#64748b',
                     }}
+                    title="Click to toggle milestone"
                   >
                     {m.label.split('. ')[1]}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Vendor Interactive Milestone Checklist */}
+            <div className="vendor-milestone-checklist">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                <span style={{ fontSize: 11, fontWeight: 900, color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <CheckCircle2 size={13} color="#00e676" /> Vendor Milestone Check Marks
+                </span>
+                <span style={{ fontSize: 10, color: '#38bdf8', fontWeight: 700 }}>
+                  Tap circles above or buttons below to update
+                </span>
+              </div>
+
+              {milestones.map((m) => (
+                <div
+                  key={m.id}
+                  className={`vendor-milestone-row ${m.isComplete ? 'is-complete' : ''}`}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                    <button
+                      type="button"
+                      onClick={() => toggleMilestone(o.id, m.id)}
+                      style={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: 6,
+                        border: m.isComplete ? '1.5px solid #00e676' : '1.5px solid rgba(255, 255, 255, 0.2)',
+                        background: m.isComplete ? '#00e676' : 'rgba(255, 255, 255, 0.03)',
+                        color: '#020617',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: m.id === 'placed' ? 'default' : 'pointer',
+                        flexShrink: 0,
+                      }}
+                      title={m.isComplete ? 'Click to uncheck' : 'Click to check'}
+                    >
+                      {m.isComplete && <Check size={14} strokeWidth={3} />}
+                    </button>
+
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <strong style={{ fontSize: 12, color: m.isComplete ? '#00e676' : '#f8fafc', display: 'block', lineHeight: 1.3 }}>
+                        {m.label}
+                      </strong>
+                      <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginTop: 1 }}>
+                        {m.sub}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {m.id === 'placed' ? (
+                      <span style={{ fontSize: 10, color: '#00e676', fontWeight: 800, padding: '4px 8px', background: 'rgba(0, 230, 118, 0.1)', borderRadius: 6 }}>
+                        ✓ Verified
+                      </span>
+                    ) : m.id === 'dispatched' && !m.isComplete ? (
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button
+                          type="button"
+                          onClick={() => toggleMilestone(o.id, m.id)}
+                          className="vendor-milestone-toggle-btn is-unchecked"
+                        >
+                          ✓ Mark Dispatched
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAssigningCourierOrder(o)}
+                          style={{
+                            padding: '6px 10px',
+                            borderRadius: 7,
+                            background: 'linear-gradient(135deg, #38bdf8, #818cf8)',
+                            color: '#020617',
+                            fontWeight: 900,
+                            fontSize: 10,
+                            border: 'none',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                          }}
+                        >
+                          <Truck size={11} /> Shipping Form
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => toggleMilestone(o.id, m.id)}
+                        className={`vendor-milestone-toggle-btn ${m.isComplete ? 'is-checked' : 'is-unchecked'}`}
+                      >
+                        {m.isComplete ? (
+                          <>
+                            <Check size={12} strokeWidth={3} /> Checked (Click to Undo)
+                          </>
+                        ) : (
+                          `Mark ${m.label.split('. ')[1]}`
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -907,7 +1127,7 @@ export default function SellerMerchantPortal() {
               <strong style={{ color: '#f8fafc', fontSize: 13 }}>
                 {o.orderStage === 'pending_packing' && 'Order received and confirmed. Please inspect and pack the items.'}
                 {o.orderStage === 'packed_ready' && 'Package is sealed with invoice. Assign courier partner to generate AWB & tracking.'}
-                {o.orderStage === 'dispatched' && `Handed over to ${o.courierPartner}. In transit to destination.`}
+                {o.orderStage === 'dispatched' && (o.outForDelivery ? 'Package has reached destination local hub and is out for delivery.' : `Handed over to ${o.courierPartner}. In transit to destination.`)}
                 {o.orderStage === 'delivered' && 'Delivered successfully. Payment released to bank ready balance.'}
               </strong>
             </div>
@@ -1339,6 +1559,13 @@ export default function SellerMerchantPortal() {
                         orderStage: 'dispatched',
                         stageLabel: 'Dispatched / In Transit',
                         escrowStatus: 'Escrow Holding (In Transit)',
+                        milestoneChecks: {
+                          placed: true,
+                          packed: true,
+                          dispatched: true,
+                          out_delivery: Boolean(ord.milestoneChecks?.out_delivery),
+                          delivered: false,
+                        },
                       }
                       if (viewingOrder && viewingOrder.id === ord.id) {
                         setViewingOrder(updated)
