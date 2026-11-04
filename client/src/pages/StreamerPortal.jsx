@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Video,
@@ -117,10 +117,50 @@ export default function StreamerPortal() {
   const [showThemeCustomizePage, setShowThemeCustomizePage] = useState(false)
   const [showMontageCreatorPage, setShowMontageCreatorPage] = useState(false)
   const [showWithdrawPayoutPage, setShowWithdrawPayoutPage] = useState(false)
+  const [showAddContractPage, setShowAddContractPage] = useState(false)
+  const [viewingClip, setViewingClip] = useState(null)
+  const [clipSpeed, setClipSpeed] = useState(1.0)
   const [viewingInvoice, setViewingInvoice] = useState(null)
+
+  // Tournament Production Contracts
+  const [contracts, setContracts] = useState([
+    { id: 'INV-BR-881', client: 'Mumbai Corporate Premier League', amount: 35000, date: '02 Nov 2026', description: 'Semi-Final & Final 4K Broadcast Coverage', status: 'Paid via Escrow' },
+    { id: 'INV-BR-882', client: 'Apex Cricket Trophy Season 4', amount: 30000, date: '28 Oct 2026', description: 'Round Robin Multi-Cam Stream Package', status: 'Paid via Escrow' },
+    { id: 'INV-BR-883', client: 'BCCI U-19 Invitational Trophy', amount: 45000, date: '10 Nov 2026', description: '5-Day Multi-Cam HD Coverage + Drone Rig', status: 'Advance Confirmed (₹20,000)' },
+  ])
+
+  // Live Score Sync with LiveScorer
+  const [liveMatchScore, setLiveMatchScore] = useState({
+    team: 'Scoring XI',
+    score: '106/3',
+    overs: '10.3',
+    striker: { name: 'Rohit *', runs: 42, balls: 18 },
+    nonStriker: { name: 'Karan', runs: 18, balls: 10 },
+    bowler: { name: 'Vikram', figures: '1.3-0-21-1' }
+  })
 
   // Feedback toast
   const [toastMessage, setToastMessage] = useState('')
+
+  // Dynamic overlay reaction to live match events
+  useEffect(() => {
+    try {
+      const commStr = localStorage.getItem('scoringheros_live_commentary')
+      if (commStr) {
+        const commArr = JSON.parse(commStr)
+        if (commArr && commArr.length > 0) {
+          const latest = commArr[0]
+          if (latest.event === 'WICKET') {
+            setOverlays(prev => ({ ...prev, wicketAlert: true }))
+            setTimeout(() => setOverlays(prev => ({ ...prev, wicketAlert: false })), 4000)
+          } else if (latest.event === 'BOUNDARY' || latest.event === 'SIX') {
+            setOverlays(prev => ({ ...prev, boundaryStinger: true }))
+            setTimeout(() => setOverlays(prev => ({ ...prev, boundaryStinger: false })), 4000)
+          }
+        }
+      }
+    } catch (e) {}
+  }, [])
 
   function showToast(msg) {
     setToastMessage(msg)
@@ -512,6 +552,150 @@ export default function StreamerPortal() {
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // =========================================================================
+  // SUB-PAGE 7: WATCH REPLAY CLIP & SLOW-MOTION REVIEW
+  // =========================================================================
+  if (viewingClip) {
+    return (
+      <Screen title={viewingClip.title} back={() => setViewingClip(null)} padded={false}>
+        <div className="streamer-subpage">
+          <div className="subpage-header-row">
+            <button className="btn btn--secondary btn--sm" onClick={() => setViewingClip(null)}>
+              ← Back to Clip Desk
+            </button>
+            <span className="pill" style={{ background: 'rgba(101,31,255,0.15)', color: '#c084fc', fontWeight: 800 }}>
+              {viewingClip.event} • {viewingClip.duration}
+            </span>
+          </div>
+
+          <div className="sp-card" style={{ padding: 10 }}>
+            {/* 16:9 Video Player View */}
+            <div className="program-screen-canvas" style={{ marginBottom: 12 }}>
+              <img src={viewingClip.thumbnail} alt={viewingClip.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(225,6,19,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                  <Play size={24} fill="#fff" color="#fff" style={{ marginLeft: 3 }} />
+                </div>
+              </div>
+              <div style={{ position: 'absolute', bottom: 8, left: 8, background: 'rgba(0,0,0,0.7)', padding: '2px 8px', borderRadius: 4, fontSize: 10, color: '#00e676', fontWeight: 800 }}>
+                HD 60FPS • SPEED: {clipSpeed}x
+              </div>
+            </div>
+
+            {/* Playback speed controls */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+              {[0.25, 0.5, 1.0, 2.0].map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  className={`btn btn--sm ${clipSpeed === s ? 'btn--primary' : 'btn--secondary'}`}
+                  style={{ flex: 1, fontSize: 11, padding: '6px 0', border: clipSpeed === s ? 'none' : '1px solid rgba(255,255,255,0.1)' }}
+                  onClick={() => setClipSpeed(s)}
+                >
+                  {s}x {s < 1 ? 'Slow-Mo' : ''}
+                </button>
+              ))}
+            </div>
+
+            <h3 style={{ fontSize: 16, color: '#f8fafc', margin: '0 0 6px' }}>{viewingClip.title}</h3>
+            <p style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 14px', lineHeight: 1.5 }}>
+              Captured live from Cam 1 (Center Pavilion 1080p60). Synced with broadcast graphics and AI commentary audio desk.
+            </p>
+
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                className="btn btn--primary"
+                style={{ flex: 1, padding: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                onClick={() => {
+                  handlePublishClip(viewingClip.id)
+                  setViewingClip(null)
+                }}
+              >
+                <Share2 size={15} /> Publish to Match Reels
+              </button>
+              <button
+                type="button"
+                className="btn btn--secondary"
+                style={{ padding: 12 }}
+                onClick={() => showToast('High-Definition 1080p MP4 downloaded to local drive!')}
+              >
+                <Download size={15} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+
+  // =========================================================================
+  // SUB-PAGE 8: BOOK NEW BROADCAST CONTRACT
+  // =========================================================================
+  if (showAddContractPage) {
+    return (
+      <Screen title="Book Broadcast Contract" back={() => setShowAddContractPage(false)} padded={false}>
+        <div className="streamer-subpage">
+          <div className="subpage-header-row">
+            <button className="btn btn--secondary btn--sm" onClick={() => setShowAddContractPage(false)}>
+              ← Back
+            </button>
+            <span className="pill" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676', fontWeight: 800 }}>
+              PRODUCTION CONTRACT
+            </span>
+          </div>
+
+          <div className="sp-card">
+            <h2 className="sp-card-title">Book New Tournament Broadcast Contract</h2>
+            <p className="sp-card-sub">
+              Issue an official matchday streaming agreement with automated escrow fee protection.
+            </p>
+
+            <label className="sp-label">Tournament / League Name</label>
+            <input className="sp-input" placeholder="e.g. State T20 Championship 2026" defaultValue="State T20 Championship 2026" />
+
+            <label className="sp-label" style={{ marginTop: 12 }}>Organizer / Client Name</label>
+            <input className="sp-input" placeholder="e.g. Tamil Nadu Cricket League Committee" defaultValue="Tamil Nadu Cricket League Committee" />
+
+            <label className="sp-label" style={{ marginTop: 12 }}>Broadcast Production Package</label>
+            <select className="sp-input">
+              <option>Full Multi-Cam Rig + 4K Drone + TV Overlays (₹45,000 / match)</option>
+              <option>Standard 2-Cam Pavilion & Pitch Rig (₹25,000 / match)</option>
+              <option>Single Camera Webcast + Live AI Commentary (₹15,000 / match)</option>
+            </select>
+
+            <label className="sp-label" style={{ marginTop: 12 }}>Agreed Production Fee (₹)</label>
+            <input className="sp-input" type="number" defaultValue="45000" />
+
+            <label className="sp-label" style={{ marginTop: 12 }}>Match Date & Stadium Venue</label>
+            <input className="sp-input" placeholder="e.g. 15 Nov 2026 • Main Oval Stadium" defaultValue="15 Nov 2026 • Main Oval Stadium" />
+
+            <button
+              type="button"
+              className="btn btn--primary"
+              style={{ width: '100%', marginTop: 20, padding: 14 }}
+              onClick={() => {
+                const newContract = {
+                  id: `INV-BR-${Math.floor(100 + Math.random() * 900)}`,
+                  client: 'State T20 Championship 2026',
+                  amount: 45000,
+                  date: '15 Nov 2026',
+                  description: 'Full Multi-Cam Rig + 4K Drone + TV Overlays',
+                  status: 'Advance Confirmed (Escrow)',
+                }
+                setContracts([newContract, ...contracts])
+                setShowAddContractPage(false)
+                showToast('Broadcast contract booked and locked in Escrow!')
+              }}
+            >
+              Confirm & Book Contract
+            </button>
           </div>
         </div>
       </Screen>
@@ -1011,7 +1195,7 @@ export default function StreamerPortal() {
 
               <div className="clips-feed-list">
                 {clips.map(clip => (
-                  <div key={clip.id} className="clip-card">
+                  <div key={clip.id} className="clip-card" style={{ cursor: 'pointer' }} onClick={() => setViewingClip(clip)}>
                     <div className="clip-thumb-box">
                       <img src={clip.thumbnail} alt={clip.title} />
                       <span className="clip-duration">{clip.duration}</span>
@@ -1033,17 +1217,25 @@ export default function StreamerPortal() {
                           </span>
                         ) : (
                           <button
+                            type="button"
                             className="btn btn--primary btn--sm"
                             style={{ padding: '6px 12px', fontSize: 11 }}
-                            onClick={() => handlePublishClip(clip.id)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handlePublishClip(clip.id)
+                            }}
                           >
                             🚀 Publish to Reels
                           </button>
                         )}
                         <button
+                          type="button"
                           className="btn btn--secondary btn--sm"
                           style={{ padding: '6px 10px', fontSize: 11 }}
-                          onClick={() => showToast('Clip downloaded in 1080p MP4!')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            showToast('Clip downloaded in 1080p MP4!')
+                          }}
                         >
                           <Download size={12} />
                         </button>
@@ -1131,20 +1323,31 @@ export default function StreamerPortal() {
 
             {/* Match Production Contracts Ledger */}
             <div className="sp-card">
-              <h3 className="sp-card-title">Tournament Production Contracts</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div>
+                  <h3 className="sp-card-title" style={{ margin: 0 }}>Tournament Production Contracts ({contracts.length})</h3>
+                  <span style={{ fontSize: 11, color: '#94a3b8' }}>Secured by Automated Escrow Milestone Agreement</span>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn--secondary btn--sm"
+                  onClick={() => setShowAddContractPage(true)}
+                >
+                  + Book Contract
+                </button>
+              </div>
               <div className="contracts-table">
-                {[
-                  { id: 'INV-BR-881', client: 'Mumbai Corporate Premier League', amount: 35000, date: '02 Nov 2026', description: 'Semi-Final & Final 4K Broadcast Coverage' },
-                  { id: 'INV-BR-882', client: 'Apex Cricket Trophy Season 4', amount: 30000, date: '28 Oct 2026', description: 'Round Robin Multi-Cam Stream Package' },
-                ].map((inv) => (
+                {contracts.map((inv) => (
                   <div key={inv.id} className="contract-row">
                     <div>
                       <strong style={{ fontSize: 13, color: '#f8fafc', display: 'block' }}>{inv.client}</strong>
                       <span style={{ fontSize: 11, color: '#94a3b8' }}>{inv.id} • {inv.date}</span>
+                      <small style={{ fontSize: 10, color: '#38bdf8', display: 'block' }}>{inv.status || 'Active Production'}</small>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <strong style={{ fontSize: 14, color: '#00e676', display: 'block' }}>₹{inv.amount.toLocaleString()}</strong>
                       <button
+                        type="button"
                         className="btn btn--secondary btn--sm"
                         style={{ marginTop: 4, fontSize: 10, padding: '2px 8px' }}
                         onClick={() => setViewingInvoice(inv)}
