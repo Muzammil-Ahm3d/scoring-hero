@@ -10,6 +10,8 @@ import {
   DollarSign,
   Building,
   GraduationCap,
+  Boxes,
+  Truck,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
@@ -111,6 +113,38 @@ const ACADEMY_NAV_ITEMS = [
   },
 ]
 
+// Sports Equipment Seller & Factory Merchant Dedicated Navigation
+const SELLER_NAV_ITEMS = [
+  {
+    to: '/app',
+    label: 'Home',
+    icon: Building,
+    end: true,
+  },
+  {
+    to: '/app/seller?tab=inventory',
+    label: 'Stock',
+    icon: Boxes,
+    aliases: ['/app/seller', '/app/merchant'],
+  },
+  {
+    to: '/app/seller?tab=orders',
+    label: 'Orders',
+    icon: Truck,
+  },
+  {
+    to: '/app/seller?tab=payouts',
+    label: 'Payouts',
+    icon: DollarSign,
+  },
+  {
+    to: '/app/marketplace',
+    label: 'Shop',
+    icon: ShoppingBag,
+    aliases: ['/app/shop', '/app/store', '/app/market'],
+  },
+]
+
 export default function BottomNav() {
   const { user } = useAuth()
   const location = useLocation()
@@ -118,10 +152,12 @@ export default function BottomNav() {
 
   const isGroundOwner = user?.role === 'ground'
   const isAcademyDirector = user?.role === 'academy'
+  const isSellerMerchant = user?.role === 'seller'
 
   let navItems = PLAYER_NAV_ITEMS
   if (isGroundOwner) navItems = GROUND_NAV_ITEMS
   else if (isAcademyDirector) navItems = ACADEMY_NAV_ITEMS
+  else if (isSellerMerchant) navItems = SELLER_NAV_ITEMS
 
   // Hide the bottom navigation bar on camera/capture pages
   if (
@@ -141,7 +177,7 @@ export default function BottomNav() {
       // Default to primary tab when query is empty on base page
       if (
         (!location.search || location.search === '') &&
-        (itemQuery === 'tab=slots' || itemQuery === 'tab=students') &&
+        (itemQuery === 'tab=slots' || itemQuery === 'tab=students' || itemQuery === 'tab=inventory') &&
         currentPath === itemPath
       ) {
         return true
