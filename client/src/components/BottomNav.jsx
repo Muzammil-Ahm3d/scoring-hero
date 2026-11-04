@@ -145,6 +145,37 @@ const SELLER_NAV_ITEMS = [
   },
 ]
 
+// Independent Coach & High-Performance Trainer Dedicated Navigation
+const COACH_NAV_ITEMS = [
+  {
+    to: '/app',
+    label: 'Home',
+    icon: Home,
+    end: true,
+  },
+  {
+    to: '/app/coach?tab=trainees',
+    label: 'Trainees',
+    icon: Users,
+    aliases: ['/app/coach', '/app/trainer'],
+  },
+  {
+    to: '/app/coach?tab=sessions',
+    label: 'Sessions',
+    icon: Calendar,
+  },
+  {
+    to: '/app/coach?tab=drills',
+    label: 'Drills',
+    icon: PlaySquare,
+  },
+  {
+    to: '/app/coach?tab=earnings',
+    label: 'Earnings',
+    icon: DollarSign,
+  },
+]
+
 export default function BottomNav() {
   const { user } = useAuth()
   const location = useLocation()
@@ -153,11 +184,13 @@ export default function BottomNav() {
   const isGroundOwner = user?.role === 'ground'
   const isAcademyDirector = user?.role === 'academy'
   const isSellerMerchant = user?.role === 'seller'
+  const isCoachTrainer = user?.role === 'coach'
 
   let navItems = PLAYER_NAV_ITEMS
   if (isGroundOwner) navItems = GROUND_NAV_ITEMS
   else if (isAcademyDirector) navItems = ACADEMY_NAV_ITEMS
   else if (isSellerMerchant) navItems = SELLER_NAV_ITEMS
+  else if (isCoachTrainer) navItems = COACH_NAV_ITEMS
 
   // Hide the bottom navigation bar on camera/capture pages
   if (
@@ -177,7 +210,7 @@ export default function BottomNav() {
       // Default to primary tab when query is empty on base page
       if (
         (!location.search || location.search === '') &&
-        (itemQuery === 'tab=slots' || itemQuery === 'tab=students' || itemQuery === 'tab=inventory') &&
+        (itemQuery === 'tab=slots' || itemQuery === 'tab=students' || itemQuery === 'tab=inventory' || itemQuery === 'tab=trainees') &&
         currentPath === itemPath
       ) {
         return true

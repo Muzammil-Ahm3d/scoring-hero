@@ -12,7 +12,7 @@
 | **1** | **Ground & Stadium Owner** | `9999999999` | Pitch Slots & Booking, Staff Attendance & Payroll, Accounts P&L | ✅ **Completed & Deployed** |
 | **2** | **Sports Academy & Institute** | `8888888888` | Student Batches, Attendance, Fee Tracking & Reminders, Training Curriculum | ✅ **Completed & Deployed** |
 | **3** | **Sports Equipment Seller** | `7777777777` | Catalog Management, Order Queue & Fulfillment, Escrow Payouts | ✅ **Completed & Deployed** |
-| **4** | **Independent Coach & Trainer**| `6666666666` | Trainee Profiles, 1-on-1 Sessions, Video Drills, Coaching Income | 🏗️ **In Progress (Active Build)** |
+| **4** | **Independent Coach & Trainer**| `6666666666` | Trainee Profiles, 1-on-1 Sessions, Video Drills, Coaching Income | ✅ **Completed & Deployed** |
 | **5** | **Live Streamer & Broadcaster**| `5555555555` | RTMP Ingest & Stream Keys, Live Score Overlays, Instant Clips, Earnings | ⚪ Pending Real Ops Portal |
 | **6** | **Tournament Sponsor & Brand** | `4444444444` | Ad Campaigns, Real-Time ROI Analytics, Creative Assets, Ad Wallet | ⚪ Pending Real Ops Portal |
 
@@ -146,33 +146,51 @@ A dedicated **Merchant Control Portal** (`/app/seller` or `/app/merchant`):
 * **Role Key:** `coach`
 * **Home Dashboard:** `client/src/components/dashboards/CoachDashboard.jsx`
 
-### What We Have Built Till Now
-- Coach dashboard with BCCI certification badge, active trainee count, and feedback form.
+### What We Have Built (Current Production Status)
+* **Dedicated Operations Portal:** `client/src/pages/CoachPortal.jsx` & `CoachPortal.css` (`/app/coach` & `/app/trainer`)
+* **Dedicated Bottom Navigation:** `Home`, `Trainees`, `Sessions`, `Drills`, `Earnings` (`client/src/components/BottomNav.jsx`)
+* **Strict Navigation Architecture:** Zero popups or modal overlays — all 8 operational actions navigate to full dedicated sub-pages with standard `← Back` buttons.
 
-### What We Need to Build (Product-Level Functionality)
-A dedicated **Coaching Operations Portal** (`/app/coach`):
+#### Tab 1: 🏃 Trainee Roster & Skill Assessments (`?tab=trainees`)
+- **Interactive Roster Filters:** Filter by batch (`Morning Pro`, `Evening Elite`, `Weekend Masterclass`, `1-on-1 Private`) and live search by name, role, or coach observations.
+- **Trainee Performance Cards:** Displays Trainee name, age, batch, primary cricket role, direct phone dialer (`[📞 Call Athlete]`), and mini biomechanical bar (Batting Index, Clocked Pace, Yo-Yo score, Reflex rating).
+- **Dedicated Sub-Page 1.1 — Athlete Profile & Biomechanical Radar (`viewingTrainee`):**
+  - Full-screen radar breakdown of 5 core athletic dimensions: Technique, Kinetic Power, Catching Reflexes, Cardiovascular Endurance, and Tactical IQ.
+  - Chronological coach assessment log with previous evaluation notes, dates, and scores.
+  - Active assigned drills list and 30-day attendance score.
+- **Dedicated Sub-Page 1.2 — Enroll New Athlete (`showEnrollTraineePage`):**
+  - Full registration form capturing athlete personal details, guardian contact, blood group, batch, monthly fee, and baseline 1-100 biomechanical ratings.
+- **Dedicated Sub-Page 1.3 — Add Biomechanical Evaluation (`evaluatingTrainee`):**
+  - Direct form to log technique ratings, session focus, and actionable coach feedback notes.
 
-#### Tab 1: 🏃 Trainee Roster & Skill Assessments
-- **Purpose:** Tracking performance, bio-mechanics, and drill progress for private students.
-- **Trainee Cards:**
-  - Name, age, role, batting strike rate, bowling speed clocked, fitness Yo-Yo score.
-  - Coach Notes & Assessment log (e.g., *Front-foot drive head position upright; back-foot punch improving*).
-  - `+ Add Performance Evaluation` action.
+#### Tab 2: 📅 1-on-1 Sessions & Masterclass Scheduling Calendar (`?tab=sessions`)
+- **Interactive Date Filters:** Switch between `All Days`, `Today`, and `Tomorrow`.
+- **Session Slot Cards:** Displays scheduled time, date, session category (`1-on-1 Private Net`, `Fast Bowling Clinic`, `Masterclass Group`), assigned venue (`Turf Net 1 - Red Soil`, `Bowling Machine Bay 2`, etc.), target focus topic, hourly fee, and payment status (`Paid via Escrow` vs `Pending`).
+- **Direct Actions:** `[✓ Mark Completed / Re-open Slot]`, `[Reschedule Slot]`.
+- **Dedicated Sub-Page 2.1 — Schedule 1-on-1 Session (`showScheduleSessionPage`):**
+  - Form to select trainee/group, session type, date, time window, venue net, coaching focus, fee, and escrow payment status.
 
-#### Tab 2: 📅 Private Session Booking Calendar
-- **Purpose:** Managing 1-on-1 coaching slots and group masterclasses.
-- **Slot Manager:**
-  - Morning 1-on-1 Net Session (06:00 - 07:00 AM) — Booked by Dev Anand.
-  - Evening Fast Bowling Clinic (04:30 - 06:00 PM) — 4 Trainees enrolled.
-  - Hourly rate display, venue location (e.g., *Nets A & B - Turf 2*).
-  - Direct Actions: `[Call Trainee]`, `[Reschedule Slot]`.
+#### Tab 3: 📹 Video Drill Analysis & Technical Library (`?tab=drills`)
+- **Skill Category Filters:** `All Drills`, `Batting`, `Fast Bowling`, `Spin`, `Fielding`.
+- **Technical Drill Cards:**
+  - HD Video thumbnail with slow-motion framerate pill (`HD 60FPS Slow-Mo`, `240FPS Ultra Slow-Mo`).
+  - Drill title, duration, assigned trainees count, and primary checkpoint preview.
+- **Dedicated Sub-Page 3.1 — Watch Slow-Mo Video Breakdown (`viewingDrill`):**
+  - Video simulator with playback speed toggles (`0.25x Slow-Mo`, `0.5x Half-Speed`, `1.0x Normal`), frame counter, mandatory 3-point biomechanical checkpoints, common technical fault warning box, and prescribed repetitions.
+- **Dedicated Sub-Page 3.2 — Create Technical Drill (`showCreateDrillPage`):**
+  - Form to publish technical drills with title, category, video FPS, thumbnail URL, 3 checkpoints, common fault, and recommended sets/reps.
 
-#### Tab 3: 📹 Video Drill Analysis Library
-- **Purpose:** Video-based technical coaching with slow-motion and angle review.
-- Tagged player clips with coach voice notes and biomechanical pointers.
-
-#### Tab 4: 💵 Coaching Income & Payments
-- Session fees earned, pending monthly coaching fees per student, 1-click payment reminders, and revenue ledger.
+#### Tab 4: 💵 Coaching Income, Invoicing & Fee Ledger (`?tab=earnings`)
+- **Coach P&L Math Formula Banner:**
+  $$\text{Net Profit} = (\text{1-on-1 Sessions} + \text{Monthly Retainers}) - \text{Facility Turf Net Rental Outflow}$$
+- **KPI Financial Cards:** Monthly Billed (`₹1,48,000`), Collected Fees (`₹1,18,500`), Pending Dues (`₹29,500`), Net Turf Net Rent (`₹24,000`).
+- **Itemized Fee Ledger:** Trainee list with payment status pills (`Paid` vs `Overdue`).
+  - **`[📲 Remind via WhatsApp]`**: Direct WhatsApp link with prefilled personalized message and UPI QR payment address.
+  - **`[Record Payment]` Action**: Opens dedicated sub-page to record payment amount, mode, and generate receipt.
+- **Dedicated Sub-Page 4.1 — Record Coaching Payment (`recordingPaymentTrainee`):**
+  - Form to enter amount received, payment method (UPI, NEFT, Cash, Escrow), and tuition notes.
+- **Dedicated Sub-Page 4.2 — Printable Official Coaching Tuition Receipt (`viewingReceipt`):**
+  - Formal digital tuition receipt complete with unique voucher ID, BCCI coach credentials, athlete details, itemized fee breakdown, and digital authentication seal with 1-click `[Print Receipt]` trigger.
 
 ---
 

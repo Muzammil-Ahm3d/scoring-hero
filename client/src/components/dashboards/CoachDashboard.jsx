@@ -15,6 +15,10 @@ import {
   Video,
   Bot,
   Send,
+  Users,
+  DollarSign,
+  PlaySquare,
+  ChevronRight,
 } from 'lucide-react'
 
 export default function CoachDashboard({ user }) {
@@ -110,33 +114,117 @@ export default function CoachDashboard({ user }) {
         </div>
       </section>
 
-      {/* Quick Action Shortcuts (Allocated Features) */}
+      {/* Coach Operations Grid */}
       <div className="sh-quick-actions-grid">
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/scorer')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/coach?tab=trainees')}>
           <div className="sh-action-icon" style={{ background: 'rgba(255,45,58,0.15)', color: '#ff2d3a' }}>
-            <Activity size={18} />
+            <Users size={18} />
           </div>
-          <span>Practice Scorer</span>
+          <span>Trainee Radar</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/match-tools')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/coach?tab=sessions')}>
           <div className="sh-action-icon" style={{ background: 'rgba(61,224,255,0.15)', color: '#3de0ff' }}>
-            <Shield size={18} />
+            <Calendar size={18} />
           </div>
-          <span>DLS & DRS Calc</span>
+          <span>1-on-1 Sessions</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/highlights')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/coach?tab=drills')}>
           <div className="sh-action-icon" style={{ background: 'rgba(255,200,61,0.15)', color: '#ffc83d' }}>
-            <Video size={18} />
+            <PlaySquare size={18} />
           </div>
-          <span>Video Analysis</span>
+          <span>Video Drills</span>
         </button>
-        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/stats')}>
+        <button type="button" className="sh-action-btn" onClick={() => navigate('/app/coach?tab=earnings')}>
           <div className="sh-action-icon" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676' }}>
-            <Award size={18} />
+            <DollarSign size={18} />
           </div>
-          <span>Skill Ratings</span>
+          <span>P&L Ledger</span>
         </button>
       </div>
+
+      {/* Today's 1-on-1 Practice Net Schedule */}
+      <section className="panel" style={{ padding: '14px 16px' }}>
+        <header style={{ marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Calendar size={17} color="#00e676" />
+            <h3 style={{ margin: 0, fontSize: 15 }}>Today's 1-on-1 High Performance Nets</h3>
+          </div>
+          <button
+            type="button"
+            className="text-link"
+            style={{ fontSize: 12 }}
+            onClick={() => navigate('/app/coach?tab=sessions')}
+          >
+            All Sessions →
+          </button>
+        </header>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '10px 12px',
+              background: 'rgba(255,255,255,0.02)',
+              borderRadius: 8,
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span className="pill" style={{ background: 'rgba(56,189,248,0.15)', color: '#38bdf8', fontSize: 10 }}>
+                  07:30 - 08:45 AM
+                </span>
+                <strong style={{ fontSize: 13, color: '#f8fafc' }}>Aryan Deshmukh</strong>
+              </div>
+              <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
+                Spin Box Net 3 • Drift into Right-Hander & Arm Ball Skid
+              </span>
+            </div>
+            <button
+              type="button"
+              className="btn btn--secondary btn--sm"
+              style={{ fontSize: 11 }}
+              onClick={() => navigate('/app/coach?tab=sessions')}
+            >
+              Manage
+            </button>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '10px 12px',
+              background: 'rgba(255,255,255,0.02)',
+              borderRadius: 8,
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span className="pill" style={{ background: 'rgba(255,200,61,0.15)', color: '#ffc83d', fontSize: 10 }}>
+                  04:30 - 05:45 PM
+                </span>
+                <strong style={{ fontSize: 13, color: '#f8fafc' }}>Kavya Raman</strong>
+              </div>
+              <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
+                Bowling Machine Bay 2 • Yorker Accuracy & 125 km/h Bouncer Variation
+              </span>
+            </div>
+            <button
+              type="button"
+              className="btn btn--secondary btn--sm"
+              style={{ fontSize: 11 }}
+              onClick={() => navigate('/app/coach?tab=sessions')}
+            >
+              Manage
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Trainee Attendance Tracker (Core requirement) */}
       <section className="panel" style={{ padding: '14px 16px' }}>
