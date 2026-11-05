@@ -50,23 +50,66 @@ const GAMES_LIST = [
   { id: 'mallakhamb', name: 'Mallakhamb', icon: '🤸', roles: ['Pole Mallakhamb', 'Rope Mallakhamb', 'Hanging Mallakhamb'] },
 ]
 
-export default function Register({ defaultTab }) {
+const MODULE_PREFILLS = {
+  grounds: { key: 'grounds', phone: '9999999999', target: '/app/grounds', title: 'Grounds & Stadium Operations', icon: '🏟️' },
+  stadium: { key: 'grounds', phone: '9999999999', target: '/app/grounds', title: 'Grounds & Stadium Operations', icon: '🏟️' },
+  academy: { key: 'academy', phone: '8888888888', target: '/app/academy', title: 'Sports Academies Portal', icon: '🏫' },
+  academies: { key: 'academy', phone: '8888888888', target: '/app/academy', title: 'Sports Academies Portal', icon: '🏫' },
+  seller: { key: 'seller', phone: '7777777777', target: '/app/seller', title: 'Manufacturers & Sports Sellers', icon: '🏭' },
+  merchant: { key: 'seller', phone: '7777777777', target: '/app/seller', title: 'Manufacturers & Sports Sellers', icon: '🏭' },
+  manufacturer: { key: 'seller', phone: '7777777777', target: '/app/seller', title: 'Manufacturers & Sports Sellers', icon: '🏭' },
+  coach: { key: 'coach', phone: '6666666666', target: '/app/coach', title: 'Coach & Trainer Operations', icon: '🏏' },
+  trainer: { key: 'coach', phone: '6666666666', target: '/app/coach', title: 'Coach & Trainer Operations', icon: '🏏' },
+  streamer: { key: 'streamer', phone: '5555555555', target: '/app/streamer', title: 'Live Streamer & Broadcaster', icon: '📹' },
+  broadcast: { key: 'streamer', phone: '5555555555', target: '/app/streamer', title: 'Live Streamer & Broadcaster', icon: '📹' },
+  sponsor: { key: 'sponsor', phone: '4444444444', target: '/app/sponsor', title: 'Tournament Sponsor & Brand', icon: '🤝' },
+  sponsorship: { key: 'sponsor', phone: '4444444444', target: '/app/sponsor', title: 'Tournament Sponsor & Brand', icon: '🤝' },
+}
+
+export default function Register({ defaultTab, prefillModule }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const { draft, completeSignup, loginWithIdentifier, loginAsGuest } = useAuth()
+  const { user, draft, completeSignup, loginWithIdentifier, loginAsGuest } = useAuth()
+
+  // Match direct module from prop, pathname, or redirect param
+  const matchedModule = useMemo(() => {
+    if (prefillModule && MODULE_PREFILLS[prefillModule]) {
+      return MODULE_PREFILLS[prefillModule]
+    }
+    const path = location.pathname.toLowerCase()
+    for (const key of Object.keys(MODULE_PREFILLS)) {
+      if (path.includes(`/${key}/login`) || path.includes(`/app/${key}/login`)) {
+        return MODULE_PREFILLS[key]
+      }
+    }
+    const redirectParam = searchParams.get('redirect')?.toLowerCase() || ''
+    for (const key of Object.keys(MODULE_PREFILLS)) {
+      if (redirectParam.includes(`/${key}`)) {
+        return MODULE_PREFILLS[key]
+      }
+    }
+    return null
+  }, [prefillModule, location.pathname, searchParams])
 
   // 1. Two primary modes: 'register' vs 'login'
-  const isLoginPath = location.pathname === '/login' || location.pathname === '/signin' || defaultTab === 'login' || searchParams.get('mode') === 'login'
+  const isLoginPath = location.pathname === '/login' || location.pathname === '/signin' || Boolean(matchedModule) || defaultTab === 'login' || searchParams.get('mode') === 'login'
   const [activeTab, setActiveTab] = useState(isLoginPath ? 'login' : 'register')
 
   useEffect(() => {
-    if (location.pathname === '/login' || location.pathname === '/signin' || defaultTab === 'login') {
+    if (matchedModule || location.pathname === '/login' || location.pathname === '/signin' || defaultTab === 'login') {
       setActiveTab('login')
     } else if (location.pathname === '/register' || location.pathname === '/signup' || defaultTab === 'register') {
       setActiveTab('register')
     }
-  }, [location.pathname, defaultTab])
+  }, [location.pathname, defaultTab, matchedModule])
+
+  // If already logged in, redirect directly to module target
+  useEffect(() => {
+    if (user && matchedModule) {
+      navigate(matchedModule.target, { replace: true })
+    }
+  }, [user, matchedModule, navigate])
 
   // 2. Role selection: 'player' vs 'business' (Two simple tabs)
   const [accountType, setAccountType] = useState('player') // 'player' | 'business'
@@ -137,11 +180,19 @@ export default function Register({ defaultTab }) {
 
   // Input states (No password required - 100% OTP!)
   const [phoneCode, setPhoneCode] = useState(draft.phoneCode || '+91')
-  const [phone, setPhone] = useState(draft.phone || '')
+  const [phone, setPhone] = useState(draft.phone || matchedModule?.phone || '')
   const [email, setEmail] = useState(draft.email || '')
   const [username, setUsername] = useState(draft.nickname || '')
   const [agreeTerms, setAgreeTerms] = useState(true)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (matchedModule) {
+      setPhone(matchedModule.phone)
+      setAuthMethod('mobile')
+      setActiveTab('login')
+    }
+  }, [matchedModule])
 
   // Universal OTP dialog state (for Mobile OTP and Email OTP)
   const [showOtpDialog, setShowOtpDialog] = useState(false)
@@ -398,7 +449,7 @@ export default function Register({ defaultTab }) {
     if (activeTab === 'login') {
       const identifier = otpTargetType === 'mobile' ? cleanPhone : cleanEmail
       const loggedUser = loginWithIdentifier(identifier)
-      const redirectTarget = searchParams.get('redirect') || '/app'
+      const redirectTarget = matchedModule?.target || searchParams.get('redirect') || '/app'
       // If user already verified, go directly to target or app dashboard! Otherwise redirect to Aadhaar verification
       if (otpTargetType === 'mobile') {
         if (loggedUser?.aadhaarVerified) {
@@ -422,7 +473,7 @@ export default function Register({ defaultTab }) {
     const googleEmail = 'athlete.sports@gmail.com'
     if (activeTab === 'login') {
       loginWithIdentifier(googleEmail)
-      const redirectTarget = searchParams.get('redirect') || '/app'
+      const redirectTarget = matchedModule?.target || searchParams.get('redirect') || '/app'
       navigate(redirectTarget, { replace: true })
       return
     }
@@ -495,6 +546,42 @@ export default function Register({ defaultTab }) {
         </div>
 
         <form onSubmit={handleFormSubmit} className="sh-white-form">
+          {matchedModule && (
+            <div style={{
+              margin: '0 0 14px',
+              padding: '10px 14px',
+              background: '#f0fdf4',
+              border: '1.5px solid #86efac',
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 20 }}>{matchedModule.icon}</span>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#14532d' }}>
+                    {matchedModule.title} Login
+                  </div>
+                  <div style={{ fontSize: 11, color: '#16a34a' }}>
+                    Auto-filling registered business session
+                  </div>
+                </div>
+              </div>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                background: '#16a34a',
+                color: '#ffffff',
+                padding: '4px 10px',
+                borderRadius: 8,
+                letterSpacing: '0.4px',
+              }}>
+                {matchedModule.phone}
+              </span>
+            </div>
+          )}
           {/* ============================================================== */}
           {/* REGISTER MODE: SINGLE PAGE FLOW (ROLE -> STATS -> AUTH TABS)  */}
           {/* ============================================================== */}
@@ -1456,7 +1543,7 @@ export default function Register({ defaultTab }) {
                 className="sh-modern-guest-btn"
                 onClick={() => {
                   loginAsGuest('player')
-                  const redirectTarget = searchParams.get('redirect') || '/app'
+                  const redirectTarget = matchedModule?.target || searchParams.get('redirect') || '/app'
                   navigate(redirectTarget, { replace: true })
                 }}
               >

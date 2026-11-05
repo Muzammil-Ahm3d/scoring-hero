@@ -87,6 +87,23 @@ export default function App() {
       <Route path="/profile" element={<ProfileSetup />} />
       <Route path="/role" element={<RoleSelect />} />
       <Route path="/privacy" element={<Privacy />} />
+
+      {/* Direct Business Module Login Routes (Both /app/<module>/login and /<module>/login) */}
+      <Route path="/app/grounds/login" element={<Register defaultTab="login" prefillModule="grounds" />} />
+      <Route path="/app/stadium/login" element={<Register defaultTab="login" prefillModule="grounds" />} />
+      <Route path="/app/academy/login" element={<Register defaultTab="login" prefillModule="academy" />} />
+      <Route path="/app/seller/login" element={<Register defaultTab="login" prefillModule="seller" />} />
+      <Route path="/app/coach/login" element={<Register defaultTab="login" prefillModule="coach" />} />
+      <Route path="/app/streamer/login" element={<Register defaultTab="login" prefillModule="streamer" />} />
+      <Route path="/app/sponsor/login" element={<Register defaultTab="login" prefillModule="sponsor" />} />
+
+      <Route path="/grounds/login" element={<Register defaultTab="login" prefillModule="grounds" />} />
+      <Route path="/stadium/login" element={<Register defaultTab="login" prefillModule="grounds" />} />
+      <Route path="/academy/login" element={<Register defaultTab="login" prefillModule="academy" />} />
+      <Route path="/seller/login" element={<Register defaultTab="login" prefillModule="seller" />} />
+      <Route path="/coach/login" element={<Register defaultTab="login" prefillModule="coach" />} />
+      <Route path="/streamer/login" element={<Register defaultTab="login" prefillModule="streamer" />} />
+      <Route path="/sponsor/login" element={<Register defaultTab="login" prefillModule="sponsor" />} />
       <Route
         path="/app"
         element={
