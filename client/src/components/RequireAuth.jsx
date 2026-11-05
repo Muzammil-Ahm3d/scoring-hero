@@ -1,8 +1,12 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function RequireAuth({ children }) {
   const { user } = useAuth()
-  if (!user) return <Navigate to="/" replace />
+  const location = useLocation()
+  if (!user) {
+    const redirectParam = encodeURIComponent(location.pathname + location.search)
+    return <Navigate to={`/login?redirect=${redirectParam}`} replace />
+  }
   return children
 }

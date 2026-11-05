@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useState, useMemo, useEffect } from 'react'
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import {
   User,
   Building,
@@ -52,12 +52,21 @@ const GAMES_LIST = [
 
 export default function Register({ defaultTab }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const { draft, completeSignup, loginWithIdentifier, loginAsGuest } = useAuth()
 
   // 1. Two primary modes: 'register' vs 'login'
-  const initialMode = defaultTab || (searchParams.get('mode') === 'login' ? 'login' : 'register')
-  const [activeTab, setActiveTab] = useState(initialMode) // 'register' | 'login'
+  const isLoginPath = location.pathname === '/login' || location.pathname === '/signin' || defaultTab === 'login' || searchParams.get('mode') === 'login'
+  const [activeTab, setActiveTab] = useState(isLoginPath ? 'login' : 'register')
+
+  useEffect(() => {
+    if (location.pathname === '/login' || location.pathname === '/signin' || defaultTab === 'login') {
+      setActiveTab('login')
+    } else if (location.pathname === '/register' || location.pathname === '/signup' || defaultTab === 'register') {
+      setActiveTab('register')
+    }
+  }, [location.pathname, defaultTab])
 
   // 2. Role selection: 'player' vs 'business' (Two simple tabs)
   const [accountType, setAccountType] = useState('player') // 'player' | 'business'
@@ -389,15 +398,16 @@ export default function Register({ defaultTab }) {
     if (activeTab === 'login') {
       const identifier = otpTargetType === 'mobile' ? cleanPhone : cleanEmail
       const loggedUser = loginWithIdentifier(identifier)
-      // If user already verified, go directly to app dashboard! Otherwise redirect to Aadhaar verification
+      const redirectTarget = searchParams.get('redirect') || '/app'
+      // If user already verified, go directly to target or app dashboard! Otherwise redirect to Aadhaar verification
       if (otpTargetType === 'mobile') {
         if (loggedUser?.aadhaarVerified) {
-          navigate('/app', { replace: true })
+          navigate(redirectTarget, { replace: true })
         } else {
           navigate('/aadhaar', { replace: true })
         }
       } else {
-        navigate('/app', { replace: true })
+        navigate(redirectTarget, { replace: true })
       }
       return
     }
@@ -412,7 +422,8 @@ export default function Register({ defaultTab }) {
     const googleEmail = 'athlete.sports@gmail.com'
     if (activeTab === 'login') {
       loginWithIdentifier(googleEmail)
-      navigate('/app', { replace: true })
+      const redirectTarget = searchParams.get('redirect') || '/app'
+      navigate(redirectTarget, { replace: true })
       return
     }
 
@@ -461,6 +472,8 @@ export default function Register({ defaultTab }) {
             onClick={() => {
               setActiveTab('login')
               setError('')
+              const redirect = searchParams.get('redirect')
+              navigate(redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login', { replace: true })
             }}
           >
             <ArrowRight size={15} strokeWidth={2.6} />
@@ -472,6 +485,8 @@ export default function Register({ defaultTab }) {
             onClick={() => {
               setActiveTab('register')
               setError('')
+              const redirect = searchParams.get('redirect')
+              navigate(redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : '/register', { replace: true })
             }}
           >
             <Plus size={16} strokeWidth={2.6} />
@@ -1441,7 +1456,8 @@ export default function Register({ defaultTab }) {
                 className="sh-modern-guest-btn"
                 onClick={() => {
                   loginAsGuest('player')
-                  navigate('/app', { replace: true })
+                  const redirectTarget = searchParams.get('redirect') || '/app'
+                  navigate(redirectTarget, { replace: true })
                 }}
               >
                 <div className="sh-modern-guest-icon">
