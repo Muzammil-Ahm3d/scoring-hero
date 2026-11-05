@@ -196,9 +196,9 @@ export default function CoachDashboard({ user }) {
         </button>
         <button type="button" className="sh-action-btn" onClick={() => navigate('/app/coach?tab=drills')}>
           <div className="sh-action-icon" style={{ background: 'rgba(255,200,61,0.15)', color: '#ffc83d' }}>
-            <PlaySquare size={18} />
+            <ClipboardList size={18} />
           </div>
-          <span>Video Drills</span>
+          <span>Training Drills</span>
         </button>
         <button type="button" className="sh-action-btn" onClick={() => navigate('/app/coach?tab=earnings')}>
           <div className="sh-action-icon" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676' }}>

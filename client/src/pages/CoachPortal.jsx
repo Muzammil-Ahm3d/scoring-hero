@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Users,
   Calendar,
-  PlaySquare,
+  ClipboardList,
   DollarSign,
   Search,
   Filter,
@@ -353,69 +353,105 @@ const INITIAL_DRILLS = [
     id: 'DRL-301',
     title: 'Front-Foot Cover Drive Weight Transfer',
     category: 'Batting',
-    fps: 'HD 60FPS Slow-Mo',
-    duration: '04:15 min',
-    videoThumb: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80',
+    difficulty: 'Intermediate to Advanced',
+    whatToDrill: 'Head position directly over front knee, forward stride alignment, and full-face bat presentation accelerating through the cover arc without head collapse or falling off-side.',
+    setup: 'Nets Lane 1: 6 marker cones placed in off-side driving arc (cover-point, cover, extra-cover). Stationary batting tee or coach knee-height drop feed.',
+    equipment: 'Bat, Batting Tee / Drop-feed, 6 Marker Cones, 30 Turf/Poly Balls',
     assignedCount: 14,
+    conductedToday: true,
+    steps: [
+      'Balanced Stance: Maintain relaxed stance with eyes dead level facing delivery crease.',
+      'Head Lead & Stride: Lead with chin toward ball line; land front toe pointing toward cover-point.',
+      'Vertical Presentation: Present full face of bat with high guide elbow leading through impact.',
+      'Balance Freeze: Hold follow-through finish for 2 full seconds to lock in balance memory.',
+    ],
     checkpoints: [
       'Head positioned directly over front knee at moment of ball contact',
-      'Full bat face presentation accelerating through target cover area',
-      'High lead elbow guide without premature wrist twist',
+      'Full bat face presentation accelerating cleanly through target cone channel',
+      'High lead elbow guide without premature wrist twist or slicing',
     ],
-    commonFault: 'Dropping head towards off-side causing body weight to fall outside off-stump.',
-    recommendedReps: '4 Sets × 15 Drives (60 balls daily against throwdowns)',
-    coachNote: 'Key drill for stroke players facing 130+ km/h swinging deliveries.',
+    commonFault: 'Dropping head towards off-side causing body weight to fall outside off-stump and nicking.',
+    coachCorrection: 'Place marker cone under chin; force trainee to execute 20 drives without dropping the cone.',
+    recommendedReps: '4 Sets × 15 Drives (60 balls daily against throwdowns / tee)',
+    coachNote: 'Key drill for stroke players facing 130+ km/h swinging deliveries to master balance and timing.',
   },
   {
     id: 'DRL-302',
     title: 'Fast Bowler Gather & Upright Wrist Release',
     category: 'Fast Bowling',
-    fps: '240FPS Ultra Slow-Mo',
-    duration: '06:30 min',
-    videoThumb: 'https://images.unsplash.com/photo-1531415074868-036b107e775a?auto=format&fit=crop&w=800&q=80',
+    difficulty: 'All Pace Bowlers',
+    whatToDrill: 'High bowling arm gather, locked upright seam position at point of release, explosive hip-shoulder torque and non-bowling arm pull down through ribcage.',
+    setup: 'Turf Net Lane 3: Chalk target boxes at 6 to 8 meter good length channel outside off-stump. Crease landing marker line.',
+    equipment: '4 Red Leather Match Balls, 2 Target Cones, Length Chalk Box',
     assignedCount: 12,
+    conductedToday: false,
+    steps: [
+      'Back-Foot Impact: Land on back foot parallel to bowling crease, eyes locked onto off-stump.',
+      'The Gather & Knee Drive: High front knee tuck with non-bowling elbow aiming straight down pitch.',
+      'Upright Wrist Snap: Index and middle fingers locked behind the seam; snap through release point.',
+      'Follow-Through Deceleration: Drive bowling shoulder through to opposite knee, finish down wicket side.',
+    ],
     checkpoints: [
       'Explosive back-foot landing aligned straight down pitch',
       'Vertical index and middle fingers behind seam at release',
       'Full non-bowling arm pull down through ribcage to maximize hip torque',
     ],
     commonFault: 'Collapsing front knee on delivery stride causing energy leak and short pitch delivery.',
-    recommendedReps: '5 Spells × 6 Deliveries (Target marker at good length)',
-    coachNote: 'Helps bowlers cross 125 km/h mark with consistent outswing deviation.',
+    coachCorrection: 'Place hurdle cone at delivery crease to enforce braced front leg lock on impact.',
+    recommendedReps: '5 Spells × 6 Deliveries (Target marker at good length off-stump channel)',
+    coachNote: 'Helps bowlers cross 125+ km/h mark with consistent outswing deviation and steep upright bounce.',
   },
   {
     id: 'DRL-303',
     title: 'Off-Spin Revolutions & Flighted Dip',
     category: 'Spin',
-    fps: '120FPS Slow-Mo',
-    duration: '05:00 min',
-    videoThumb: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80',
+    difficulty: 'Intermediate',
+    whatToDrill: 'Index finger knuckle rip over top seam, high delivery loop with steep trajectory drop into the 4.5m batsman blind spot.',
+    setup: 'Spin Box Net 2: 3-foot chalk target square at 5.5 meters on off-stump line. Batting dummy on batting crease.',
+    equipment: '6 Spin Practice Balls, Chalk Box, Trajectory Marker Rod',
     assignedCount: 8,
+    conductedToday: true,
+    steps: [
+      'Pivot & Stride: Smooth 5-step approach, back-foot parallel, pivot hard on front ball of foot.',
+      'Cock & Rip: Index finger cocked around top seam, wrist rolled violently clockwise over ball.',
+      'Trajectory Elevation: Push ball above eye-line so seam revolutions generate aerodynamic dip.',
+      'Shoulder Follow-Through: Complete pivot with bowling shoulder pointing straight at batsman.',
+    ],
     checkpoints: [
-      'Index finger cocked over top seam for maximum torque at 2200 RPM',
+      'Index finger cocked over top seam for maximum torque at 2000+ RPM',
       'Body weight pushed upward through delivery arc for natural trajectory dip',
       'Right shoulder pointing straight at batsman at follow-through finish',
     ],
-    commonFault: 'Pushing ball with palm instead of ripping off the index finger knuckle.',
-    recommendedReps: '6 Overs Continuous Loop (Aiming for 3-foot chalk square)',
-    coachNote: 'Essential drill to deceive aggressive batsmen dancing down track.',
+    commonFault: 'Pushing ball with palm instead of ripping off the index finger knuckle, causing flat drag-downs.',
+    coachCorrection: 'Have bowler practice spinning tennis balls off index knuckle against a wall 20 times.',
+    recommendedReps: '6 Overs Continuous Loop (Aiming for 3-foot chalk square with consistent seam angle)',
+    coachNote: 'Essential drill to deceive aggressive batsmen dancing down track in modern T20/ODI cricket.',
   },
   {
     id: 'DRL-304',
     title: 'Wicketkeeper Low Snatch & Blind Rebound',
     category: 'Fielding',
-    fps: 'HD 60FPS Slow-Mo',
-    duration: '03:45 min',
-    videoThumb: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80',
+    difficulty: 'Match-Ready',
+    whatToDrill: 'Staying down until ball passes bounce point, soft cupped hands catching ball inside chest frame, rapid lateral reflex reaction to edges.',
+    setup: 'Slip catch cradle / deflection ramp placed 2.5 meters in front of keeper. Coach throwing sharp edges from side.',
+    equipment: 'Deflection Catch Ramp, Wicketkeeping Gloves, Incrediballs / Leather Balls',
     assignedCount: 6,
+    conductedToday: false,
+    steps: [
+      'Crouch Stance: Weight on balls of feet, hips low, gloves relaxed resting on turf with fingers down.',
+      'Watch Bounce: Head dead still, eyes tracking ball through deviation off deflection ramp.',
+      'Soft Hand Catch: Catch ball with elbows slightly flexed to absorb impact directly into glove webbing.',
+      'Recovery: Instantly return to low balanced position ready for next deflection.',
+    ],
     checkpoints: [
       'Soft cupped hands rising smoothly with pitch bounce',
       'Body weight balanced on balls of feet, head dead still',
       'Clean snatch without double clutching or snatching upward early',
     ],
-    commonFault: 'Rising too early before ball reaches glove pocket on bouncy turf pitches.',
-    recommendedReps: '50 Catches off deflection ramp (25 right / 25 left)',
-    coachNote: 'Directly builds muscle memory for edge catches standing up to pacers and spinners.',
+    commonFault: 'Rising too early before ball reaches glove pocket on bouncy turf pitches, creating blind edges.',
+    coachCorrection: 'Keep knees flexed by placing a resistance band above knees during 30 consecutive snatches.',
+    recommendedReps: '50 Catches off deflection ramp (25 right edge / 25 left edge)',
+    coachNote: 'Directly builds muscle memory for edge catches standing up to pacers and spinners on changing wickets.',
   },
 ]
 
@@ -631,6 +667,36 @@ export default function CoachPortal() {
     showToast(`✓ Session status updated!`)
   }
 
+  function handleToggleConducted(drillId) {
+    setDrills((prev) =>
+      prev.map((d) => {
+        if (d.id === drillId) {
+          const nextVal = !d.conductedToday
+          showToast(
+            nextVal
+              ? `✓ Marked "${d.title}" as Conducted Today!`
+              : `Updated "${d.title}" status to Scheduled.`
+          )
+          return { ...d, conductedToday: nextVal }
+        }
+        return d
+      })
+    )
+    if (viewingDrill && viewingDrill.id === drillId) {
+      setViewingDrill((prev) => (prev ? { ...prev, conductedToday: !prev.conductedToday } : null))
+    }
+  }
+
+  function handleQuickAssignDrill(drill) {
+    setDrills((prev) =>
+      prev.map((d) => (d.id === drill.id ? { ...d, assignedCount: d.assignedCount + 1 } : d))
+    )
+    if (viewingDrill && viewingDrill.id === drill.id) {
+      setViewingDrill((prev) => (prev ? { ...prev, assignedCount: prev.assignedCount + 1 } : null))
+    }
+    showToast(`✓ "${drill.title}" assigned to squad trainees!`)
+  }
+
   function handleCreateDrillSubmit(e) {
     e.preventDefault()
     const form = e.target
@@ -638,24 +704,31 @@ export default function CoachPortal() {
       id: `DRL-${Date.now().toString().slice(-3)}`,
       title: form.title.value,
       category: form.category.value,
-      fps: form.fps.value,
-      duration: form.duration.value || '04:00 min',
-      videoThumb:
-        form.videoThumb.value ||
-        'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80',
+      difficulty: form.difficulty?.value || 'All Levels',
+      whatToDrill: form.whatToDrill?.value || 'Precision cricket technical fundamentals.',
+      setup: form.setup?.value || 'Standard turf net setup with target cones.',
+      equipment: form.equipment?.value || 'Balls, Cones, Bat / Ball equipment',
       assignedCount: 0,
-      checkpoints: [
-        form.checkpoint1.value || 'Maintain high elbow and still head',
-        form.checkpoint2.value || 'Weight centered on contact',
-        form.checkpoint3.value || 'Clean wrist snap follow-through',
+      conductedToday: false,
+      steps: [
+        form.step1?.value || 'Balanced Stance: Get into stable balanced posture.',
+        form.step2?.value || 'Trigger & Movement: Step into the ball line with head leading.',
+        form.step3?.value || 'Impact & Execution: Clean bat/ball release through target area.',
+        form.step4?.value || 'Follow-Through: Hold balance finish for 2 seconds.',
       ],
-      commonFault: form.commonFault.value || 'Over-rotating torso too early in delivery.',
-      recommendedReps: form.recommendedReps.value || '4 sets × 15 reps',
-      coachNote: form.coachNote.value || 'Mastery drill for high-performance training.',
+      checkpoints: [
+        form.checkpoint1?.value || 'Maintain high elbow and still head directly over line',
+        form.checkpoint2?.value || 'Weight centered and balanced through contact',
+        form.checkpoint3?.value || 'Clean follow-through toward target area',
+      ],
+      commonFault: form.commonFault?.value || 'Over-rotating torso too early in delivery or stroke.',
+      coachCorrection: form.coachCorrection?.value || 'Use cone markers to enforce body alignment.',
+      recommendedReps: form.recommendedReps?.value || '4 sets × 15 reps (60 balls total)',
+      coachNote: form.coachNote?.value || 'Mastery drill for high-performance training.',
     }
     setDrills([newDrill, ...drills])
     setShowCreateDrillPage(false)
-    showToast(`✓ New technical drill "${newDrill.title}" published to library!`)
+    showToast(`✓ New training drill "${newDrill.title}" saved & published!`)
   }
 
   function handleRecordPaymentSubmit(e) {
@@ -809,7 +882,7 @@ export default function CoachPortal() {
           {/* Assigned Drills List */}
           <div className="coach-card">
             <h3 className="coach-card-title">
-              <PlaySquare size={15} color="#38bdf8" /> Assigned Video Technical Drills
+              <ClipboardList size={15} color="#38bdf8" /> Assigned Training Drills
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {viewingTrainee.assignedDrills.map((dName, idx) => (
@@ -1359,11 +1432,11 @@ export default function CoachPortal() {
   }
 
   // =========================================================================
-  // DEDICATED SUB-PAGE 5: WATCH SLOW-MO DRILL BREAKDOWN & CHECKPOINTS
+  // DEDICATED SUB-PAGE 5: TECHNICAL DRILL PRACTICE SHEET & COACH CHECKPOINTS
   // =========================================================================
   if (viewingDrill) {
     return (
-      <Screen title={`Drill Breakdown · ${viewingDrill.title}`} back={false} padded={false}>
+      <Screen title={`Drill Protocol · ${viewingDrill.title}`} back={false} padded={false}>
         <div className="coach-portal-container">
           <div className="coach-top-bar">
             <button
@@ -1374,92 +1447,131 @@ export default function CoachPortal() {
               ← Back
             </button>
             <div className="coach-badge-group">
-              <span className="pill" style={{ background: 'rgba(255,200,61,0.15)', color: '#ffc83d' }}>
-                {viewingDrill.fps}
-              </span>
               <span className="pill" style={{ background: 'rgba(56,189,248,0.15)', color: '#38bdf8' }}>
                 {viewingDrill.category}
               </span>
-            </div>
-          </div>
-
-          {/* Video Player Display */}
-          <div className="coach-card" style={{ padding: 0, overflow: 'hidden' }}>
-            <div className="coach-drill-video-thumb" style={{ borderRadius: 0, border: 'none', height: 260 }}>
-              <img src={viewingDrill.videoThumb} alt={viewingDrill.title} />
-              <div
+              <span className="pill" style={{ background: 'rgba(255,255,255,0.06)', color: '#cbd5e1' }}>
+                {viewingDrill.difficulty || 'All Levels'}
+              </span>
+              <button
+                type="button"
+                className="pill"
                 style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'linear-gradient(to top, rgba(2,6,23,0.95), transparent)',
+                  background: viewingDrill.conductedToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,200,61,0.2)',
+                  color: viewingDrill.conductedToday ? '#00e676' : '#ffc83d',
+                  border: viewingDrill.conductedToday ? '1px solid #00e67666' : '1px solid #ffc83d66',
+                  cursor: 'pointer',
+                  fontWeight: 700,
                   display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  padding: 14,
+                  alignItems: 'center',
+                  gap: 4,
                 }}
+                onClick={() => handleToggleConducted(viewingDrill.id)}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <h2 style={{ margin: 0, fontSize: 18, color: '#f8fafc' }}>{viewingDrill.title}</h2>
-                    <span style={{ fontSize: 12, color: 'var(--muted)' }}>
-                      Duration: {viewingDrill.duration} • Active in {viewingDrill.assignedCount} Trainee Programs
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      padding: '6px 12px',
-                      background: '#00e676',
-                      color: '#020617',
-                      borderRadius: 20,
-                      fontWeight: 800,
-                      fontSize: 11,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}
-                  >
-                    <Video size={13} /> 60 FPS SIMULATION
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Video Controls Bar */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '10px 14px',
-                background: 'rgba(15,23,42,0.95)',
-                borderTop: '1px solid rgba(255,255,255,0.06)',
-              }}
-            >
-              <div style={{ display: 'flex', gap: 6 }}>
-                {['0.25x Slow-Mo', '0.5x Half-Speed', '1.0x Normal'].map((spd, i) => (
-                  <button
-                    key={spd}
-                    type="button"
-                    className="pill"
-                    style={{
-                      background: i === 0 ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)',
-                      color: i === 0 ? '#00e676' : '#cbd5e1',
-                      border: i === 0 ? '1px solid #00e67655' : '1px solid transparent',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {spd}
-                  </button>
-                ))}
-              </div>
-              <span style={{ fontSize: 11, color: 'var(--muted)' }}>Frame 142 / 640</span>
+                <CheckCircle2 size={12} />
+                {viewingDrill.conductedToday ? 'Conducted Today ✓' : 'Mark Conducted'}
+              </button>
             </div>
           </div>
 
-          {/* Key Biomechanical Checkpoints */}
+          {/* Drill Overview Card */}
+          <div className="coach-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
+              <div>
+                <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Cricket Training Drill Protocol
+                </span>
+                <h2 style={{ margin: '4px 0 6px', fontSize: 18, color: '#f8fafc' }}>{viewingDrill.title}</h2>
+                <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                  Assigned in {viewingDrill.assignedCount} Trainee Programs • Recommended sets: {viewingDrill.recommendedReps}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="btn btn--primary btn--sm"
+                onClick={() => handleQuickAssignDrill(viewingDrill)}
+                style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <Users size={14} /> Assign to Squad
+              </button>
+            </div>
+          </div>
+
+          {/* What to Drill (Primary Focus) */}
+          <div className="coach-card" style={{ background: 'rgba(0,230,118,0.04)', borderColor: 'rgba(0,230,118,0.25)' }}>
+            <h3 className="coach-card-title" style={{ color: '#00e676' }}>
+              <Target size={16} color="#00e676" /> What to Drill (Technical Focus & Objective)
+            </h3>
+            <p style={{ margin: 0, fontSize: 13, color: '#e2e8f0', lineHeight: 1.55 }}>
+              {viewingDrill.whatToDrill}
+            </p>
+          </div>
+
+          {/* Practice Setup & Equipment */}
           <div className="coach-card">
             <h3 className="coach-card-title">
-              <CheckCircle2 size={15} color="#00e676" /> Mandatory Biomechanical Checkpoints
+              <ClipboardList size={15} color="#38bdf8" /> Practice Setup & Equipment Required
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: 10, borderRadius: 8 }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>Net / Pitch Setup</span>
+                <strong style={{ fontSize: 13, color: '#f8fafc', display: 'block', marginTop: 2 }}>{viewingDrill.setup || 'Standard Practice Turf'}</strong>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: 10, borderRadius: 8 }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>Equipment Needed</span>
+                <strong style={{ fontSize: 13, color: '#ffc83d', display: 'block', marginTop: 2 }}>{viewingDrill.equipment || 'Balls, Cones, Bat'}</strong>
+              </div>
+            </div>
+          </div>
+
+          {/* Step-by-Step Training Protocol */}
+          {viewingDrill.steps && viewingDrill.steps.length > 0 && (
+            <div className="coach-card">
+              <h3 className="coach-card-title">
+                <Activity size={15} color="#ffc83d" /> Step-by-Step Execution Sequence
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {viewingDrill.steps.map((st, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                      padding: 10,
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.05)',
+                      borderRadius: 8,
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: '50%',
+                        background: 'rgba(255,200,61,0.15)',
+                        color: '#ffc83d',
+                        fontWeight: 800,
+                        fontSize: 12,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {idx + 1}
+                    </span>
+                    <p style={{ margin: 0, fontSize: 12, color: '#cbd5e1', lineHeight: 1.45 }}>{st}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Mandatory Biomechanical Checkpoints */}
+          <div className="coach-card">
+            <h3 className="coach-card-title">
+              <CheckCircle2 size={15} color="#00e676" /> Mandatory Coach Eye Checkpoints
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {viewingDrill.checkpoints.map((cp, idx) => (
@@ -1501,29 +1613,42 @@ export default function CoachPortal() {
             </div>
           </div>
 
-          {/* Common Technical Fault to Avoid */}
-          <div className="coach-card" style={{ borderColor: 'rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.03)' }}>
-            <h3 className="coach-card-title" style={{ color: '#ef4444' }}>
-              <AlertTriangle size={15} color="#ef4444" /> Common Technical Fault to Eliminate
-            </h3>
-            <p style={{ margin: 0, fontSize: 13, color: '#fca5a5' }}>{viewingDrill.commonFault}</p>
+          {/* Common Technical Fault & Coach Correction */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 10 }}>
+            <div className="coach-card" style={{ borderColor: 'rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.03)' }}>
+              <h3 className="coach-card-title" style={{ color: '#ef4444' }}>
+                <AlertTriangle size={15} color="#ef4444" /> Common Fault to Eliminate
+              </h3>
+              <p style={{ margin: 0, fontSize: 12, color: '#fca5a5', lineHeight: 1.45 }}>{viewingDrill.commonFault}</p>
+            </div>
+            {viewingDrill.coachCorrection && (
+              <div className="coach-card" style={{ borderColor: 'rgba(0,230,118,0.25)', background: 'rgba(0,230,118,0.03)' }}>
+                <h3 className="coach-card-title" style={{ color: '#00e676' }}>
+                  <ShieldCheck size={15} color="#00e676" /> Immediate Coach Correction
+                </h3>
+                <p style={{ margin: 0, fontSize: 12, color: '#86efac', lineHeight: 1.45 }}>{viewingDrill.coachCorrection}</p>
+              </div>
+            )}
           </div>
 
           {/* Training Volume & Reps */}
           <div className="coach-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
               <div>
                 <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block' }}>Prescribed Repetition Protocol</span>
                 <strong style={{ fontSize: 14, color: '#ffc83d' }}>{viewingDrill.recommendedReps}</strong>
+                {viewingDrill.coachNote && (
+                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#94a3b8' }}>
+                    💡 <em>{viewingDrill.coachNote}</em>
+                  </p>
+                )}
               </div>
               <button
                 type="button"
                 className="btn btn--primary btn--sm"
-                onClick={() => {
-                  showToast(`✓ Drill assigned to all active trainees!`)
-                }}
+                onClick={() => handleQuickAssignDrill(viewingDrill)}
               >
-                Assign to Squad
+                + Assign to Trainees
               </button>
             </div>
           </div>
@@ -1533,11 +1658,11 @@ export default function CoachPortal() {
   }
 
   // =========================================================================
-  // DEDICATED SUB-PAGE 6: CREATE TECHNICAL DRILL
+  // DEDICATED SUB-PAGE 6: CREATE TRAINING DRILL
   // =========================================================================
   if (showCreateDrillPage) {
     return (
-      <Screen title="Create Technical Video Drill" back={false} padded={false}>
+      <Screen title="Create Training Drill" back={false} padded={false}>
         <div className="coach-portal-container">
           <div className="coach-top-bar">
             <button
@@ -1547,20 +1672,20 @@ export default function CoachPortal() {
             >
               ← Back
             </button>
-            <span className="pill" style={{ background: 'rgba(255,200,61,0.15)', color: '#ffc83d' }}>
-              Publish Video Drill
+            <span className="pill" style={{ background: 'rgba(0,230,118,0.15)', color: '#00e676', fontWeight: 700 }}>
+              Add to Academy Library
             </span>
           </div>
 
           <form onSubmit={handleCreateDrillSubmit} className="coach-card">
             <h3 className="coach-card-title">
-              <PlaySquare size={15} color="#ffc83d" /> Drill Metadata & Classification
+              <ClipboardList size={15} color="#00e676" /> Drill Specifications & Setup
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
               <div>
                 <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
-                  Technical Drill Title *
+                  Training Drill Title *
                 </label>
                 <input
                   name="title"
@@ -1585,42 +1710,93 @@ export default function CoachPortal() {
 
               <div>
                 <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
-                  Video Frame Rate (FPS) *
+                  Difficulty Level *
                 </label>
-                <select name="fps" className="sh-select" style={{ width: '100%' }}>
-                  <option value="HD 60FPS Slow-Mo">HD 60FPS Slow-Mo</option>
-                  <option value="120FPS Slow-Mo">120FPS High-Speed Slow-Mo</option>
-                  <option value="240FPS Ultra Slow-Mo">240FPS Ultra Slow-Mo (Biomechanics)</option>
+                <select name="difficulty" className="sh-select" style={{ width: '100%' }}>
+                  <option value="All Levels">All Levels</option>
+                  <option value="Beginner / Fundamentals">Beginner / Fundamentals</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Match-Ready Advanced">Match-Ready Advanced</option>
                 </select>
               </div>
 
               <div>
                 <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
-                  Video Clip Duration
+                  Equipment Required *
                 </label>
                 <input
-                  name="duration"
-                  defaultValue="05:15 min"
+                  name="equipment"
+                  defaultValue="6 Marker Cones, 30 Turf/Poly Balls, Batting Tee"
                   className="sh-input"
                   style={{ width: '100%' }}
                 />
               </div>
             </div>
 
-            <div style={{ marginTop: 8 }}>
+            <div style={{ marginTop: 10 }}>
               <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
-                Video Thumbnail URL / Asset Link
+                What to Drill (Technical Focus & Objective) *
+              </label>
+              <textarea
+                name="whatToDrill"
+                required
+                rows={3}
+                placeholder="Describe exactly what the trainee must execute during this drill (e.g. weight transfer through line of ball, head over front knee, full bat face presentation)..."
+                defaultValue="Focus on leading with the head, keeping weight centered over the front knee, and presenting the full face of the bat through the target cone channel."
+                className="sh-input"
+                style={{ width: '100%', resize: 'vertical' }}
+              />
+            </div>
+
+            <div style={{ marginTop: 10 }}>
+              <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
+                Net / Pitch Practice Setup
               </label>
               <input
-                name="videoThumb"
-                defaultValue="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80"
+                name="setup"
+                defaultValue="Nets Lane 2: Target chalk boxes at 6-8 meter good length channel outside off-stump."
                 className="sh-input"
                 style={{ width: '100%' }}
               />
             </div>
 
             <h3 className="coach-card-title" style={{ marginTop: 12 }}>
-              <CheckCircle2 size={15} color="#00e676" /> Checkpoints to Monitor (Mandatory 3)
+              <Activity size={15} color="#ffc83d" /> Step-by-Step Execution Pointers (4 Steps)
+            </h3>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <input
+                name="step1"
+                placeholder="Step 1: Stance & Trigger Movement"
+                defaultValue="Balanced Stance: Maintain relaxed posture with eyes dead level facing delivery crease."
+                className="sh-input"
+                style={{ width: '100%' }}
+              />
+              <input
+                name="step2"
+                placeholder="Step 2: Stride & Body Alignment"
+                defaultValue="Head Lead & Stride: Lead with chin toward ball line; land front toe pointing toward cover."
+                className="sh-input"
+                style={{ width: '100%' }}
+              />
+              <input
+                name="step3"
+                placeholder="Step 3: Point of Impact / Release"
+                defaultValue="Vertical Presentation: Present full face of bat with high guide elbow leading through impact."
+                className="sh-input"
+                style={{ width: '100%' }}
+              />
+              <input
+                name="step4"
+                placeholder="Step 4: Finish & Follow-Through"
+                defaultValue="Balance Freeze: Hold follow-through finish for 2 full seconds to lock in balance memory."
+                className="sh-input"
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            <h3 className="coach-card-title" style={{ marginTop: 12 }}>
+              <CheckCircle2 size={15} color="#00e676" /> Key Checkpoints to Monitor (Mandatory 3)
             </h3>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1650,18 +1826,33 @@ export default function CoachPortal() {
               />
             </div>
 
-            <div style={{ marginTop: 10 }}>
-              <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
-                Common Technical Fault to Avoid *
-              </label>
-              <input
-                name="commonFault"
-                required
-                placeholder="e.g. Dropping wrists early causing toe-end contact"
-                defaultValue="Dropping wrists early causing bottom hand dominance and spooning catches"
-                className="sh-input"
-                style={{ width: '100%' }}
-              />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10, marginTop: 10 }}>
+              <div>
+                <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
+                  Common Technical Fault to Eliminate *
+                </label>
+                <input
+                  name="commonFault"
+                  required
+                  placeholder="e.g. Dropping wrists early causing toe-end contact"
+                  defaultValue="Dropping wrists early causing bottom hand dominance and spooning catches"
+                  className="sh-input"
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
+                  Coach Immediate Correction Technique
+                </label>
+                <input
+                  name="coachCorrection"
+                  placeholder="e.g. Place cone under chin to enforce head discipline"
+                  defaultValue="Place cone under chin to enforce head discipline during 20 consecutive reps"
+                  className="sh-input"
+                  style={{ width: '100%' }}
+                />
+              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10, marginTop: 10 }}>
@@ -1671,7 +1862,7 @@ export default function CoachPortal() {
                 </label>
                 <input
                   name="recommendedReps"
-                  defaultValue="4 Sets × 15 Deliveries Daily"
+                  defaultValue="4 Sets × 15 Deliveries Daily (60 balls total)"
                   className="sh-input"
                   style={{ width: '100%' }}
                 />
@@ -1683,7 +1874,7 @@ export default function CoachPortal() {
                 </label>
                 <input
                   name="coachNote"
-                  defaultValue="Key drill for mastering high-speed bouncers on bouncy pitches."
+                  defaultValue="Essential drill for building muscle memory under match pressure."
                   className="sh-input"
                   style={{ width: '100%' }}
                 />
@@ -1704,7 +1895,7 @@ export default function CoachPortal() {
                 className="btn btn--primary"
                 style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
               >
-                <Check size={16} /> Publish Drill to Squad Library
+                <Check size={16} /> Save & Publish Training Drill
               </button>
             </div>
           </form>
@@ -1888,7 +2079,7 @@ export default function CoachPortal() {
                 <div>
                   <strong style={{ color: '#f8fafc' }}>{viewingReceipt.period}</strong>
                   <p style={{ margin: '2px 0 0', fontSize: 11, color: '#94a3b8' }}>
-                    Includes Turf Net Practice, Biomechanical Radar Assessment & Video Drill Access
+                    Includes Turf Net Practice, Biomechanical Radar Assessment & Structured Drill Access
                   </p>
                 </div>
                 <strong style={{ color: '#00e676' }}>₹{viewingReceipt.amount.toLocaleString('en-IN')}</strong>
@@ -1996,8 +2187,8 @@ export default function CoachPortal() {
             className={`coach-tab-btn ${activeTab === 'drills' ? 'is-active' : ''}`}
             onClick={() => handleTabChange('drills')}
           >
-            <PlaySquare size={16} />
-            <span>Video Drills ({drills.length})</span>
+            <ClipboardList size={16} />
+            <span>Training Drills ({drills.length})</span>
           </button>
 
           <button
@@ -2265,12 +2456,12 @@ export default function CoachPortal() {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 3: VIDEO DRILL ANALYSIS & TECHNICAL LIBRARY */}
+        {/* TAB 3: STRUCTURED TRAINING DRILLS & TECHNICAL LIBRARY */}
         {/* ================================================================= */}
         {activeTab === 'drills' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {/* Filter and Create Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
               <div className="coach-scroll-filters" style={{ flex: 1, marginRight: 8 }}>
                 {['All', 'Batting', 'Fast Bowling', 'Spin', 'Fielding'].map((cat) => (
                   <button
@@ -2304,77 +2495,139 @@ export default function CoachPortal() {
             <div className="coach-drill-grid">
               {filteredDrills.map((d) => (
                 <div key={d.id} className="coach-drill-card">
+                  {/* Card Header: Category, Difficulty & Conducted Status */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <span className="pill" style={{ background: 'rgba(56,189,248,0.15)', color: '#38bdf8', fontWeight: 700, fontSize: 11 }}>
+                        {d.category === 'Batting' ? '🏏 Batting' : d.category === 'Fast Bowling' ? '⚡ Fast Bowling' : d.category === 'Spin' ? '🌀 Spin' : '🧤 Fielding'}
+                      </span>
+                      <span className="pill" style={{ background: 'rgba(255,255,255,0.06)', color: '#94a3b8', fontSize: 10 }}>
+                        {d.difficulty || 'All Levels'}
+                      </span>
+                    </div>
+                    <span
+                      className="pill"
+                      style={{
+                        background: d.conductedToday ? 'rgba(0,230,118,0.15)' : 'rgba(255,200,61,0.15)',
+                        color: d.conductedToday ? '#00e676' : '#ffc83d',
+                        fontWeight: 700,
+                        fontSize: 10,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {d.conductedToday ? <CheckCircle2 size={11} /> : <Clock size={11} />}
+                      {d.conductedToday ? 'Conducted Today ✓' : 'Scheduled Today'}
+                    </span>
+                  </div>
+
+                  {/* Title & Assigned Trainees */}
                   <div>
-                    {/* Video Thumbnail with Slow-Mo Badge */}
-                    <div className="coach-drill-video-thumb">
-                      <img src={d.videoThumb} alt={d.title} />
-                      <div
-                        className="coach-drill-play-overlay"
-                        onClick={() => setViewingDrill(d)}
-                        title="Watch slow-mo video analysis"
-                      >
-                        <PlaySquare size={20} />
+                    <h3 style={{ margin: 0, fontSize: 15, color: '#f8fafc', fontWeight: 700, lineHeight: 1.35 }}>
+                      {d.title}
+                    </h3>
+                    <span style={{ fontSize: 11, color: '#94a3b8', display: 'block', marginTop: 2 }}>
+                      Assigned to <strong style={{ color: '#38bdf8' }}>{d.assignedCount} Active Trainees</strong>
+                    </span>
+                  </div>
+
+                  {/* What to Drill (Technical Focus) */}
+                  <div style={{ background: 'rgba(0,230,118,0.05)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 8, padding: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                      <Target size={14} color="#00e676" />
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#00e676', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        What to Drill (Technical Focus)
+                      </span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: 12, color: '#e2e8f0', lineHeight: 1.45 }}>
+                      {d.whatToDrill}
+                    </p>
+                  </div>
+
+                  {/* Execution Steps */}
+                  {d.steps && d.steps.length > 0 && (
+                    <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 8, padding: 10, border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <span style={{ fontSize: 10, color: 'var(--muted)', textTransform: 'uppercase', fontWeight: 700, display: 'block', marginBottom: 6 }}>
+                        Execution Sequence:
+                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {d.steps.slice(0, 3).map((st, idx) => (
+                          <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 11, color: '#cbd5e1' }}>
+                            <span style={{ color: '#ffc83d', fontWeight: 800, minWidth: 14 }}>{idx + 1}.</span>
+                            <span>{st}</span>
+                          </div>
+                        ))}
                       </div>
-                      <span
-                        style={{
-                          position: 'absolute',
-                          top: 8,
-                          left: 8,
-                          padding: '3px 8px',
-                          background: 'rgba(2,6,23,0.8)',
-                          borderRadius: 6,
-                          fontSize: 10,
-                          color: '#ffc83d',
-                          fontWeight: 800,
-                          backdropFilter: 'blur(4px)',
-                        }}
-                      >
-                        {d.fps}
-                      </span>
-                      <span
-                        style={{
-                          position: 'absolute',
-                          bottom: 8,
-                          right: 8,
-                          padding: '2px 6px',
-                          background: 'rgba(2,6,23,0.8)',
-                          borderRadius: 4,
-                          fontSize: 10,
-                          color: '#fff',
-                        }}
-                      >
-                        {d.duration}
-                      </span>
                     </div>
+                  )}
 
-                    {/* Drill Info */}
-                    <div style={{ marginTop: 8 }}>
-                      <strong style={{ fontSize: 14, color: '#f8fafc', display: 'block' }}>{d.title}</strong>
-                      <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 700 }}>
-                        {d.category} Mechanics • Assigned: {d.assignedCount} Athletes
-                      </span>
+                  {/* Equipment & Recommended Volume */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 11 }}>
+                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: 8, borderRadius: 6 }}>
+                      <span style={{ color: 'var(--muted)', display: 'block', fontSize: 10 }}>Equipment Needed:</span>
+                      <strong style={{ color: '#cbd5e1', fontSize: 11, display: 'block', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {d.equipment || 'Cones, Balls, Bat'}
+                      </strong>
                     </div>
-
-                    {/* Key Checkpoint Preview */}
-                    <div style={{ marginTop: 8, padding: 8, background: 'rgba(255,255,255,0.02)', borderRadius: 8 }}>
-                      <span style={{ fontSize: 10, color: 'var(--muted)', display: 'block', textTransform: 'uppercase' }}>
-                        Primary Checkpoint:
-                      </span>
-                      <p style={{ margin: '2px 0 0', fontSize: 12, color: '#cbd5e1' }}>
-                        ✓ {d.checkpoints[0]}
-                      </p>
+                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: 8, borderRadius: 6 }}>
+                      <span style={{ color: 'var(--muted)', display: 'block', fontSize: 10 }}>Recommended Reps:</span>
+                      <strong style={{ color: '#ffc83d', fontSize: 11, display: 'block', marginTop: 2 }}>
+                        {d.recommendedReps}
+                      </strong>
                     </div>
                   </div>
 
-                  {/* Drill Card Actions */}
-                  <div style={{ display: 'flex', gap: 6, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8, marginTop: 4 }}>
+                  {/* Key Checkpoint Preview */}
+                  <div style={{ padding: 8, background: 'rgba(56,189,248,0.04)', borderRadius: 6, border: '1px solid rgba(56,189,248,0.15)' }}>
+                    <span style={{ fontSize: 10, color: '#38bdf8', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>
+                      Coach Eye Checkpoint:
+                    </span>
+                    <p style={{ margin: '2px 0 0', fontSize: 11, color: '#e2e8f0' }}>
+                      ✓ {d.checkpoints[0]}
+                    </p>
+                  </div>
+
+                  {/* Card Action Buttons: Direct Coach Options */}
+                  <div style={{ display: 'flex', gap: 6, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10, marginTop: 4, flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn btn--sm"
+                      style={{
+                        flex: '1 1 auto',
+                        fontSize: 11,
+                        background: d.conductedToday ? 'rgba(0,230,118,0.15)' : 'rgba(255,255,255,0.08)',
+                        color: d.conductedToday ? '#00e676' : '#fff',
+                        border: d.conductedToday ? '1px solid #00e67655' : '1px solid rgba(255,255,255,0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 5,
+                        padding: '8px 10px',
+                      }}
+                      onClick={() => handleToggleConducted(d.id)}
+                    >
+                      <CheckCircle2 size={13} color={d.conductedToday ? '#00e676' : '#94a3b8'} />
+                      {d.conductedToday ? 'Conducted ✓' : 'Mark Conducted'}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn btn--secondary btn--sm"
+                      style={{ flex: '1 1 auto', fontSize: 11, padding: '8px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}
+                      onClick={() => handleQuickAssignDrill(d)}
+                    >
+                      <Users size={13} />
+                      Assign Trainees
+                    </button>
+
                     <button
                       type="button"
                       className="btn btn--primary btn--sm"
-                      style={{ flex: 1, fontSize: 11 }}
+                      style={{ flex: '100%', fontSize: 11, padding: '8px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}
                       onClick={() => setViewingDrill(d)}
                     >
-                      Watch Slow-Mo Breakdown →
+                      View Full Drill Protocol →
                     </button>
                   </div>
                 </div>
